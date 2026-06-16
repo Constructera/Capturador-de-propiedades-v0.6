@@ -113,7 +113,10 @@
     <div class="subbox" id="unitsBox" style="display:none">
       <div class="field">
         <div class="field-top"><label>Detalle por unidad</label></div>
-        <div class="hint">Se nombran solas; edita nombre, precio, m² o nota por unidad.</div>
+        <div class="hint">Se pre-llenan con los valores globales de m² y precio. Edita unidad por unidad si alguna varía.</div>
+        <div class="btn-row" style="margin-top:6px">
+          <button type="button" class="btn chip-sm" id="btnIgualaTodo">🔄 Igualar todas desde valores globales</button>
+        </div>
         <div class="units-list" id="unitsList"></div>
       </div>
       <div class="field">
@@ -155,7 +158,8 @@
 
   <div class="field">
     <div class="field-top"><label>Zona / Colonia <span class="req">*</span></label></div>
-    <input type="text" id="f_zona" placeholder="Escribe la colonia; aparecen las existentes o créala" autocomplete="off">
+    <div class="tags" id="zonasTags"></div>
+    <input type="text" id="f_zona" placeholder="Escribe para buscar o agregar zonas (Enter para confirmar)" autocomplete="off">
     <div class="suggest" id="zonaSuggest"></div>
     <div class="hint" id="zonaHint"></div>
   </div>
@@ -166,14 +170,10 @@
     <div class="field-top"><label>Nombre de la propiedad</label></div>
     <input type="text" id="f_nombre" placeholder="Se genera solo si lo dejas vacío">
   </div>
-  <div class="row2">
-    <div class="field"><div class="field-top"><label>Código</label></div>
-      <input type="text" id="f_codigo" placeholder="Auto (PROP- o TERR-)"></div>
-    <div class="field"><div class="field-top"><label>Fecha de captura</label></div>
-      <input type="date" id="f_fecha"></div>
-  </div>
+  <div class="field"><div class="field-top"><label>Fecha de captura</label></div>
+    <input type="date" id="f_fecha"></div>
   <div class="field">
-    <div class="field-top"><label>Fuente</label></div>
+    <div class="field-top"><label>Fuente <span class="h-hint">(cómo se consiguió)</span></label></div>
     <select id="f_fuente">
       <option selected>Recorrido/Scouteo</option>
       <option>Socio inmobiliario</option>
@@ -312,14 +312,14 @@
   <h2>Datos comerciales</h2>
   <div class="row2">
     <div class="field"><div class="field-top"><label>Estatus</label></div>
-      <select id="f_estatus"><option>Captada</option><option selected>En análisis</option><option>Disponible</option><option>Apartada</option><option>Vendida</option></select>
+      <select id="f_estatus"><option>Captada</option><option selected>En análisis</option><option>Disponible</option><option>En obra gris</option><option>Apartada</option><option>Vendida</option></select>
       <div class="hint" id="estatusHint"></div></div>
     <div class="field"><div class="field-top"><label>Publicable</label></div>
       <select id="f_pub"><option selected>Sí</option><option>No</option></select></div>
   </div>
   <div class="row2">
     <div class="field"><div class="field-top"><label>Comisión esperada</label></div>
-      <select id="f_comision"><option selected>4%</option><option>5%</option><option>Otra</option></select></div>
+      <select id="f_comision"><option>0.5%</option><option>1%</option><option>2%</option><option>3%</option><option selected>4%</option><option>5%</option><option>6%</option><option>7%</option></select></div>
     <div class="field"><div class="field-top"><label>Prioridad</label></div>
       <select id="f_prioridad"><option>Alta</option><option selected>Media</option><option>Baja</option></select></div>
   </div>
@@ -434,7 +434,6 @@
     <div class="hint" id="cfgCount"></div>
     <div class="btn-row">
       <button type="button" class="btn" id="cfg_export">Exportar historial (JSON)</button>
-      <button type="button" class="btn btn-danger" id="cfg_clear">Borrar todo el historial</button>
     </div>
   </div>
 </main>

@@ -47,6 +47,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 .si-btn{border:1px solid var(--line-dark);background:#fff;color:var(--si);font-size:.72rem;font-weight:700;border-radius:5px;padding:6px 11px;cursor:pointer;flex-shrink:0}
 .si-btn.active{background:var(--si);border-color:var(--si);color:#fff}
+.na-btn{border:1px solid var(--line-dark);background:#fff;color:#5b6277;font-size:.72rem;font-weight:700;border-radius:5px;padding:6px 11px;cursor:pointer;flex-shrink:0;margin-left:4px}
+.na-btn.active{background:#5b6277;border-color:#5b6277;color:#fff}
 
 .chips{display:flex;flex-wrap:wrap;gap:9px}
 .chip{border:1px solid var(--line-dark);background:#fff;border-radius:6px;padding:11px 15px;font-size:.95rem;cursor:pointer;font-family:inherit;color:var(--text)}
