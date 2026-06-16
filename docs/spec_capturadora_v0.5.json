@@ -1,0 +1,413 @@
+{
+  "project": {
+    "name": "Capturadora Hauser / Inmobitera",
+    "target_version": "v0.5",
+    "spec_revision": 2,
+    "origin_repo": "https://github.com/Constructera/Capturador-de-propiedades",
+    "origin_site": "https://constructera.github.io/Capturador-de-propiedades/",
+    "destination_strategy": "new_repo_copy",
+    "destination_repo_suggested_names": ["Capturador-de-propiedades-v0.5", "Capturadora-Hauser"],
+    "destination_rationale": "v0.5 cambia navegacion y arquitectura; un repo copia da GitHub Pages de staging independiente y rollback limpio. No usar rama sobre el repo estable.",
+    "deployment": "GitHub Pages",
+    "implementation_strategy": "Mantener app estatica HTML/CSS/JS para v0.5; preparar arquitectura para futura migracion a React/Vite si el sitio crece a dashboard completo.",
+    "primary_goal": "Convertir la capturadora actual en una app gamificada, modular, mobile-first y profesional para incentivar la captacion de propiedades y contactos."
+  },
+  "product_decisions_rev2": {
+    "note": "16 decisiones del dueno que prevalecen sobre cualquier especificacion previa que las contradiga.",
+    "decisions": [
+      {
+        "id": 1,
+        "topic": "direccion",
+        "rule": "El asesor captura una direccion generica (calle, numero, colonia). El markdown de salida instruye al agente Notion a geolocalizar la ubicacion exacta en la web y rellenar Direccion con referencia tipo Google Maps (link y/o coordenadas).",
+        "backlog": "Buscador de direcciones con autocompletado que sustituira la geolocalizacion manual."
+      },
+      {
+        "id": 2,
+        "topic": "zona",
+        "rule": "Autocompletar el campo Zona con las zonas existentes de la base 'Zonas'. Si el asesor escribe una zona nueva, permitir terminarla y agregar al markdown la instruccion de crearla como nueva opcion del select Zona (y/o nuevo registro en base Zonas)."
+      },
+      {
+        "id": 3,
+        "topic": "codigo",
+        "rule": "Codigo condicional: PROP-XX para casa o departamento; TERR-XX para terreno.",
+        "open_issue": "El terreno PROP-3 ya existe con prefijo PROP-. El dueno decide despues si se renumera. NO renumerar automaticamente. El markdown debe senalar el conflicto cuando aplique."
+      },
+      {
+        "id": 4,
+        "topic": "nombre",
+        "rule": "Nombre propuesto por el asesor; si lo deja vacio, el titulo es la direccion sencilla (calle y numero)."
+      },
+      {
+        "id": 5,
+        "topic": "dimensiones",
+        "rule": "m2 terreno Y m2 construccion: ambos son esenciales. Cambia la regla previa 'm2 terreno o m2 construccion'. En terreno sin construccion, m2 construccion puede marcarse N/A explicitamente.",
+        "changes_previous": true
+      },
+      {
+        "id": 6,
+        "topic": "operacion_precio",
+        "rule": "Precio segun operacion: venta, renta o ambos."
+      },
+      {
+        "id": 7,
+        "topic": "operacion_ambas",
+        "rule": "La opcion 'Ambas' despliega los dos campos de precio (venta y renta) para capturarlos por separado."
+      },
+      {
+        "id": 8,
+        "topic": "servicios",
+        "rule": "Servicios disponibles se conserva (agua, luz, drenaje, pavimento o 'Por confirmar')."
+      },
+      {
+        "id": 9,
+        "topic": "topografia",
+        "rule": "Topografia ELIMINADA del formulario y de los datos esenciales de terreno.",
+        "changes_previous": true,
+        "removed": true
+      },
+      {
+        "id": 10,
+        "topic": "uso_de_suelo",
+        "rule": "Agregar 'uso de suelo / densidad permitida' como campo de terreno; alimenta la corrida financiera."
+      },
+      {
+        "id": 11,
+        "topic": "estatus_legal",
+        "rule": "Agregar 'estatus legal / escrituras' como campo opcional tipo select.",
+        "select_options_suggested": ["Titulo limpio", "Con gravamen", "Ejidal", "En tramite", "S/I"]
+      },
+      {
+        "id": 12,
+        "topic": "fuente",
+        "rule": "Fuente se conserva. Nota: las fuentes actuales no son las principales de captacion; revisar en version futura."
+      },
+      {
+        "id": 13,
+        "topic": "propietario",
+        "rule": "Propietario / quien ofrece se conserva (nombre + un dato de contacto, o 'No se aun')."
+      },
+      {
+        "id": 14,
+        "topic": "estatus_auto",
+        "rule": "Default al crear: 'En analisis'. Al alcanzar 3 estrellas (captura completa), el estatus pasa automaticamente a 'Captada'. El markdown debe reflejar el estatus resultante e indicarlo explicitamente si es Captada.",
+        "trigger": "stars === 3"
+      },
+      {
+        "id": 15,
+        "topic": "publicable",
+        "rule": "Publicable: checkbox Si / No."
+      },
+      {
+        "id": 16,
+        "topic": "notas",
+        "rule": "Notas se conserva (texto libre)."
+      }
+    ]
+  },
+  "versioning": {
+    "visible_app_version": "Capturadora Hauser v0.5",
+    "required_changes": [
+      "Agregar version visible en pantalla de inicio, configuracion y footer.",
+      "Agregar encabezado de version en app.js/index.html/styles.css si aplica.",
+      "Crear o actualizar CHANGELOG.md con resumen de v0.5.",
+      "No mezclar version tecnica antigua con version de producto; si app.js dice v4, normalizar el encabezado a v0.5 o explicar la transicion."
+    ],
+    "changelog_entry": {
+      "version": "v0.5",
+      "title": "Gamificacion, asesores, temporizador, capturadora de contactos y decisiones de producto rev.2",
+      "items": [
+        "Nuevo menu principal tipo app.",
+        "Seleccion/registro de asesor antes de iniciar captura.",
+        "Temporizador circular configurable.",
+        "Mascota/casita animada con estados emocionales.",
+        "Sonidos de interaccion configurables.",
+        "Sistema de 3 estrellas por captura.",
+        "Ranking global por asesor.",
+        "Nueva capturadora de clientes/socios/contactos.",
+        "Resumen final de calidad de captura.",
+        "Direccion generica + geolocalizacion delegada al agente Notion.",
+        "Autocompletado de zona y alta de zona nueva via markdown.",
+        "Codigo condicional PROP-/TERR- por tipo de inmueble.",
+        "m2 terreno y m2 construccion ahora ambos esenciales.",
+        "Campo topografia eliminado.",
+        "Campos nuevos de terreno: uso de suelo/densidad y estatus legal.",
+        "Auto-avance de estatus a 'Captada' con 3 estrellas.",
+        "Preparacion para almacenamiento mas robusto."
+      ]
+    }
+  },
+  "technical_references": {
+    "vanilla_recommended_for_v0_5": [
+      {"name": "lottie-web", "url": "https://github.com/airbnb/lottie-web", "use_case": "Renderizar animaciones JSON locales para la casita/mascota sin migrar a React."},
+      {"name": "MDN Web Audio API best practices", "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices", "use_case": "Implementar sonidos despues de interaccion del usuario y evitar bloqueo de autoplay."},
+      {"name": "MDN prefers-reduced-motion", "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion", "use_case": "Reducir animaciones si el usuario lo tiene configurado en su sistema."},
+      {"name": "Dexie", "url": "https://dexie.org/", "use_case": "Futura migracion de localStorage a IndexedDB para ranking, historial y capturas estructuradas."}
+    ],
+    "future_react_references": [
+      {"name": "react-duolingo", "url": "https://github.com/bryanjenningz/react-duolingo", "use_case": "Referencia de estructura visual gamificada. No copiar marca."},
+      {"name": "lottie-react", "url": "https://github.com/Gamote/lottie-react", "use_case": "Renderizar Lottie si se migra a React."},
+      {"name": "react-countdown-circle-timer", "url": "https://github.com/vydimitrov/react-countdown-circle-timer", "use_case": "Temporizador circular animado en React."},
+      {"name": "use-sound", "url": "https://github.com/joshwcomeau/use-sound", "use_case": "Patron de sonidos de UI en React."},
+      {"name": "react-sounds", "url": "https://github.com/aediliclabs/react-sounds", "use_case": "Biblioteca de sonidos para UI en React."},
+      {"name": "react-confetti-boom", "url": "https://github.com/almond-bongbong/react-confetti-boom", "use_case": "Celebracion visual con 3 estrellas."},
+      {"name": "rhf-wizard", "url": "https://github.com/kennyhei/rhf-wizard", "use_case": "Multi-step form wizard con React Hook Form."},
+      {"name": "Framer Motion", "url": "https://github.com/motiondivision/motion", "use_case": "Microinteracciones y transiciones en React."},
+      {"name": "CoreUI React Admin Template", "url": "https://github.com/coreui/coreui-free-react-admin-template", "use_case": "Referencia futura para dashboard administrativo."}
+    ]
+  },
+  "information_architecture": {
+    "main_menu": {
+      "route_id": "home",
+      "title": "Que quieres capturar hoy?",
+      "cards": [
+        {"id": "capture_property", "label": "Capturar propiedad", "description": "Alta rapida de propiedad, terreno, casa, local, bodega u otro inmueble.", "icon": "home"},
+        {"id": "capture_contact", "label": "Capturar cliente / socio", "description": "Alta de propietarios, compradores, desarrolladores, arquitectos, notarios, maestros de obra y aliados.", "icon": "people"},
+        {"id": "leaderboard", "label": "Ranking de asesores", "description": "Estrellas acumuladas, capturas, promedio y tiempos.", "icon": "star"},
+        {"id": "history", "label": "Historial", "description": "Capturas guardadas en este dispositivo.", "icon": "history"},
+        {"id": "settings", "label": "Configuracion", "description": "Asesores, sonidos, animacion, backend y datos locales.", "icon": "settings"},
+        {"id": "help", "label": "Ayuda rapida", "description": "Criterios minimos de captura y uso correcto.", "icon": "help"}
+      ]
+    },
+    "navigation_rules": [
+      "Cada vista debe tener boton Volver al menu.",
+      "Cada vista debe mostrar version v0.5.",
+      "Usar transicion suave entre vistas.",
+      "Mantener navegacion por data-view si se conserva arquitectura actual."
+    ]
+  },
+  "advisor_module": {
+    "storage_key": "cap_advisors_v0_5",
+    "active_storage_key": "cap_active_advisor_v0_5",
+    "default_advisors": [
+      {"id": "advisor_daniel", "name": "Daniel", "alias": "Daniel", "stars_total": 0, "captures_total": 0, "best_time_seconds": null, "last_capture_at": null},
+      {"id": "advisor_erica", "name": "Erica", "alias": "Erica", "stars_total": 0, "captures_total": 0, "best_time_seconds": null, "last_capture_at": null},
+      {"id": "advisor_carlos", "name": "Carlos", "alias": "Carlos", "stars_total": 0, "captures_total": 0, "best_time_seconds": null, "last_capture_at": null},
+      {"id": "advisor_gabriel", "name": "Gabriel", "alias": "Gabriel", "stars_total": 0, "captures_total": 0, "best_time_seconds": null, "last_capture_at": null}
+    ],
+    "fields": ["id", "name", "alias", "phone", "avatar", "color", "stars_total", "captures_total", "captures_complete", "captures_essential", "average_stars", "best_time_seconds", "average_time_seconds", "last_capture_at"],
+    "requirements": [
+      "El asesor debe seleccionarse antes de iniciar una captura.",
+      "Si no hay asesor activo, bloquear inicio de temporizador y mostrar selector.",
+      "Permitir agregar asesor nuevo desde pantalla inicial o configuracion.",
+      "Sincronizar campo actual de Responsable / quien captura con asesor activo."
+    ]
+  },
+  "gamified_timer": {
+    "default_duration_seconds": 600,
+    "quick_options_seconds": [300, 600, 900, 1200],
+    "editable_before_start": true,
+    "editable_after_start": false,
+    "display": {"type": "circular_countdown", "position": "top_sticky", "text_format": "mm:ss", "show_only_minutes_before_start": true, "show_seconds_after_start": true},
+    "states": [
+      {"id": "ready", "condition": "before_start", "mascot_state": "idle", "message": "Elige tiempo e inicia la captura."},
+      {"id": "happy", "condition": "remaining_seconds > 300", "mascot_state": "dancing", "message": "Vas bien."},
+      {"id": "focused", "condition": "remaining_seconds <= 300 && remaining_seconds > 120", "mascot_state": "focused", "message": "Quedan 5 minutos o menos."},
+      {"id": "urgent", "condition": "remaining_seconds <= 120 && remaining_seconds > 0", "mascot_state": "angry", "message": "Ultimos minutos."},
+      {"id": "expired", "condition": "remaining_seconds <= 0", "mascot_state": "sad", "message": "Tiempo agotado. Puedes terminar, pero no gana estrella de velocidad."}
+    ],
+    "session_fields": ["capture_session_id", "advisor_id", "started_at", "ended_at", "duration_limit_seconds", "elapsed_seconds", "remaining_seconds", "was_paused", "pause_count", "completed"]
+  },
+  "mascot": {
+    "name": "Casita Hauser",
+    "type": "animated_house",
+    "implementation_options_priority": ["CSS + SVG inline", "Lottie JSON local con lottie-web", "Canvas solo si es necesario"],
+    "asset_folder": "/assets/animations/",
+    "states": {
+      "idle": {"description": "Casita tranquila con ojos parpadeando.", "trigger": "Pantalla previa o menu."},
+      "dancing": {"description": "Casita bailando suavemente.", "trigger": "Inicio de captura y avance correcto."},
+      "happy": {"description": "Casita sonriente.", "trigger": "Campo esencial completado o captura buena."},
+      "focused": {"description": "Casita atenta.", "trigger": "Quedan 5 minutos o menos."},
+      "angry": {"description": "Casita enojada/urgente.", "trigger": "Quedan 2 minutos o menos."},
+      "sad": {"description": "Casita triste.", "trigger": "Faltan datos esenciales o se agoto el tiempo."},
+      "celebrating": {"description": "Casita celebrando con estrellas.", "trigger": "Captura completada con 2 o 3 estrellas."}
+    },
+    "accessibility": ["Respetar prefers-reduced-motion.", "Agregar toggle de reducir animaciones.", "No bloquear la app si falla la animacion."]
+  },
+  "sounds": {
+    "enabled_by_default": true,
+    "volume_default": 0.45,
+    "storage_key": "cap_sound_settings_v0_5",
+    "implementation_options_priority": ["Web Audio API para tonos cortos sin archivos externos", "Archivos locales en /assets/sounds/", "Howler.js solo si se justifica"],
+    "events": [
+      {"id": "button_click", "file": "click.mp3", "trigger": "click en boton principal"},
+      {"id": "chip_select", "file": "select.mp3", "trigger": "seleccion de chip"},
+      {"id": "success", "file": "success.mp3", "trigger": "seccion completada"},
+      {"id": "error", "file": "error.mp3", "trigger": "campo esencial faltante"},
+      {"id": "star", "file": "star.mp3", "trigger": "estrella ganada"},
+      {"id": "complete", "file": "complete.mp3", "trigger": "captura finalizada"},
+      {"id": "timeout", "file": "timeout.mp3", "trigger": "tiempo agotado"}
+    ],
+    "rules": ["No reproducir sonido antes del primer click/tap del usuario.", "Agregar boton de silenciar.", "Agregar control de volumen.", "No usar loops ni musica constante en v0.5."]
+  },
+  "star_system": {
+    "max_stars": 3,
+    "star_1_speed": {"label": "Velocidad", "condition": "elapsed_seconds <= 300", "failure_message": "La captura tardo mas de 5 minutos."},
+    "star_2_essential": {
+      "label": "Datos esenciales",
+      "condition": "essential_missing_fields.length === 0",
+      "failure_message": "Faltan datos esenciales para una buena captura.",
+      "essential_fields_by_context": {
+        "all_properties": ["advisor_id", "tipo", "operacion", "direccion_or_coordinates", "zona", "fuente", "quien_ofrece", "precio_venta_or_precio_renta", "m2_terreno_AND_m2_construccion"],
+        "contact_required_when_known_offer_source": ["contact_name_or_phone"],
+        "built_property": ["recamaras_or_NA", "banos_or_NA", "estacionamientos_or_NA"],
+        "land_property": ["servicios_disponibles_or_por_confirmar", "uso_de_suelo_or_SI"]
+      },
+      "_changelog_rev2": [
+        "m2_terreno_or_m2_construccion cambiado a m2_terreno_AND_m2_construccion (Decision 5).",
+        "topografia_or_SI ELIMINADO de land_property (Decision 9).",
+        "uso_de_suelo_or_SI agregado a land_property (Decision 10)."
+      ]
+    },
+    "star_3_complete": {"label": "Captura completa", "condition": "all_relevant_fields_completed_or_marked_SI_NA", "failure_message": "La captura es valida, pero todavia hay campos vacios o pendientes."},
+    "quality_labels": [
+      {"id": "incomplete", "condition": "stars === 0 || essential_missing_fields.length > 0", "label": "Incompleta"},
+      {"id": "essential", "condition": "stars >= 2 && complete_missing_fields.length > 0", "label": "Esencial"},
+      {"id": "publicable", "condition": "stars >= 2 && has_publication_ready_fields === true", "label": "Publicable"},
+      {"id": "complete", "condition": "stars === 3", "label": "Completa"}
+    ],
+    "result_actions": ["Guardar captura", "Generar markdown", "Copiar markdown", "Completar faltantes", "Capturar otra propiedad", "Volver al menu"]
+  },
+  "leaderboard": {
+    "storage_key": "cap_leaderboard_v0_5",
+    "sort_order": ["stars_total_desc", "average_stars_desc", "average_time_seconds_asc"],
+    "advisor_stats": ["advisor_id", "advisor_name", "stars_total", "captures_total", "captures_complete", "captures_essential", "captures_incomplete", "average_stars", "best_time_seconds", "average_time_seconds", "last_capture_at"],
+    "ui": {"components": ["podium_top_3", "advisor_cards", "stats_summary", "filter_by_period_future"]}
+  },
+  "property_capture": {
+    "keep_existing_features": ["Leer publicacion y autorrellenar", "Tipo y operacion", "Unidades iguales", "Ubicacion y mapa", "Identificacion", "Quien ofrece la propiedad", "Dimensiones y precio", "Datos de terreno para corrida financiera", "Datos comerciales", "Notas y fotos", "Personas involucradas / CRM", "Generar markdown", "Historial", "Configuracion"],
+    "new_features": ["Pantalla previa con asesor y tiempo.", "Temporizador circular durante captura.", "Mascota animada superior.", "Estados emocionales segun avance/tiempo.", "Calculo de estrellas al finalizar.", "Resumen final gamificado.", "Suma al ranking del asesor.", "Direccion generica con geolocalizacion delegada al agente Notion.", "Autocompletado de zona desde base Zonas + alta de zona nueva via markdown.", "Codigo condicional PROP-/TERR-.", "Campos de terreno uso_de_suelo y estatus_legal.", "Auto-avance de estatus a Captada con 3 estrellas."],
+    "do_not_break": ["Markdown actual para Notion.", "Historial local.", "Exportar historial JSON.", "Responsable por defecto.", "S/I y N/A.", "Configuracion de backend opcional."],
+    "property_fields": {
+      "common": ["nombre_propiedad", "codigo", "tipo_inmueble", "operacion", "precio_venta", "precio_renta", "precio_por_m2", "m2_terreno", "m2_construccion", "direccion_generica", "zona", "estatus", "fuente", "propietario", "publicable", "notas"],
+      "built_only": ["recamaras", "banos", "estacionamientos"],
+      "land_only": ["servicios_disponibles", "uso_de_suelo_densidad", "estatus_legal"],
+      "removed_rev2": ["topografia"]
+    },
+    "code_rule": {"casa": "PROP-", "departamento": "PROP-", "terreno": "TERR-", "open_issue": "PROP-3 (terreno) preexistente; no renumerar automaticamente."},
+    "name_default": "direccion_sencilla_calle_y_numero",
+    "operacion_options": ["Venta", "Renta", "Ambas"],
+    "operacion_ambas_behavior": "Mostrar precio_venta y precio_renta simultaneamente.",
+    "estatus_default": "En analisis",
+    "estatus_auto_captada_trigger": "stars === 3"
+  },
+  "contact_capture": {
+    "route_id": "capture_contact",
+    "title": "Capturar cliente / socio",
+    "contact_types": ["Propietario", "Comprador", "Desarrollador", "Arquitecto", "Notario", "Maestro de obra", "Broker", "Asesor inmobiliario", "Inversionista", "Referido", "Otro"],
+    "conditional_fields": [
+      {"if": "tipo_contacto === 'Otro'", "show": ["otro_tipo_contacto"]},
+      {"if": "tipo_contacto === 'Comprador' || tipo_contacto === 'Inversionista'", "show": ["presupuesto", "zona_interes", "tipo_propiedad_buscada", "urgencia"]},
+      {"if": "tipo_contacto === 'Propietario' || tipo_contacto === 'Desarrollador'", "show": ["propiedad_relacionada", "tipo_propiedad_ofrece", "zona_operacion"]},
+      {"if": "tipo_contacto === 'Arquitecto' || tipo_contacto === 'Notario' || tipo_contacto === 'Maestro de obra'", "show": ["servicio_que_ofrece", "zona_operacion", "nivel_confianza"]}
+    ],
+    "fields": ["id", "created_at", "advisor_id", "nombre_completo", "alias", "tipo_contacto", "otro_tipo_contacto", "empresa", "puesto", "telefono", "whatsapp", "email", "zona_operacion", "zona_interes", "presupuesto", "tipo_propiedad_buscada", "tipo_propiedad_ofrece", "propiedad_relacionada", "fuente_contacto", "nivel_confianza", "urgencia", "estatus_contacto", "proxima_accion", "fecha_seguimiento", "notas", "markdown_generado"],
+    "markdown_output": {
+      "title_template": "Alta de contacto en Notion — {{nombre_completo}}",
+      "target_database": "Contactos / CRM",
+      "rules": ["No inventar datos.", "Usar S/I cuando no hay informacion.", "Usar N/A cuando no aplica.", "Si tipo_contacto es Otro, usar otro_tipo_contacto como etiqueta sugerida."]
+    }
+  },
+  "notion_property_database": {
+    "database_name": "Propiedades",
+    "source_of_truth": "CSV exportado de Notion (esquema de 21 columnas, registros PROP-1/2/3).",
+    "parameters": [
+      {"notion_field": "Propiedad", "role": "title", "type": "text", "app_source": "nombre_propuesto_o_direccion_sencilla"},
+      {"notion_field": "Codigo", "type": "text", "app_source": "PROP-XX o TERR-XX segun tipo"},
+      {"notion_field": "Tipo de inmueble", "type": "select", "app_source": "tipo_inmueble"},
+      {"notion_field": "Operacion", "type": "select", "options": ["Venta", "Renta", "Ambas"], "app_source": "operacion"},
+      {"notion_field": "Precio", "type": "text_money", "app_source": "precio_venta_y_o_renta"},
+      {"notion_field": "Precio / m2", "type": "number", "app_source": "calculado"},
+      {"notion_field": "m2 terreno", "type": "number", "app_source": "m2_terreno", "essential": true},
+      {"notion_field": "m2 construccion", "type": "number", "app_source": "m2_construccion", "essential": true},
+      {"notion_field": "Recamaras", "type": "number", "app_source": "recamaras", "applies_to": "built_only"},
+      {"notion_field": "Banos", "type": "text", "app_source": "banos", "applies_to": "built_only"},
+      {"notion_field": "Estacionamientos", "type": "number", "app_source": "estacionamientos", "applies_to": "built_only"},
+      {"notion_field": "Direccion", "type": "text", "app_source": "direccion_generica", "agent_instruction": "geolocalizar y rellenar con referencia Google Maps"},
+      {"notion_field": "Zona", "type": "relation", "relates_to": "Zonas", "app_source": "zona", "agent_instruction": "autocompletar de existentes o crear nueva opcion"},
+      {"notion_field": "Estatus", "type": "select", "app_source": "estatus", "default": "En analisis", "auto_rule": "pasa a 'Captada' con 3 estrellas"},
+      {"notion_field": "Fuente", "type": "select", "app_source": "fuente"},
+      {"notion_field": "Propietario", "type": "relation", "relates_to": "Contactos", "app_source": "propietario"},
+      {"notion_field": "Publicable", "type": "checkbox", "app_source": "publicable"},
+      {"notion_field": "Operaciones", "type": "relation", "relates_to": "Operaciones"},
+      {"notion_field": "Proyectos", "type": "relation", "relates_to": "Proyectos"},
+      {"notion_field": "Tareas", "type": "relation", "relates_to": "Tareas"},
+      {"notion_field": "Notas", "type": "text", "app_source": "notas"}
+    ],
+    "new_land_fields_pending": {
+      "note": "uso_de_suelo_densidad, estatus_legal y servicios_disponibles no existen aun como propiedades en la base. El markdown debe instruir crearlos como nuevas propiedades, o registrarlos en Notas. Pendiente de confirmacion del dueno.",
+      "fields": ["uso_de_suelo_densidad", "estatus_legal", "servicios_disponibles"]
+    }
+  },
+  "storage": {
+    "current": "localStorage",
+    "future": "IndexedDB/Dexie",
+    "wrapper_functions_required": ["loadData(key, defaultValue)", "saveData(key, value)", "updateAdvisorStats(advisorId, captureResult)", "saveCaptureSession(session)", "saveContactCapture(contact)", "exportAllData()"],
+    "keys": ["cap_cfg", "cap_hist", "cap_advisors_v0_5", "cap_active_advisor_v0_5", "cap_leaderboard_v0_5", "cap_contacts_v0_5", "cap_sound_settings_v0_5", "cap_animation_settings_v0_5", "cap_timer_settings_v0_5"]
+  },
+  "ui_components": {
+    "required": ["AppHeader", "VersionBadge", "MainMenu", "AdvisorSelector", "TimerSetupCard", "CircularTimer", "HouseMascot", "StarResult", "Leaderboard", "CaptureSummary", "MissingFieldsPanel", "ContactCaptureForm", "BackToMenuButton", "SoundToggle", "AnimationToggle", "ZonaAutocomplete", "AddressGenericInput"],
+    "visual_style": {
+      "layout": "mobile-first",
+      "buttons": "large rounded buttons",
+      "cards": "soft shadows, rounded corners",
+      "feedback": "microinteractions",
+      "colors": {"primary": "green", "secondary": "white/gray", "star": "yellow/gold", "warning": "orange", "error": "red", "contacts": "soft blue or purple"}
+    }
+  },
+  "accessibility": {
+    "required": ["prefers-reduced-motion support", "sound toggle", "volume control", "sufficient contrast", "clear labels", "error messages not only color-based", "keyboard accessible buttons where reasonable"]
+  },
+  "files_to_update_or_create": [
+    {"path": "index.html", "action": "update", "notes": "Menu principal, contenedores de nuevas vistas, version visible, hooks de UI, campos de terreno uso_de_suelo y estatus_legal, eliminar topografia."},
+    {"path": "app.js", "action": "update", "notes": "Modulo de asesores, temporizador, mascota, sonidos, estrellas, ranking, capturadora de contactos, logica codigo PROP-/TERR-, auto-estatus, autocompletado de zona, instruccion de geolocalizacion en markdown."},
+    {"path": "styles.css", "action": "create_if_missing", "notes": "Estilos de UI gamificada, animaciones y responsive."},
+    {"path": "manifest.json", "action": "update", "notes": "Nombre visible a Capturadora Hauser v0.5."},
+    {"path": "sw.js", "action": "update", "notes": "Agregar nuevos assets locales al cache si se usan sonidos/animaciones; actualizar nombre de cache para invalidar version previa."},
+    {"path": "CHANGELOG.md", "action": "create_or_update", "notes": "Documentar v0.5 rev.2."},
+    {"path": "PENDIENTES.md", "action": "update", "notes": "Conflicto PROP-3, buscador de direcciones, campos nuevos de terreno en Notion, revision de fuentes, IndexedDB, sincronizacion Notion/Sheets."},
+    {"path": "assets/sounds/", "action": "create_folder", "notes": "Sonidos locales si se usan archivos."},
+    {"path": "assets/animations/", "action": "create_folder", "notes": "Animaciones locales de la casita si se usa Lottie."}
+  ],
+  "acceptance_tests": [
+    "La app abre correctamente en GitHub Pages.",
+    "Se ve la version v0.5.",
+    "El menu principal permite navegar entre paginas.",
+    "Se puede seleccionar asesor antes de capturar.",
+    "Se puede agregar asesor nuevo.",
+    "El tiempo default es 10 minutos.",
+    "El tiempo puede modificarse antes de iniciar.",
+    "El temporizador circular inicia y se vacia visualmente.",
+    "La casita cambia de estado segun tiempo y resultado.",
+    "Los sonidos se reproducen despues del primer click/tap.",
+    "El sonido se puede apagar.",
+    "Las animaciones se pueden reducir.",
+    "Una captura terminada en menos de 5 minutos gana estrella 1.",
+    "Una captura con datos esenciales gana estrella 2.",
+    "Una captura completa gana estrella 3 y el estatus pasa a Captada.",
+    "Si faltan datos esenciales, se muestra lista clara de faltantes.",
+    "El codigo se genera PROP- para casa/depto y TERR- para terreno.",
+    "El campo Zona autocompleta zonas existentes y permite zona nueva.",
+    "El markdown incluye instruccion de geolocalizar la direccion.",
+    "m2 terreno y m2 construccion cuentan ambos para la estrella esencial.",
+    "El campo topografia ya no existe.",
+    "El ranking suma estrellas al asesor correcto.",
+    "La capturadora de clientes/socios guarda contacto y genera markdown.",
+    "El markdown de propiedad existente no se rompe.",
+    "El historial local sigue funcionando.",
+    "La app funciona en celular."
+  ],
+  "future_backlog_after_v0_5": [
+    "Resolver conflicto de codigo PROP-3 (terreno) vs regla TERR-.",
+    "Buscador de direcciones con autocompletado que sustituya geolocalizacion manual.",
+    "Confirmar si campos nuevos de terreno se crean como propiedades en Notion o viven en Notas.",
+    "Revisar catalogo de Fuentes (las actuales no son las principales de captacion).",
+    "Migrar almacenamiento a IndexedDB/Dexie.",
+    "Sincronizar ranking/capturas con Notion o Google Sheets.",
+    "Crear dashboard publico/privado de propiedades.",
+    "Login ligero por asesor para multiusuario real.",
+    "Subida de fotos real.",
+    "Mapa vivo de captaciones.",
+    "Modo recorrido/scouting ultrarrapido.",
+    "Vista Kanban de propiedades."
+  ]
+}
