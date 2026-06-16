@@ -45,12 +45,15 @@ document.addEventListener('click',function(e){
   showView(b.dataset.view);
 });
 function showView(id){
+  // mascota: reset al salir de viewResult
+  if(id!=='viewResult'){var vr=$('viewResult');if(vr&&vr.classList.contains('active')){id==='viewCapture'?updateTimerUI():setMascotState('idle');}}
   document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('active',v.id===id);});
   document.querySelectorAll('#navbar button').forEach(function(b){b.classList.toggle('active',b.dataset.view===id);});
   window.scrollTo(0,0);
   if(id==='viewHistory')renderHist();
   if(id==='viewConfig')renderCfgCount();
   if(id==='viewAdvisor')renderAsesorGrid();
+  if(id==='viewLeaderboard')renderRanking();
 }
 
 /* ===================== MÓDULO DE ASESORES ===================== */
@@ -1283,8 +1286,8 @@ function generar(){
   $('outputArea').style.display='block';
 
   // guardar en historial
-  lastCaptureId=saveCapture(md,estatus,falt,estrellas.count);
-  if(asesorActivo)updateAsesorStats(asesorActivo.id,estrellas.count,timerElapsed);
+  lastCaptureId=saveCapture(md,estatus,falt,estrellas.count,estrellas.quality);
+  if(asesorActivo)updateAsesorStats(asesorActivo.id,estrellas,timerElapsed);
   sndSuccess();
   mostrarResultado(estrellas);
 }
@@ -1310,11 +1313,13 @@ function camposSI(){
 }
 
 /* ===================== RESULTADO + CONFETTI — FASE 5 ===================== */
-function updateAsesorStats(id,stars,elapsed){
+function updateAsesorStats(id,strs,elapsed){
   var lista=getAsesores();
   var a=lista.filter(function(x){return x.id===id;})[0];if(!a)return;
   a.totalCapturas=(a.totalCapturas||0)+1;
-  a.totalEstrellas=(a.totalEstrellas||0)+stars;
+  a.totalEstrellas=(a.totalEstrellas||0)+strs.count;
+  if(strs.s2)a.capturasEsenciales=(a.capturasEsenciales||0)+1;
+  if(strs.s3)a.capturasCompletas=(a.capturasCompletas||0)+1;
   if(elapsed>0&&(!a.mejorTiempo||elapsed<a.mejorTiempo))a.mejorTiempo=elapsed;
   a.ultimaCaptura=new Date().toISOString();
   saveAsesores(lista);
@@ -1366,8 +1371,9 @@ function mostrarResultado(strs){
     $('resFaltCallout').style.display='none';
   }
 
-  // mostrar vista
+  // mostrar vista + mascota
   showView('viewResult');
+  if(strs.count===3)setMascotState('celebrating');
 
   // animar estrellas en secuencia
   var stars=[strs.s1,strs.s2,strs.s3];
@@ -1397,9 +1403,13 @@ $('resBtnOtra').addEventListener('click',function(){doReset();showView('viewCapt
 $('resBtnCompletar').addEventListener('click',function(){showView('viewCapture');window.scrollTo({top:0,behavior:'smooth'});});
 
 /* ===================== HISTORIAL ===================== */
+function histStars(n,quality){
+  var s='';for(var i=0;i<3;i++)s+=(i<(n||0)?'⭐':'☆');
+  return s+(quality?' <span class="hi-quality">'+quality+'</span>':'');
+}
 function getHist(){return load('hist',[]);}
 function setHist(h){save('hist',h);updateBadge();}
-function saveCapture(md,estatus,falt,stars){
+function saveCapture(md,estatus,falt,stars,quality){
   var h=getHist();
   var id=state.editId&&false?null:'CAP-'+Date.now();
   var rec={
@@ -1409,7 +1419,7 @@ function saveCapture(md,estatus,falt,stars){
     people:state.people.map(function(p){return (p.nombre||'?')+' ('+p.rol+')';}),
     anuncio:state.anuncioUrl||'',maps:$('f_maps').value,drive:$('f_drive').value,
     md:md,estado:falt.length?'Con faltantes':'Markdown generado',
-    estrellas:stars||0,
+    estrellas:stars||0,calidad:quality||'',
     faltantes:falt,copiado:false,enviado:false,edit:new Date().toISOString()
   };
   h.unshift(rec);setHist(h);
@@ -1443,6 +1453,7 @@ function renderHist(){
     var stTxt=r.enviado?'Enviada a Notion':(r.faltantes&&r.faltantes.length?'Con faltantes':'Generada');
     var item=document.createElement('div');item.className='hist-item';
     item.innerHTML='<div class="hi-top"><div><div class="hi-name">'+r.nombre+'</div>'+
+      (r.estrellas!=null?'<div class="hi-stars">'+histStars(r.estrellas,r.calidad)+'</div>':'')+
       '<div class="hi-meta">'+(r.tipo||'?')+' · '+r.oper+' · '+r.zona+' · '+r.resp+'<br>'+new Date(r.fecha).toLocaleString('es-MX')+'</div></div>'+
       '<span class="hi-state '+stCls+'">'+stTxt+'</span></div>'+
       '<div class="hi-actions">'+

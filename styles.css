@@ -138,6 +138,8 @@ pre{background:#fbfbfa;border:1px solid var(--line);border-radius:6px;padding:16
 .hi-state.miss{background:var(--warn-bg);color:var(--warn)}
 .hi-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .hi-actions .btn{padding:8px 12px;font-size:.8rem}
+.hi-stars{font-size:.8rem;margin:2px 0 3px;}
+.hi-quality{font-size:.7rem;font-weight:700;color:var(--accent);margin-left:4px;vertical-align:middle;}
 .empty{color:var(--text-soft);font-size:.9rem;text-align:center;padding:40px 10px}
 
 .cfg-block{border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-top:14px}
