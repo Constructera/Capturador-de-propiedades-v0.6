@@ -166,3 +166,64 @@ pre{background:#fbfbfa;border:1px solid var(--line);border-radius:6px;padding:16
 /* ===================== MÓDULO DE ASESORES ===================== */
 .asesor-sel{border-color:var(--accent)!important;background:var(--accent-bg)!important;box-shadow:0 0 0 2px var(--accent);}
 .asesor-avatar{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;font-size:1.1rem;font-weight:700;margin-bottom:4px;align-self:center}
+
+/* ===================== TIMER + MASCOTA ===================== */
+.timer-widget{border:1px solid var(--line);border-radius:12px;padding:18px 16px 16px;background:var(--bg-soft);margin-bottom:16px;}
+.timer-top{display:flex;align-items:center;justify-content:center;gap:22px;margin-bottom:14px;}
+
+/* mascot */
+.mascot-wrap{flex-shrink:0;}
+.mascot{width:90px;height:90px;display:block;overflow:visible;transition:filter .4s;}
+.timer-widget.running .mascot{width:64px;height:64px;}
+
+/* ring */
+.timer-ring-wrap{position:relative;width:90px;height:90px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.timer-widget.running .timer-ring-wrap{width:80px;height:80px;}
+.timer-ring{width:100%;height:100%;}
+.timer-display{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:var(--text);letter-spacing:-.01em;}
+
+/* arc color por estado */
+.timer-widget.state-happy #timerArc{stroke:var(--accent);}
+.timer-widget.state-focused #timerArc{stroke:var(--warn);}
+.timer-widget.state-urgent #timerArc{stroke:var(--danger);}
+.timer-widget.state-expired #timerArc{stroke:#c4554d;opacity:.45;}
+
+/* ready controls */
+.timer-ready-msg{text-align:center;font-size:.83rem;color:var(--text-soft);margin-bottom:12px;}
+.time-chips{justify-content:center;gap:8px;margin-bottom:14px;}
+#btnIniciarCaptura{width:100%;}
+
+/* running controls */
+.timer-running-ctrl{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:4px;}
+.timer-msg{font-size:.8rem;color:var(--text-soft);font-style:italic;flex:1;}
+
+/* ===================== MASCOTA ANIMACIONES ===================== */
+/* por defecto: ocultar variantes */
+.mascot .mouth-frown,.mascot .brow-angry,.mascot .star-deco{display:none;}
+
+/* sad / angry / expired → frown */
+.mascot.state-sad .mouth-happy,.mascot.state-angry .mouth-happy,.mascot.state-expired .mouth-happy{display:none;}
+.mascot.state-sad .mouth-frown,.mascot.state-angry .mouth-frown,.mascot.state-expired .mouth-frown{display:block;}
+
+/* angry → angry brows */
+.mascot.state-angry .brow-neutral{display:none;}
+.mascot.state-angry .brow-angry{display:block;}
+
+/* celebrating → stars */
+.mascot.state-celebrating .star-deco{display:block;}
+
+@keyframes mBlink{0%,85%,100%{transform:scaleY(1)}92%{transform:scaleY(0.05)}}
+@keyframes mDance{0%,100%{transform:translateY(0) rotate(0deg)}30%{transform:translateY(-6px) rotate(-4deg)}70%{transform:translateY(-6px) rotate(4deg)}}
+@keyframes mShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+@keyframes mSad{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+@keyframes mCelebrate{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-14px) scale(1.07)}}
+@keyframes mPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+
+.mascot.state-idle .eye-group{animation:mBlink 3.5s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+.mascot.state-dancing{animation:mDance 0.72s ease-in-out infinite;}
+.mascot.state-focused .eye-group{animation:mPulse 2s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+.mascot.state-angry{animation:mShake 0.45s ease-in-out infinite;filter:saturate(2) hue-rotate(-10deg);}
+.mascot.state-sad{animation:mSad 2.2s ease-in-out infinite;filter:saturate(0.25);}
+.mascot.state-celebrating{animation:mCelebrate 0.55s ease-in-out infinite;}
+
+@media(prefers-reduced-motion:reduce){.mascot,.mascot *{animation:none!important;transition:none!important;}}

@@ -114,7 +114,7 @@ function renderAsesorGrid(){
   });
   $('btnEmpezarCaptura').disabled=!asesorActivo;
 }
-$('btnEmpezarCaptura').addEventListener('click',function(){showView('viewCapture');});
+$('btnEmpezarCaptura').addEventListener('click',function(){resetTimerToReady();showView('viewCapture');});
 $('btnAgregarAsesor').addEventListener('click',function(){
   var nombre=prompt('Nombre del nuevo asesor:');
   if(!nombre||!nombre.trim())return;
@@ -128,6 +128,125 @@ $('btnAgregarAsesor').addEventListener('click',function(){
   asesorActivo=nuevo;save('asesor_activo',nuevo);
   renderAsesorGrid();syncAsesor();
   $('btnEmpezarCaptura').disabled=false;
+});
+
+/* ===================== MÓDULO DE TEMPORIZADOR + MASCOTA ===================== */
+var TIMER_C=2*Math.PI*54;           // circunferencia anillo SVG (r=54) = 339.29
+var timerLimit=load('cfg_timer_limit',600);
+var timerState='ready';             // 'ready'|'running'|'paused'|'expired'
+var timerRemaining=timerLimit;
+var timerElapsed=0;
+var timerInterval=null;
+var timerStartedAt=null;
+var timerWasPaused=false;
+var timerPauseCount=0;
+
+function timerFmt(s){
+  var m=Math.floor(s/60),sc=s%60;
+  return(m<10?'0':'')+m+':'+(sc<10?'0':'')+sc;
+}
+function setTimerArc(rem,lim){
+  var arc=$('timerArc');if(!arc)return;
+  var pct=lim>0?rem/lim:0;
+  arc.style.strokeDashoffset=TIMER_C*(1-Math.max(0,Math.min(1,pct)));
+}
+function setMascotState(st){
+  var svg=$('mascotSvg');if(!svg)return;
+  svg.setAttribute('class','mascot state-'+st);
+}
+function updateTimerUI(){
+  var d=$('timerDisplay');if(d)d.textContent=timerFmt(timerRemaining);
+  setTimerArc(timerRemaining,timerLimit);
+  var ts;
+  if(timerState==='ready'){ts='ready';}
+  else if(timerState==='expired'){ts='expired';}
+  else if(timerRemaining>300){ts='happy';}
+  else if(timerRemaining>120){ts='focused';}
+  else{ts='urgent';}
+  var w=$('timerWidget');
+  if(w){
+    w.className='timer-widget'+(timerState!=='ready'?' running':'');
+    if(ts!=='ready')w.classList.add('state-'+ts);
+  }
+  var MSGS={
+    happy:'Vas bien. 💪',
+    focused:'Quedan 5 min o menos. ⚡',
+    urgent:'¡Últimos 2 minutos! 🔥',
+    expired:'Tiempo agotado — igualmente puedes terminar.'
+  };
+  var msgEl=$('timerMsg');if(msgEl&&ts!=='ready')msgEl.textContent=MSGS[ts]||'';
+  var MAS={ready:'idle',happy:'dancing',focused:'focused',urgent:'angry',expired:'sad'};
+  setMascotState(MAS[ts]||'idle');
+}
+function startTimer(){
+  if(timerState==='running')return;
+  timerState='running';timerRemaining=timerLimit;timerElapsed=0;
+  timerStartedAt=Date.now();timerWasPaused=false;timerPauseCount=0;
+  var rw=$('timerRingWrap');if(rw)rw.style.display='flex';
+  var rc=$('timerRunningCtrl');if(rc)rc.style.display='';
+  var rd=$('timerReadyCtrl');if(rd)rd.style.display='none';
+  var pb=$('btnPausarTimer');if(pb)pb.textContent='⏸ Pausar';
+  updateTimerUI();
+  timerInterval=setInterval(function(){
+    if(timerState!=='running')return;
+    timerElapsed++;timerRemaining=Math.max(0,timerLimit-timerElapsed);
+    updateTimerUI();
+    if(timerRemaining===0){timerState='expired';clearInterval(timerInterval);timerInterval=null;}
+  },1000);
+}
+function pauseTimer(){
+  if(timerState!=='running')return;
+  timerState='paused';timerWasPaused=true;timerPauseCount++;
+  clearInterval(timerInterval);timerInterval=null;
+  var pb=$('btnPausarTimer');if(pb)pb.textContent='▶ Reanudar';
+}
+function resumeTimer(){
+  if(timerState!=='paused')return;
+  timerState='running';
+  timerInterval=setInterval(function(){
+    if(timerState!=='running')return;
+    timerElapsed++;timerRemaining=Math.max(0,timerLimit-timerElapsed);
+    updateTimerUI();
+    if(timerRemaining===0){timerState='expired';clearInterval(timerInterval);timerInterval=null;}
+  },1000);
+  var pb=$('btnPausarTimer');if(pb)pb.textContent='⏸ Pausar';
+}
+function resetTimerToReady(){
+  clearInterval(timerInterval);timerInterval=null;
+  timerState='ready';timerRemaining=timerLimit;timerElapsed=0;
+  timerWasPaused=false;timerPauseCount=0;
+  var rw=$('timerRingWrap');if(rw)rw.style.display='none';
+  var rc=$('timerRunningCtrl');if(rc)rc.style.display='none';
+  var rd=$('timerReadyCtrl');if(rd)rd.style.display='';
+  var w=$('timerWidget');if(w)w.className='timer-widget';
+  var d=$('timerDisplay');if(d)d.textContent=timerFmt(timerLimit);
+  setTimerArc(1,1);
+  setMascotState('idle');
+}
+// inicializar display y chip según preferencia guardada
+(function(){
+  var d=$('timerDisplay');if(d)d.textContent=timerFmt(timerLimit);
+  var savedMin=timerLimit/60;
+  var tc=$('timeChips');if(!tc)return;
+  tc.querySelectorAll('.chip').forEach(function(c){
+    c.classList.toggle('sel',parseInt(c.dataset.min)===savedMin);
+  });
+})();
+$('timeChips').addEventListener('click',function(e){
+  var c=e.target.closest('.chip');if(!c||!c.dataset.min)return;
+  this.querySelectorAll('.chip').forEach(function(x){x.classList.remove('sel');});
+  c.classList.add('sel');
+  timerLimit=parseInt(c.dataset.min)*60;
+  save('cfg_timer_limit',timerLimit);
+  if(timerState==='ready'){var d=$('timerDisplay');if(d)d.textContent=timerFmt(timerLimit);}
+});
+$('btnIniciarCaptura').addEventListener('click',function(){
+  startTimer();
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+$('btnPausarTimer').addEventListener('click',function(){
+  if(timerState==='running')pauseTimer();
+  else if(timerState==='paused')resumeTimer();
 });
 
 /* ===================== CHIPS ===================== */
@@ -1242,6 +1361,7 @@ $('btnReset').addEventListener('click',function(){
   ['n_precio','n_precio_renta','n_m2t','n_m2c','geoStatus','anuncioStatus','aiStatus','driveStatus','estatusHint'].forEach(function(id){$(id).textContent='';});
   delete $('f_drive').dataset.manual;refreshDrive();
   $('outputArea').style.display='none';$('btnFotos').disabled=true;
+  resetTimerToReady();
   updateProgress();window.scrollTo({top:0,behavior:'smooth'});
 });
 

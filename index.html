@@ -86,6 +86,84 @@
   <div class="doc-title">📥 Captura de propiedad</div>
   <div class="doc-sub">Hauser · alimenta la base 🏠 Propiedades y bases relacionadas</div>
 
+  <!-- ===================== TIMER + MASCOTA ===================== -->
+  <div id="timerWidget" class="timer-widget">
+    <div class="timer-top">
+      <!-- Mascota: Casita Hauser -->
+      <div class="mascot-wrap">
+        <svg class="mascot state-idle" id="mascotSvg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- chimenea -->
+          <rect x="67" y="6" width="8" height="16" rx="2" fill="#3d5a47"/>
+          <!-- techo sombra -->
+          <polygon points="2,47 50,4 98,47" fill="#1a4a2a"/>
+          <!-- techo -->
+          <polygon points="6,47 50,9 94,47" fill="#2e6f40"/>
+          <!-- cuerpo -->
+          <rect x="10" y="45" width="80" height="52" rx="4" fill="#38814d"/>
+          <!-- puerta -->
+          <rect x="39" y="67" width="22" height="30" rx="2" fill="rgba(0,0,0,0.22)"/>
+          <circle cx="56" cy="82" r="2" fill="rgba(255,255,255,0.35)"/>
+          <!-- blancos de ojos -->
+          <circle cx="30" cy="61" r="11" fill="white"/>
+          <circle cx="70" cy="61" r="11" fill="white"/>
+          <!-- grupo ojos (animación parpadeo) -->
+          <g class="eye-group">
+            <circle cx="30" cy="62" r="6.5" fill="#1a4a27"/>
+            <circle cx="70" cy="62" r="6.5" fill="#1a4a27"/>
+            <circle cx="32" cy="59" r="2.5" fill="white" opacity=".8"/>
+            <circle cx="72" cy="59" r="2.5" fill="white" opacity=".8"/>
+          </g>
+          <!-- cejas neutras -->
+          <path class="brow-neutral" d="M22,51 Q30,47 38,51" stroke="#1a4a27" fill="none" stroke-width="2" stroke-linecap="round"/>
+          <path class="brow-neutral" d="M62,51 Q70,47 78,51" stroke="#1a4a27" fill="none" stroke-width="2" stroke-linecap="round"/>
+          <!-- cejas enojadas -->
+          <path class="brow-angry" d="M22,49 Q30,54 38,51" stroke="#7a1500" fill="none" stroke-width="2.5" stroke-linecap="round"/>
+          <path class="brow-angry" d="M62,51 Q70,54 78,49" stroke="#7a1500" fill="none" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- boca feliz -->
+          <path class="mouth-happy" d="M37,77 Q50,87 63,77" stroke="white" fill="none" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- boca triste -->
+          <path class="mouth-frown" d="M37,84 Q50,74 63,84" stroke="white" fill="none" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- decoración celebración -->
+          <g class="star-deco">
+            <circle cx="8" cy="22" r="4" fill="#f0c040"/>
+            <line x1="8" y1="17" x2="8" y2="27" stroke="#f0c040" stroke-width="1.5"/>
+            <line x1="3" y1="22" x2="13" y2="22" stroke="#f0c040" stroke-width="1.5"/>
+            <circle cx="90" cy="16" r="3" fill="#f0c040"/>
+            <line x1="90" y1="12" x2="90" y2="20" stroke="#f0c040" stroke-width="1.5"/>
+            <line x1="86" y1="16" x2="94" y2="16" stroke="#f0c040" stroke-width="1.5"/>
+            <circle cx="96" cy="40" r="2.5" fill="#f0c040"/>
+          </g>
+        </svg>
+      </div>
+      <!-- Anillo de cuenta regresiva (visible al iniciar) -->
+      <div class="timer-ring-wrap" id="timerRingWrap" style="display:none">
+        <svg class="timer-ring" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="60" cy="60" r="54" fill="none" stroke="var(--line)" stroke-width="9"/>
+          <circle id="timerArc" cx="60" cy="60" r="54" fill="none" stroke="var(--accent)" stroke-width="9"
+            stroke-dasharray="339.29" stroke-dashoffset="0"
+            stroke-linecap="round" transform="rotate(-90 60 60)"/>
+        </svg>
+        <div class="timer-display" id="timerDisplay">10:00</div>
+      </div>
+    </div>
+    <!-- Controles pre-inicio -->
+    <div id="timerReadyCtrl">
+      <p class="timer-ready-msg">Selecciona el tiempo e inicia la captura</p>
+      <div class="chips time-chips" id="timeChips">
+        <button type="button" class="chip chip-sm" data-min="5">5 min</button>
+        <button type="button" class="chip chip-sm sel" data-min="10">10 min</button>
+        <button type="button" class="chip chip-sm" data-min="15">15 min</button>
+        <button type="button" class="chip chip-sm" data-min="20">20 min</button>
+      </div>
+      <button type="button" class="btn btn-accent btn-big" id="btnIniciarCaptura">▶ Iniciar captura</button>
+    </div>
+    <!-- Controles en marcha -->
+    <div id="timerRunningCtrl" class="timer-running-ctrl" style="display:none">
+      <span class="timer-msg" id="timerMsg">Vas bien. 💪</span>
+      <button type="button" class="btn chip-sm" id="btnPausarTimer">⏸ Pausar</button>
+    </div>
+  </div>
+
   <div class="progress-wrap">
     <div class="progress-label"><span id="progText">0 campos</span><span id="progPct">0%</span></div>
     <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
