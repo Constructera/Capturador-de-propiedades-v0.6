@@ -1402,6 +1402,86 @@ $('resBtnVerMd').addEventListener('click',function(){
 $('resBtnOtra').addEventListener('click',function(){doReset();showView('viewCapture');});
 $('resBtnCompletar').addEventListener('click',function(){showView('viewCapture');window.scrollTo({top:0,behavior:'smooth'});});
 
+/* ===================== RANKING — FASE 6 ===================== */
+function repStar(n){var s='';for(var i=0;i<Math.min(n,9);i++)s+='⭐';return s+(n>9?'+':'');}
+
+function sortAsesores(lista){
+  return lista.slice().sort(function(a,b){
+    var stA=a.totalEstrellas||0,stB=b.totalEstrellas||0;
+    if(stA!==stB)return stB-stA;
+    var capA=a.totalCapturas||0,capB=b.totalCapturas||0;
+    var avA=capA?stA/capA:0,avB=capB?stB/capB:0;
+    if(Math.abs(avA-avB)>.005)return avB-avA;
+    return (a.mejorTiempo||99999)-(b.mejorTiempo||99999);
+  });
+}
+
+function renderRanking(){
+  var wrap=$('rankingList');if(!wrap)return;
+  var full=sortAsesores(getAsesores());
+  var lista=full.filter(function(a){return a.totalCapturas>0;});
+  if(!lista.length){
+    wrap.innerHTML='<div class="empty" style="margin-top:48px">Sin capturas aún.<br>Captura propiedades para aparecer en el ranking.</div>';
+    return;
+  }
+  var html='';
+
+  // podio top-3
+  html+='<div class="podio">';
+  var podioOrder=[1,0,2];  // izq=plata, centro=oro, der=bronce
+  podioOrder.forEach(function(idx){
+    if(idx>=lista.length)return;
+    var a=lista[idx];
+    var medal=['🥇','🥈','🥉'][idx];
+    var posClass='pos-'+(idx+1);
+    var init=a.nombre.split(' ').map(function(p){return p[0];}).join('').toUpperCase().slice(0,2);
+    var avg=a.totalCapturas?(a.totalEstrellas/a.totalCapturas).toFixed(1):'0.0';
+    html+='<div class="podio-card '+posClass+'">'+
+      '<div class="podio-medal">'+medal+'</div>'+
+      '<div class="podio-avatar">'+init+'</div>'+
+      '<div class="podio-name">'+a.nombre+'</div>'+
+      '<div class="podio-stars">'+repStar(a.totalEstrellas||0)+'</div>'+
+      '<div class="podio-meta">'+(a.totalCapturas||0)+' cap · '+avg+' prom</div>'+
+      '</div>';
+  });
+  html+='</div>';
+
+  // tarjetas de todos los asesores
+  lista.forEach(function(a,i){
+    var pos=i+1;
+    var init=a.nombre.split(' ').map(function(p){return p[0];}).join('').toUpperCase().slice(0,2);
+    var avg=a.totalCapturas?(a.totalEstrellas/a.totalCapturas).toFixed(1):'—';
+    var best=a.mejorTiempo?timerFmt(a.mejorTiempo):'—';
+    var last=a.ultimaCaptura?new Date(a.ultimaCaptura).toLocaleDateString('es-MX'):'—';
+    html+='<div class="rank-card">'+
+      '<div class="rank-pos">'+pos+'</div>'+
+      '<div class="rank-avatar">'+init+'</div>'+
+      '<div class="rank-body">'+
+        '<div class="rank-name">'+a.nombre+'</div>'+
+        '<div class="rank-stats">'+
+          '<span>⭐ '+(a.totalEstrellas||0)+' total</span>'+
+          '<span>📊 '+avg+' prom</span>'+
+          '<span>🏠 '+(a.totalCapturas||0)+' cap</span>'+
+          (a.mejorTiempo?'<span>⚡ '+best+'</span>':'')+
+        '</div>'+
+        '<div class="rank-sub">'+
+          (a.capturasCompletas?'<span>🌟 '+a.capturasCompletas+' completa(s)</span>':'')+
+          (a.capturasEsenciales?'<span>✓ '+a.capturasEsenciales+' esencial(es)</span>':'')+
+          (last!=='—'?'<span class="rank-last">Última: '+last+'</span>':'')+
+        '</div>'+
+      '</div>'+
+      '</div>';
+  });
+
+  // asesores sin capturas al final
+  var sinCap=full.filter(function(a){return !a.totalCapturas;});
+  if(sinCap.length){
+    html+='<div class="rank-sin-cap">Sin capturas: '+sinCap.map(function(a){return a.nombre;}).join(', ')+'</div>';
+  }
+
+  wrap.innerHTML=html;
+}
+
 /* ===================== HISTORIAL ===================== */
 function histStars(n,quality){
   var s='';for(var i=0;i<3;i++)s+=(i<(n||0)?'⭐':'☆');
