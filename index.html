@@ -15,9 +15,54 @@
 </head>
 <body>
 
-<!-- ===================== VISTA: CAPTURA ===================== -->
-<main id="viewCapture" class="view active">
+<!-- ===================== VISTA: HOME ===================== -->
+<main id="viewHome" class="view active">
+  <div class="home-header">
+    <div class="home-title">Capturadora Hauser</div>
+    <span class="ver-badge">v0.5</span>
+  </div>
+  <div class="home-sub">¿Qué quieres capturar hoy?</div>
+  <div class="home-grid">
+    <button type="button" class="home-card" data-view="viewCapture">
+      <span class="home-icon">🏠</span>
+      <span class="home-label">Capturar propiedad</span>
+      <span class="home-desc">Casa, depto, terreno, local, bodega u otro inmueble</span>
+    </button>
+    <button type="button" class="home-card" data-view="viewContact">
+      <span class="home-icon">👤</span>
+      <span class="home-label">Capturar cliente / socio</span>
+      <span class="home-desc">Propietarios, compradores, arquitectos, notarios y aliados</span>
+    </button>
+    <button type="button" class="home-card" data-view="viewLeaderboard">
+      <span class="home-icon">⭐</span>
+      <span class="home-label">Ranking de asesores</span>
+      <span class="home-desc">Estrellas acumuladas, capturas y tiempos</span>
+    </button>
+    <button type="button" class="home-card" data-view="viewHistory">
+      <span class="home-icon">🗂️</span>
+      <span class="home-label">Historial</span>
+      <span class="home-desc">Capturas guardadas en este dispositivo</span>
+    </button>
+    <button type="button" class="home-card" data-view="viewConfig">
+      <span class="home-icon">⚙️</span>
+      <span class="home-label">Configuración</span>
+      <span class="home-desc">Asesores, sonidos, animación y datos locales</span>
+    </button>
+    <button type="button" class="home-card" data-view="viewHelp">
+      <span class="home-icon">❓</span>
+      <span class="home-label">Ayuda rápida</span>
+      <span class="home-desc">Criterios de captura y uso correcto</span>
+    </button>
+  </div>
+</main>
 
+<!-- ===================== VISTA: CAPTURA ===================== -->
+<main id="viewCapture" class="view">
+
+  <div class="view-header">
+    <button type="button" class="btn-back" data-view="viewHome">← Menú</button>
+    <span class="ver-badge">v0.5</span>
+  </div>
   <div class="doc-title">📥 Captura de propiedad</div>
   <div class="doc-sub">Hauser · alimenta la base 🏠 Propiedades y bases relacionadas</div>
 
@@ -347,6 +392,10 @@
 
 <!-- ===================== VISTA: HISTORIAL ===================== -->
 <main id="viewHistory" class="view">
+  <div class="view-header">
+    <button type="button" class="btn-back" data-view="viewHome">← Menú</button>
+    <span class="ver-badge">v0.5</span>
+  </div>
   <div class="doc-title">🗂️ Historial de capturas</div>
   <div class="doc-sub">Guardado en este dispositivo. Listo para sincronizar con Notion/Sheets.</div>
   <div class="hist-filters" id="histFilters"></div>
@@ -355,6 +404,10 @@
 
 <!-- ===================== VISTA: CONFIG ===================== -->
 <main id="viewConfig" class="view">
+  <div class="view-header">
+    <button type="button" class="btn-back" data-view="viewHome">← Menú</button>
+    <span class="ver-badge">v0.5</span>
+  </div>
   <div class="doc-title">⚙️ Configuración</div>
   <div class="doc-sub">Ajustes locales de la app.</div>
 
@@ -388,6 +441,10 @@
 
 <!-- ===================== VISTA: AYUDA ===================== -->
 <main id="viewHelp" class="view">
+  <div class="view-header">
+    <button type="button" class="btn-back" data-view="viewHome">← Menú</button>
+    <span class="ver-badge">v0.5</span>
+  </div>
   <div class="doc-title">❓ Ayuda rápida</div>
   <div class="doc-sub">Cómo capturar bien una propiedad.</div>
   <div class="help-q">1. ¿Qué es lo mínimo para una captura esencial?</div>
@@ -402,6 +459,28 @@
   <div class="help-a">Pon el número de unidades; se crea una página por unidad. La página madre del conjunto es opcional.</div>
   <div class="help-q">6. ¿Se pierde lo que capturo?</div>
   <div class="help-a">No. Cada captura queda en el Historial de este dispositivo aunque no generes el Markdown.</div>
+</main>
+
+<!-- ===================== VISTA: RANKING (stub — Fase 6) ===================== -->
+<main id="viewLeaderboard" class="view">
+  <div class="view-header">
+    <button type="button" class="btn-back" data-view="viewHome">← Menú</button>
+    <span class="ver-badge">v0.5</span>
+  </div>
+  <div class="doc-title">⭐ Ranking de asesores</div>
+  <div class="doc-sub">Estrellas acumuladas, capturas y tiempos por asesor.</div>
+  <div class="empty" style="margin-top:48px">El ranking estará disponible en la Fase 6.<br>Captura propiedades y acumula estrellas.</div>
+</main>
+
+<!-- ===================== VISTA: CONTACTOS (stub — Fase 7) ===================== -->
+<main id="viewContact" class="view">
+  <div class="view-header">
+    <button type="button" class="btn-back" data-view="viewHome">← Menú</button>
+    <span class="ver-badge">v0.5</span>
+  </div>
+  <div class="doc-title">👤 Capturar cliente / socio</div>
+  <div class="doc-sub">Propietarios, compradores, arquitectos, notarios y aliados.</div>
+  <div class="empty" style="margin-top:48px">La capturadora de contactos estará disponible en la Fase 7.</div>
 </main>
 
 <!-- MAP MODAL -->
@@ -430,7 +509,7 @@
 
 <!-- NAVBAR -->
 <nav class="navbar" id="navbar">
-  <button type="button" data-view="viewCapture" class="active"><span class="ic">➕</span>Captura</button>
+  <button type="button" data-view="viewHome" class="active"><span class="ic">🏠</span>Inicio</button>
   <button type="button" data-view="viewHistory"><span class="ic">🗂️</span>Historial<span class="badge" id="navBadge">0</span></button>
   <button type="button" data-view="viewConfig"><span class="ic">⚙️</span>Config</button>
   <button type="button" data-view="viewHelp"><span class="ic">❓</span>Ayuda</button>

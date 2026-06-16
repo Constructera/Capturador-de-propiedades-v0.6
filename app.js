@@ -39,7 +39,8 @@ $('f_resp').value=CFG.resp;
 $('cfg_resp').value=CFG.resp;$('cfg_drive').value=CFG.drive;$('cfg_endpoint').value=CFG.endpoint;
 
 /* ===================== NAVEGACIÓN ===================== */
-$('navbar').addEventListener('click',function(e){
+// Un solo listener cubre navbar, tarjetas del menú y botones "← Menú"
+document.addEventListener('click',function(e){
   var b=e.target.closest('button[data-view]');if(!b)return;
   showView(b.dataset.view);
 });
