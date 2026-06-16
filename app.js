@@ -988,6 +988,59 @@ function faltantesCompletitud(){
   return f;
 }
 
+/* ===================== SISTEMA DE ESTRELLAS — FASE 5 ===================== */
+function calcularEstrellas(){
+  var esTerreno=(state.tipo==='Terreno');
+  var conVenta=(state.oper==='Venta'||state.oper==='Venta y Renta');
+  var conRenta=(state.oper==='Renta'||state.oper==='Venta y Renta');
+  function ok(id){return siOn(id)||naOn(id)||($(id)&&$(id).value.trim()!=='');}
+  function okNum(id){return siOn(id)||naOn(id)||numVal(id)!=null;}
+
+  // ⭐ 1: velocidad ≤ 5 min
+  var s1=timerElapsed>0&&timerElapsed<=300;
+
+  // ⭐ 2: datos esenciales
+  var falt2=[];
+  if(!state.tipo)falt2.push('Tipo de inmueble');
+  if(!$('f_direccion').value.trim()&&!state.lat)falt2.push('Dirección o ubicación');
+  if(!zonasSel.length)falt2.push('Zona/colonia');
+  if(conVenta&&!okNum('f_precio'))falt2.push('Precio de venta');
+  if(conRenta&&!okNum('f_precio_renta'))falt2.push('Precio de renta');
+  if(!okNum('f_m2t'))falt2.push('m² terreno');
+  if(!esTerreno&&!okNum('f_m2c'))falt2.push('m² construcción');
+  if(!$('f_resp').value.trim())falt2.push('Responsable/asesor');
+  if(!state.ofrece)falt2.push('Quién ofrece la propiedad');
+  if(state.ofrece&&state.ofrece!=='No sé aún'&&
+     !state.people.some(function(p){return p.nombre||p.tel;}))
+    falt2.push('Contacto del oferente');
+  if(!esTerreno&&state.tipo){
+    if(!ok('f_rec'))falt2.push('Recámaras');
+    if(!ok('f_ban'))falt2.push('Baños');
+    if(!ok('f_est'))falt2.push('Estacionamientos');
+  }
+  if(esTerreno){
+    if(!state.serv.length)falt2.push('Servicios disponibles');
+    if(!ok('f_uso'))falt2.push('Uso de suelo/densidad');
+  }
+  var s2=falt2.length===0;
+
+  // ⭐ 3: completa — extras sobre estrella 2
+  var falt3=[];
+  if(!state.lat&&!($('f_maps')&&$('f_maps').value.trim()))falt3.push('Coordenadas o link de Maps');
+  if(esTerreno){
+    if(!ok('f_frente'))falt3.push('Frente del terreno');
+    if(!ok('f_fondo'))falt3.push('Fondo del terreno');
+  }
+  if(state.ofrece&&state.ofrece!=='No sé aún'&&
+     !state.people.some(function(p){return p.nombre&&(p.tel||p.wa||p.email);}))
+    falt3.push('Contacto con nombre y teléfono/email');
+  var s3=s2&&falt3.length===0;
+
+  var count=(s1?1:0)+(s2?1:0)+(s3?1:0);
+  var quality=!s2?'Incompleta':(s3?'Completa':(s1?'Publicable':'Esencial'));
+  return{s1:s1,s2:s2,s3:s3,count:count,quality:quality,falt2:falt2,falt3Extra:falt3};
+}
+
 /* ===================== GENERAR MARKDOWN ===================== */
 var mdActual='';var lastCaptureId=null;
 $('btnGen').addEventListener('click',function(){
@@ -1004,11 +1057,17 @@ function generar(){
   var zonasArr=zonasSel.slice();var zona=zonaVal();var fuente=fuenteVal();var nombre=nombreBase();
   var nU=Math.max(1,parseInt($('f_unidades').value,10)||1);
 
-  // estatus automático: si faltan datos de completitud -> En análisis
+  // estrellas + estatus automático (Decisión 14)
+  var estrellas=calcularEstrellas();
   var faltC=faltantesCompletitud();
   var estatus=$('f_estatus').value;
-  if(faltC.length && estatus==='Captada'){estatus='En análisis';$('f_estatus').value='En análisis';
-    $('estatusHint').textContent='Se ajustó a "En análisis" porque faltan datos mínimos.';}
+  if(estrellas.count===3){
+    estatus='Captada';$('f_estatus').value='Captada';
+    $('estatusHint').textContent='🌟 Captura completa (3 ⭐) → estatus: Captada.';
+  }else if(faltC.length&&estatus==='Captada'){
+    estatus='En análisis';$('f_estatus').value='En análisis';
+    $('estatusHint').textContent='Se ajustó a "En análisis" porque faltan datos mínimos.';
+  }
 
   var pv=conVenta?numCell('f_precio'):{val:null,pend:false,na:true};
   var pr=conRenta?numCell('f_precio_renta'):{val:null,pend:false,na:true};
@@ -1224,9 +1283,10 @@ function generar(){
   $('outputArea').style.display='block';
 
   // guardar en historial
-  lastCaptureId=saveCapture(md,estatus,falt);
+  lastCaptureId=saveCapture(md,estatus,falt,estrellas.count);
+  if(asesorActivo)updateAsesorStats(asesorActivo.id,estrellas.count,timerElapsed);
   sndSuccess();
-  if($('outputArea').scrollIntoView)$('outputArea').scrollIntoView({behavior:'smooth'});
+  mostrarResultado(estrellas);
 }
 
 function propietarioNombre(){
@@ -1249,10 +1309,97 @@ function camposSI(){
   return f;
 }
 
+/* ===================== RESULTADO + CONFETTI — FASE 5 ===================== */
+function updateAsesorStats(id,stars,elapsed){
+  var lista=getAsesores();
+  var a=lista.filter(function(x){return x.id===id;})[0];if(!a)return;
+  a.totalCapturas=(a.totalCapturas||0)+1;
+  a.totalEstrellas=(a.totalEstrellas||0)+stars;
+  if(elapsed>0&&(!a.mejorTiempo||elapsed<a.mejorTiempo))a.mejorTiempo=elapsed;
+  a.ultimaCaptura=new Date().toISOString();
+  saveAsesores(lista);
+}
+
+function launchConfetti(){
+  var box=$('confettiBox');if(!box)return;
+  box.innerHTML='';box.style.display='block';
+  var cols=['#2e6f40','#F0C040','#52C462','#7DD3FC','#fff','#f59e0b','#c4554d'];
+  for(var i=0;i<60;i++){
+    var c=document.createElement('div');c.className='confetti-p';
+    c.style.left=Math.random()*100+'%';
+    c.style.background=cols[Math.floor(Math.random()*cols.length)];
+    c.style.animationDelay=(Math.random()*1.4)+'s';
+    c.style.animationDuration=(Math.random()*1.2+1.8)+'s';
+    c.style.width=(Math.random()*7+4)+'px';c.style.height=(Math.random()*7+4)+'px';
+    c.style.borderRadius=Math.random()>.5?'50%':'2px';
+    box.appendChild(c);
+  }
+  setTimeout(function(){box.style.display='none';box.innerHTML='';},4200);
+}
+
+function mostrarResultado(strs){
+  $('resPropName').textContent=nombreBase();
+  var elapsedFmt=timerElapsed>0?timerFmt(timerElapsed):'sin cronómetro';
+  $('resMeta').textContent=($('f_resp').value||'Asesor')+' · '+elapsedFmt+' · '+$('f_fecha').value;
+
+  // badge de calidad
+  var qLabels={Incompleta:'⚠ Incompleta',Esencial:'✓ Esencial',Publicable:'✓ Publicable',Completa:'🌟 Completa'};
+  var qBadge=$('resQualityBadge');
+  qBadge.textContent=qLabels[strs.quality]||strs.quality;
+  qBadge.className='res-quality-badge res-q-'+(strs.quality||'').toLowerCase();
+
+  // detalle de cada estrella
+  var s1Txt=strs.s1?'¡En '+timerFmt(timerElapsed)+' (≤ 5 min)!':'No alcanzó 5 min'+(timerElapsed>0?' ('+timerFmt(timerElapsed)+')':' — sin cronómetro')+'.';
+  var s2Txt=strs.s2?'Todos los campos esenciales completos.':'Faltan: '+strs.falt2.slice(0,4).join(', ')+(strs.falt2.length>4?' y '+(strs.falt2.length-4)+' más':'')+'.';
+  var s3Txt=strs.s3?'¡Excelente, captura íntegra!':(!strs.s2?'Completa primero los datos esenciales.':(strs.falt3Extra.length?'Falta: '+strs.falt3Extra.slice(0,3).join(', ')+'.':'Revisa todos los campos.'));
+  $('resStarsDetail').innerHTML=
+    '<div class="star-row'+(strs.s1?' earned':'')+'"><span class="sr-icon">'+(strs.s1?'⭐':'☆')+'</span><div class="sr-text"><strong>Velocidad</strong> · '+s1Txt+'</div></div>'+
+    '<div class="star-row'+(strs.s2?' earned':'')+'"><span class="sr-icon">'+(strs.s2?'⭐':'☆')+'</span><div class="sr-text"><strong>Datos esenciales</strong> · '+s2Txt+'</div></div>'+
+    '<div class="star-row'+(strs.s3?' earned':'')+'"><span class="sr-icon">'+(strs.s3?'⭐':'☆')+'</span><div class="sr-text"><strong>Captura completa</strong> · '+s3Txt+'</div></div>';
+
+  // callout faltantes
+  var showFalt=!strs.s2?strs.falt2:(!strs.s3?strs.falt3Extra:[]);
+  if(showFalt.length){
+    $('resFaltCallout').style.display='';
+    $('resFaltList').innerHTML=showFalt.map(function(f){return '<li>'+f+'</li>';}).join('');
+  }else{
+    $('resFaltCallout').style.display='none';
+  }
+
+  // mostrar vista
+  showView('viewResult');
+
+  // animar estrellas en secuencia
+  var stars=[strs.s1,strs.s2,strs.s3];
+  [$('resStar1'),$('resStar2'),$('resStar3')].forEach(function(el,i){
+    el.className='res-star';
+    setTimeout(function(){
+      el.classList.add(stars[i]?'earned':'empty');
+      if(stars[i])sndStar();
+    },(i+1)*420);
+  });
+
+  // confetti con 3 estrellas
+  if(strs.count===3)setTimeout(launchConfetti,1380);
+}
+
+/* listeners pantalla de resultado */
+$('resBtnCopy').addEventListener('click',function(){
+  copyText(mdActual);
+  var b=this;b.textContent='Copiado ✓';
+  setTimeout(function(){b.textContent='Copiar markdown';},1800);
+});
+$('resBtnVerMd').addEventListener('click',function(){
+  showView('viewCapture');
+  if($('outputArea').scrollIntoView)$('outputArea').scrollIntoView({behavior:'smooth'});
+});
+$('resBtnOtra').addEventListener('click',function(){doReset();showView('viewCapture');});
+$('resBtnCompletar').addEventListener('click',function(){showView('viewCapture');window.scrollTo({top:0,behavior:'smooth'});});
+
 /* ===================== HISTORIAL ===================== */
 function getHist(){return load('hist',[]);}
 function setHist(h){save('hist',h);updateBadge();}
-function saveCapture(md,estatus,falt){
+function saveCapture(md,estatus,falt,stars){
   var h=getHist();
   var id=state.editId&&false?null:'CAP-'+Date.now();
   var rec={
@@ -1262,6 +1409,7 @@ function saveCapture(md,estatus,falt){
     people:state.people.map(function(p){return (p.nombre||'?')+' ('+p.rol+')';}),
     anuncio:state.anuncioUrl||'',maps:$('f_maps').value,drive:$('f_drive').value,
     md:md,estado:falt.length?'Con faltantes':'Markdown generado',
+    estrellas:stars||0,
     faltantes:falt,copiado:false,enviado:false,edit:new Date().toISOString()
   };
   h.unshift(rec);setHist(h);
@@ -1427,8 +1575,7 @@ $('cfg_snd_test').addEventListener('click',function(){sndSuccess();});
 renderSndCfg();
 
 /* ===================== RESET ===================== */
-$('btnReset').addEventListener('click',function(){
-  if(!confirm('¿Limpiar todos los campos? (El historial NO se borra)'))return;
+function doReset(){
   document.querySelectorAll('#viewCapture input,#viewCapture textarea').forEach(function(i){if(i.type!=='date')i.value='';i.disabled=false;i.removeAttribute('data-manual');});
   document.querySelectorAll('.si-btn').forEach(function(b){b.classList.remove('active');});
   document.querySelectorAll('.na-btn').forEach(function(b){b.classList.remove('active');});
@@ -1449,6 +1596,10 @@ $('btnReset').addEventListener('click',function(){
   $('outputArea').style.display='none';$('btnFotos').disabled=true;
   resetTimerToReady();
   updateProgress();window.scrollTo({top:0,behavior:'smooth'});
+}
+$('btnReset').addEventListener('click',function(){
+  if(!confirm('¿Limpiar todos los campos? (El historial NO se borra)'))return;
+  doReset();
 });
 
 /* ===================== SERVICE WORKER ===================== */

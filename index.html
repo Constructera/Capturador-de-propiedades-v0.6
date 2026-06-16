@@ -637,6 +637,42 @@
   <div class="help-a">No. Cada captura queda en el Historial de este dispositivo aunque no generes el Markdown.</div>
 </main>
 
+<!-- ===================== VISTA: RESULTADO ===================== -->
+<main id="viewResult" class="view">
+  <div class="view-header">
+    <button type="button" class="btn-back" data-view="viewHome">← Menú</button>
+    <span class="ver-badge">v0.5</span>
+  </div>
+
+  <div class="result-hero">
+    <div class="res-stars">
+      <span class="res-star" id="resStar1">⭐</span>
+      <span class="res-star" id="resStar2">⭐</span>
+      <span class="res-star" id="resStar3">⭐</span>
+    </div>
+    <div class="res-quality-badge" id="resQualityBadge">—</div>
+    <div class="res-prop"  id="resPropName"></div>
+    <div class="res-meta"  id="resMeta"></div>
+  </div>
+
+  <div class="res-stars-detail" id="resStarsDetail"></div>
+
+  <div class="callout warn" id="resFaltCallout" style="display:none">
+    <strong>Datos faltantes</strong>
+    <ul id="resFaltList"></ul>
+    <button type="button" class="btn chip-sm" id="resBtnCompletar" style="margin-top:8px">Completar faltantes →</button>
+  </div>
+
+  <div class="actions" style="margin-top:24px">
+    <button type="button" class="btn btn-accent btn-big" id="resBtnCopy">Copiar markdown</button>
+    <button type="button" class="btn"                    id="resBtnVerMd">Ver markdown completo</button>
+    <button type="button" class="btn btn-big"            id="resBtnOtra">+ Capturar otra propiedad</button>
+    <button type="button" class="btn" data-view="viewHome">← Menú principal</button>
+  </div>
+
+  <div id="confettiBox" class="confetti-box" aria-hidden="true"></div>
+</main>
+
 <!-- ===================== VISTA: RANKING (stub — Fase 6) ===================== -->
 <main id="viewLeaderboard" class="view">
   <div class="view-header">

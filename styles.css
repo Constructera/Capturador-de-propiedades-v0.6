@@ -313,3 +313,31 @@ pre{background:#fbfbfa;border:1px solid var(--line);border-radius:6px;padding:16
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:var(--line-dark);border:none;padding:0;outline:none;cursor:pointer;}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.2);}
 input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.2);border:2px solid #fff;}
+
+/* ===================== PANTALLA DE RESULTADO ===================== */
+.result-hero{text-align:center;padding:28px 0 20px;}
+.res-stars{display:flex;justify-content:center;gap:14px;margin-bottom:16px;}
+.res-star{font-size:3rem;line-height:1;display:inline-block;transform:scale(0);opacity:0;}
+@keyframes starPop{0%{transform:scale(0);opacity:0}65%{transform:scale(1.4)}85%{transform:scale(.92)}100%{transform:scale(1);opacity:1}}
+.res-star.earned{animation:starPop .46s cubic-bezier(.18,.89,.32,1.28) forwards;}
+.res-star.empty{transform:scale(.8);opacity:.22;filter:saturate(0);}
+.res-quality-badge{display:inline-block;font-size:.82rem;font-weight:700;padding:5px 16px;border-radius:999px;border:1.5px solid;margin-bottom:12px;}
+.res-q-incompleta{background:#fde8e8;color:var(--danger);border-color:#e3b8b4;}
+.res-q-esencial{background:var(--warn-bg);color:var(--warn);border-color:#e7d29a;}
+.res-q-publicable{background:var(--ok-bg);color:var(--accent);border-color:var(--accent);}
+.res-q-completa{background:var(--accent-bg);color:var(--accent);border-color:var(--accent);}
+.res-prop{font-size:1.15rem;font-weight:700;margin-bottom:4px;}
+.res-meta{font-size:.8rem;color:var(--text-soft);}
+.res-stars-detail{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:16px 0;}
+.star-row{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line);font-size:.86rem;}
+.star-row:last-child{border-bottom:none;}
+.sr-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+.sr-text{flex:1;color:var(--text-soft);}
+.sr-text strong{color:var(--text);display:block;margin-bottom:2px;}
+.star-row.earned{background:var(--ok-bg);}
+.star-row.earned .sr-text{color:var(--text);}
+
+/* confetti */
+.confetti-box{position:fixed;inset:0;pointer-events:none;z-index:200;display:none;overflow:hidden;}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+.confetti-p{position:absolute;top:-10px;animation:confettiFall linear forwards;}
