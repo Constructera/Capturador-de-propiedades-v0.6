@@ -1,6 +1,6 @@
 /* ============================================================
    Capturador de propiedades — Hauser / Inmobitera
-   app.js  ·  v4 (PWA-ready, historial, CRM, backend opcional)
+   app.js  ·  v0.5 (Capturadora Hauser — PROP-/TERR-, Notas de terreno, sin topografía)
    ============================================================ */
 (function(){
 'use strict';
@@ -28,7 +28,7 @@ function zonaTouch(n){
   save('zonas',zonasLocal);
 }
 
-var state={tipo:'',oper:'Venta',ofrece:'',crm:'No',topo:'',modo:'A · Reventa de lote',
+var state={tipo:'',oper:'Venta',ofrece:'',crm:'No',modo:'A · Reventa de lote',
   madre:'No, solo individuales',driveShare:'Sí, carpeta común',
   serv:[],caract:[],caractTerr:[],lat:null,lng:null,zonaNueva:false,
   people:[],editId:null};
@@ -73,6 +73,7 @@ function onTipo(v){
   var t=(v==='Terreno');
   document.querySelectorAll('[data-construccion]').forEach(function(el){el.style.display=t?'none':'';});
   $('terrenoExtra').style.display=t?'':'none';
+  if(!$('f_codigo').value.trim())$('f_codigo').placeholder=t?'Auto (TERR-siguiente)':'Auto (PROP-siguiente)';
   buildCaract();refreshUnits();refreshDrive();
 }
 function onOper(v){
@@ -85,7 +86,6 @@ bindChips('tipoChips','tipo',onTipo);
 bindChips('operChips','oper',onOper);
 bindChips('ofreceChips','ofrece',onOfrece);
 bindChips('crmChips','crm',function(v){renderCRM();});
-bindChips('topoChips','topo');
 bindChips('modoChips','modo');
 bindChips('madreChips','madre');
 bindChips('driveShareChips','driveShare');
@@ -625,7 +625,7 @@ function updateProgress(){
   var total=ids.length+2,done=0;
   ids.forEach(function(id){if(filled(id))done++;});
   if(state.tipo)done++;if(state.ofrece)done++;
-  if(t){total+=2;if(state.serv.length)done++;if(state.topo)done++;}
+  if(t){total+=1;if(state.serv.length)done++;}
   var pct=total?Math.round(done/total*100):0;
   $('progText').textContent=done+' de '+total+' campos clave';
   $('progPct').textContent=pct+'%';$('progFill').style.width=pct+'%';
@@ -647,7 +647,8 @@ function lineas(id){return $(id).value.split('\n').map(function(s){return s.trim
 /* requisitos de "captura completa": m2, recámaras, baños, responsable */
 function faltantesCompletitud(){
   var f=[];var esTerreno=(state.tipo==='Terreno');
-  if(numCell('f_m2t').pend && (esTerreno||numCell('f_m2c').pend))f.push('m² (terreno o construcción)');
+  if(numCell('f_m2t').pend)f.push('m² terreno');
+  if(!esTerreno && numCell('f_m2c').pend)f.push('m² construcción');
   if(!esTerreno){
     if(numCell('f_rec').pend)f.push('recámaras');
     if(siOn('f_ban')||!$('f_ban').value.trim())f.push('baños');
@@ -717,11 +718,39 @@ function generar(){
   md+='## 2. Campos de la base 🏠 Propiedades\n';
   md+='| Campo Notion | Tipo esperado | Valor para Notion | Nota interna |\n';
   md+='|---|---|---|---|\n';
+  // código PROP- / TERR- (Decisión 3)
+  var codigoActual=$('f_codigo').value.trim();
+  var prefijoCodigo=esTerreno?'TERR-':'PROP-';
+  var notaCodigo;
+  if(codigoActual){
+    if(esTerreno&&/^PROP-/i.test(codigoActual)){
+      notaCodigo='CONFLICTO PENDIENTE: este terreno tiene codigo '+codigoActual+' (prefijo PROP-) pero la regla v0.5 usa TERR-. El dueno debe decidir si renumerar. NO renumerar automaticamente.';
+    }else{notaCodigo='';}
+  }else{notaCodigo='Asignar '+prefijoCodigo+'siguiente disponible';}
+
+  // dirección genérica + instrucción de geolocalización (Decisión 1)
+  var dirVal=$('f_direccion').value.trim();
+  var dirNota=dirVal
+    ?'Direccion generica capturada en campo. Instruccion al agente: buscar esta direccion en web / Google Maps, identificar la ubicacion exacta y rellenar Direccion con referencia tipo Google Maps (link y/o coordenadas).'
+    :'S/I';
+
+  // Notas: para terreno incluye servicios/uso_suelo/estatus_legal (Decisiones 8,10,11 → van en Notas, no en propiedades de Notion)
+  var notasTextoCampo=$('f_notas').value.trim();
+  var notasValorNotion,notaNotionRow;
+  if(esTerreno){
+    var servText=state.serv.length?state.serv.join(', '):'S/I';
+    notasValorNotion='Servicios: '+servText+' | Uso de suelo/densidad: '+txt('f_uso')+' | Estatus legal: '+$('f_legal').value+(notasTextoCampo?' | Notas: '+notasTextoCampo:'');
+    notaNotionRow='Datos de terreno incluidos aqui (servicios, uso de suelo, estatus legal). No son propiedades separadas de Notion hasta confirmacion del dueno.';
+  }else{
+    notasValorNotion=notasTextoCampo;
+    notaNotionRow='';
+  }
+
   md+=row('Nombre','Title',cell(nombre))+'\n';
-  md+=row('Código','Text',cell($('f_codigo').value.trim(),$('f_codigo').value.trim()?'':'Asignar PROP-siguiente'))+'\n';
+  md+=row('Código','Text',cell(codigoActual,notaCodigo))+'\n';
   md+=row('Tipo de inmueble','Select',cell(state.tipo,state.tipo?'':'S/I'))+'\n';
   md+=row('Operación','Select',cell(state.oper))+'\n';
-  md+=row('Dirección','Text',cell($('f_direccion').value.trim(),$('f_direccion').value.trim()?'identificador principal':'S/I'))+'\n';
+  md+=row('Dirección','Text',cell(dirVal,dirNota))+'\n';
   md+=row('Zona','Relación → 📍 Zonas',cell(zona,zona==='S/I'?'S/I':(state.zonaNueva?'CREAR esta zona y relacionar':'buscar y relacionar')))+'\n';
   md+=row('Precio','Number',{v:valNum(pv),nota:notaNum(pv)+(pv.val&&moneda?(' ('+moneda+', sin símbolo)'):'')})+'\n';
   if(conRenta)md+=row('Precio renta','Number',{v:valNum(pr),nota:notaNum(pr)+' renta mensual'})+'\n';
@@ -734,6 +763,7 @@ function generar(){
   md+=row('Publicable','Select / Checkbox',cell($('f_pub').value))+'\n';
   md+=row('Fuente','Select',cell(fuente.nombre,fuente.nueva?'OPCIÓN NUEVA: agregar al select de Fuente':''))+'\n';
   md+=row('Propietario','Relación → 👥 Contactos',cell(propietarioNombre(),propietarioNota()))+'\n';
+  md+=row('Notas','Texto',{v:notasValorNotion,nota:notaNotionRow})+'\n';
   md+=row('Precio / m²','Fórmula',{v:'',nota:'lo calcula Notion; no escribir'})+'\n';
   md+='\n';
 
@@ -799,11 +829,11 @@ function generar(){
 
   // 8. Terreno extra
   if(esTerreno){
-    md+='## 8. Datos de terreno (para corrida financiera)\n';
+    md+='## 8. Datos de terreno (contexto para corrida financiera)\n';
+    md+='> Servicios, Uso de suelo y Estatus legal ya estan en el campo Notas de la seccion 2. Esta seccion es contexto adicional para el analisis financiero.\n\n';
     md+='- Servicios: '+(state.serv.length?state.serv.join(', '):'S/I')+'\n';
-    md+='- Topografía: '+(state.topo||'S/I')+'\n';
     md+='- Frente: '+txt('f_frente')+' m · Fondo: '+txt('f_fondo')+' m\n';
-    md+='- Uso de suelo: '+txt('f_uso')+'\n';
+    md+='- Uso de suelo/densidad: '+txt('f_uso')+'\n';
     md+='- Estatus legal: '+$('f_legal').value+'\n';
     md+='- Características: '+(state.caractTerr.length?state.caractTerr.join(', '):'S/I')+'\n';
     md+='- Modo de análisis: '+state.modo+'\n\n';
@@ -849,7 +879,7 @@ function generar(){
 
   // 14. Confirmación
   md+='## 14. Confirmación solicitada al agente\n';
-  md+='Al terminar, confirma: 1) nombre de las páginas creadas/actualizadas; 2) si fue alta o actualización; 3) campos vacíos por S/I; 4) relaciones creadas (Zona, Contactos, Operaciones, Tareas); 5) si se agregó alguna opción nueva (fuente/zona); 6) datos pendientes para publicar.\n';
+  md+='Al terminar, confirma: 1) nombre de las páginas creadas/actualizadas; 2) si fue alta o actualización; 3) campos vacíos por S/I; 4) relaciones creadas (Zona, Contactos, Operaciones, Tareas); 5) si se agregó alguna opción nueva (fuente/zona); 6) datos pendientes para publicar; 7) si se geolocalizo la dirección y qué referencia de Maps quedó registrada.\n';
 
   mdActual=md;$('mdOut').textContent=md;
 
@@ -1053,7 +1083,7 @@ $('btnReset').addEventListener('click',function(){
   document.querySelectorAll('#viewCapture input,#viewCapture textarea').forEach(function(i){if(i.type!=='date')i.value='';i.disabled=false;i.removeAttribute('data-manual');});
   document.querySelectorAll('.si-btn').forEach(function(b){b.classList.remove('active');});
   document.querySelectorAll('#viewCapture .chip').forEach(function(c){c.classList.remove('sel');});
-  state={tipo:'',oper:'Venta',ofrece:'',crm:'No',topo:'',modo:'A · Reventa de lote',madre:'No, solo individuales',driveShare:'Sí, carpeta común',serv:[],caract:[],caractTerr:[],lat:null,lng:null,zonaNueva:false,people:[],editId:null};
+  state={tipo:'',oper:'Venta',ofrece:'',crm:'No',modo:'A · Reventa de lote',madre:'No, solo individuales',driveShare:'Sí, carpeta común',serv:[],caract:[],caractTerr:[],lat:null,lng:null,zonaNueva:false,people:[],editId:null};
   setChip('operChips','oper','Venta',onOper);setChip('modoChips','modo','A · Reventa de lote');
   setChip('madreChips','madre','No, solo individuales');setChip('driveShareChips','driveShare','Sí, carpeta común');
   setChip('crmChips','crm','No');
