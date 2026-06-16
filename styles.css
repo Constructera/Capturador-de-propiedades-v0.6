@@ -173,7 +173,7 @@ pre{background:#fbfbfa;border:1px solid var(--line);border-radius:6px;padding:16
 
 /* mascot */
 .mascot-wrap{flex-shrink:0;}
-.mascot{width:90px;height:90px;display:block;overflow:visible;transition:filter .4s;}
+.mascot{height:90px;width:auto;display:block;overflow:visible;transition:filter .4s;}
 
 /* ring (ready mode) */
 .timer-ring-wrap{position:relative;width:90px;height:90px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
@@ -208,56 +208,75 @@ pre{background:#fbfbfa;border:1px solid var(--line);border-radius:6px;padding:16
 }
 .timer-widget.running{border:none;background:none;padding:0;margin-bottom:8px;}
 .timer-widget.running #timerRunningCtrl{border:1px solid var(--line);border-radius:8px;background:var(--bg-soft);padding:10px 14px;}
-.timer-widget.running .mascot{width:50px;height:50px;}
+.timer-widget.running .mascot{height:50px;width:auto;}
 .timer-widget.running .timer-ring-wrap{width:50px;height:50px;}
 .timer-widget.running .timer-display{font-size:.68rem;font-weight:700;}
 
 /* ===================== MASCOTA — ESTADOS ===================== */
-.mascot .mouth-frown,.mascot .brow-angry,.mascot .star-deco{display:none;}
+.mascot .brow-angry,.mascot .brow-sad,.mascot .mouth-frown,.mascot .star-deco{display:none;}
 
-.mascot.state-sad .mouth-happy,.mascot.state-angry .mouth-happy,.mascot.state-expired .mouth-happy{display:none;}
-.mascot.state-sad .mouth-frown,.mascot.state-angry .mouth-frown,.mascot.state-expired .mouth-frown{display:block;}
 .mascot.state-angry .brow-neutral{display:none;}
 .mascot.state-angry .brow-angry{display:block;}
+
+.mascot.state-sad .brow-neutral,.mascot.state-expired .brow-neutral{display:none;}
+.mascot.state-sad .brow-sad,.mascot.state-expired .brow-sad{display:block;}
+.mascot.state-sad .mouth-happy,.mascot.state-expired .mouth-happy{display:none;}
+.mascot.state-sad .mouth-frown,.mascot.state-expired .mouth-frown{display:block;}
+
 .mascot.state-celebrating .star-deco{display:block;}
 
 /* ===================== MASCOTA — ANIMACIONES ===================== */
-/* cuerpo completo */
-@keyframes mBlink{0%,85%,100%{transform:scaleY(1)}92%{transform:scaleY(0.05)}}
-@keyframes mDance{0%,100%{transform:translateY(0) rotate(0deg)}30%{transform:translateY(-6px) rotate(-4deg)}70%{transform:translateY(-6px) rotate(4deg)}}
-@keyframes mShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
-@keyframes mSad{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
-@keyframes mCelebrate{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-14px) scale(1.07)}}
-@keyframes mPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+@keyframes mBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes mBlink{0%,82%,100%{transform:scaleY(1)}87%,95%{transform:scaleY(0.08)}}
+@keyframes mDanceBody{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+@keyframes mDanceArmL{0%,100%{transform:rotate(-25deg)}50%{transform:rotate(20deg)}}
+@keyframes mDanceArmR{0%,100%{transform:rotate(25deg)}50%{transform:rotate(-20deg)}}
+@keyframes mDanceLegL{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(8deg)}}
+@keyframes mDanceLegR{0%,100%{transform:rotate(12deg)}50%{transform:rotate(-8deg)}}
+@keyframes mFocusPulse{0%,100%{transform:scale(1)}50%{transform:scale(0.97)}}
+@keyframes mFocusEye{0%,100%{transform:scaleY(1)}50%{transform:scaleY(0.55)}}
+@keyframes mShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes mSadDrop{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+@keyframes mCelebrate{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+@keyframes mStarOrbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
-/* brazos */
-@keyframes mArmDL{0%,100%{transform:rotate(-20deg)}50%{transform:rotate(15deg)}}
-@keyframes mArmDR{0%,100%{transform:rotate(20deg)}50%{transform:rotate(-15deg)}}
-@keyframes mArmCL{0%,100%{transform:rotate(-55deg)}50%{transform:rotate(-65deg)}}
-@keyframes mArmCR{0%,100%{transform:rotate(55deg)}50%{transform:rotate(65deg)}}
-/* piernas */
-@keyframes mLegCL{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(7deg)}}
-@keyframes mLegCR{0%,100%{transform:rotate(8deg)}50%{transform:rotate(-7deg)}}
+/* idle */
+.mascot.state-idle .mascot-body-group{animation:mBob 2s ease-in-out infinite;}
+.mascot.state-idle .eye-group{animation:mBlink 4s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
 
-/* estado idle */
-.mascot.state-idle .eye-group{animation:mBlink 3.5s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
-/* estado dancing */
-.mascot.state-dancing{animation:mDance 0.72s ease-in-out infinite;}
-.mascot.state-dancing .arm-left{animation:mArmDL .72s ease-in-out infinite;transform-box:fill-box;transform-origin:top right;}
-.mascot.state-dancing .arm-right{animation:mArmDR .72s ease-in-out infinite;transform-box:fill-box;transform-origin:top left;}
-/* estado focused */
-.mascot.state-focused .eye-group{animation:mPulse 2s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
-/* estado angry */
-.mascot.state-angry{animation:mShake 0.45s ease-in-out infinite;filter:saturate(2) hue-rotate(-10deg);}
-.mascot.state-angry .arm-left{transform:rotate(-22deg);transform-box:fill-box;transform-origin:top right;}
-.mascot.state-angry .arm-right{transform:rotate(22deg);transform-box:fill-box;transform-origin:top left;}
-/* estado sad */
-.mascot.state-sad{animation:mSad 2.2s ease-in-out infinite;filter:saturate(0.25);}
-/* estado celebrating */
-.mascot.state-celebrating{animation:mCelebrate 0.55s ease-in-out infinite;}
-.mascot.state-celebrating .arm-left{animation:mArmCL .55s ease-in-out infinite;transform-box:fill-box;transform-origin:top right;}
-.mascot.state-celebrating .arm-right{animation:mArmCR .55s ease-in-out infinite;transform-box:fill-box;transform-origin:top left;}
-.mascot.state-celebrating .leg-left{animation:mLegCL .55s ease-in-out infinite;transform-box:fill-box;transform-origin:top right;}
-.mascot.state-celebrating .leg-right{animation:mLegCR .55s ease-in-out infinite;transform-box:fill-box;transform-origin:top left;}
+/* dancing */
+.mascot.state-dancing .mascot-body-group{animation:mDanceBody .72s ease-in-out infinite;transform-box:fill-box;transform-origin:bottom center;}
+.mascot.state-dancing .arm-left{animation:mDanceArmL .72s ease-in-out infinite;transform-box:fill-box;transform-origin:right center;}
+.mascot.state-dancing .arm-right{animation:mDanceArmR .72s ease-in-out infinite;transform-box:fill-box;transform-origin:left center;}
+.mascot.state-dancing .leg-left{animation:mDanceLegL .72s ease-in-out infinite;transform-box:fill-box;transform-origin:top right;}
+.mascot.state-dancing .leg-right{animation:mDanceLegR .72s ease-in-out infinite;transform-box:fill-box;transform-origin:top left;}
+
+/* focused */
+.mascot.state-focused .mascot-body-group{animation:mFocusPulse 2s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+.mascot.state-focused .eye-group{animation:mFocusEye 2s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+
+/* angry */
+.mascot.state-angry{filter:saturate(1.5) hue-rotate(-15deg);}
+.mascot.state-angry .mascot-body-group{animation:mShake .42s ease-in-out infinite;}
+.mascot.state-angry .arm-left{transform:rotate(-25deg);transform-box:fill-box;transform-origin:right center;}
+.mascot.state-angry .arm-right{transform:rotate(25deg);transform-box:fill-box;transform-origin:left center;}
+
+/* sad */
+.mascot.state-sad{filter:saturate(0.25);}
+.mascot.state-sad .mascot-body-group{animation:mSadDrop 2.5s ease-in-out infinite;}
+.mascot.state-sad .arm-left{transform:rotate(18deg);transform-box:fill-box;transform-origin:right center;}
+.mascot.state-sad .arm-right{transform:rotate(-18deg);transform-box:fill-box;transform-origin:left center;}
+
+/* expired */
+.mascot.state-expired{filter:saturate(0.15);}
+.mascot.state-expired .mascot-body-group{transform:translateY(5px);}
+
+/* celebrating */
+.mascot.state-celebrating .mascot-body-group{animation:mCelebrate .6s ease-in-out infinite;}
+.mascot.state-celebrating .arm-left{transform:rotate(-52deg);transform-box:fill-box;transform-origin:right center;}
+.mascot.state-celebrating .arm-right{transform:rotate(52deg);transform-box:fill-box;transform-origin:left center;}
+.mascot.state-celebrating .leg-left{transform:rotate(-15deg);transform-box:fill-box;transform-origin:top right;}
+.mascot.state-celebrating .leg-right{transform:rotate(15deg);transform-box:fill-box;transform-origin:top left;}
+.mascot.state-celebrating .star-deco{animation:mStarOrbit 3.5s linear infinite;transform-origin:70px 105px;}
 
 @media(prefers-reduced-motion:reduce){.mascot,.mascot *{animation:none!important;transition:none!important;}}

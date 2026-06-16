@@ -91,87 +91,103 @@
     <div class="timer-top">
       <!-- Mascota: Casita Hauser v2 (brazos, piernas, volumen) -->
       <div class="mascot-wrap">
-        <svg class="mascot state-idle" id="mascotSvg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <svg class="mascot state-idle" id="mascotSvg" viewBox="0 0 140 175" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="overflow:visible">
           <defs>
-            <linearGradient id="roofGrad" x1="50%" y1="0%" x2="50%" y2="100%">
-              <stop offset="0%" stop-color="#4a9062"/>
-              <stop offset="100%" stop-color="#245535"/>
+            <linearGradient id="roofGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#52C462"/>
+              <stop offset="100%" stop-color="#3AAA47"/>
             </linearGradient>
           </defs>
-
-          <!-- BRAZOS (se dibujan detrás del cuerpo) -->
-          <g class="arm-left">
-            <path d="M13,63 L-6,71" stroke="#1a4a27" stroke-width="10" fill="none" stroke-linecap="round"/>
-            <path d="M13,63 L-6,71" stroke="#4a9062" stroke-width="7" fill="none" stroke-linecap="round"/>
-          </g>
-          <g class="arm-right">
-            <path d="M87,63 L106,71" stroke="#1a4a27" stroke-width="10" fill="none" stroke-linecap="round"/>
-            <path d="M87,63 L106,71" stroke="#4a9062" stroke-width="7" fill="none" stroke-linecap="round"/>
-          </g>
-
-          <!-- CUERPO: sombra + cuerpo + highlight de volumen -->
-          <rect x="13" y="48" width="80" height="50" rx="4" fill="#1a4a27" opacity="0.28"/>
-          <rect x="10" y="45" width="80" height="52" rx="4" fill="#38814d" stroke="#1a4a27" stroke-width="2"/>
-          <rect x="14" y="47" width="72" height="7" rx="3" fill="white" opacity="0.08"/>
-
-          <!-- chimenea -->
-          <rect x="67" y="6" width="8" height="17" rx="2" fill="#3d5a47" stroke="#1a4a27" stroke-width="1.5"/>
-
-          <!-- TECHO: sombra + gradiente + highlight -->
-          <polygon points="2,47 50,4 98,47" fill="#1a4a2a"/>
-          <polygon points="5,47 50,8 95,47" fill="url(#roofGrad)" stroke="#1a4a27" stroke-width="1.5" stroke-linejoin="round"/>
-          <polygon points="20,40 50,12 80,40" fill="white" opacity="0.07"/>
-
-          <!-- puerta -->
-          <rect x="39" y="67" width="22" height="30" rx="2" fill="#1a3a1e" opacity="0.75"/>
-          <circle cx="56" cy="82" r="2" fill="#f0c040" opacity="0.65"/>
-
-          <!-- blancos de ojos con outline -->
-          <circle cx="30" cy="61" r="11" fill="white" stroke="#1a4a27" stroke-width="1.5"/>
-          <circle cx="70" cy="61" r="11" fill="white" stroke="#1a4a27" stroke-width="1.5"/>
-          <!-- highlight de volumen en ojos -->
-          <ellipse cx="24" cy="56" rx="3.5" ry="2.5" fill="white" opacity="0.38"/>
-          <ellipse cx="64" cy="56" rx="3.5" ry="2.5" fill="white" opacity="0.38"/>
-
-          <!-- grupo ojos (parpadeo) -->
-          <g class="eye-group">
-            <circle cx="30" cy="62" r="6.5" fill="#1a4a27"/>
-            <circle cx="70" cy="62" r="6.5" fill="#1a4a27"/>
-            <circle cx="32" cy="59" r="2.5" fill="white" opacity=".85"/>
-            <circle cx="72" cy="59" r="2.5" fill="white" opacity=".85"/>
-          </g>
-
-          <!-- cejas neutras -->
-          <path class="brow-neutral" d="M22,51 Q30,47 38,51" stroke="#1a4a27" fill="none" stroke-width="2.5" stroke-linecap="round"/>
-          <path class="brow-neutral" d="M62,51 Q70,47 78,51" stroke="#1a4a27" fill="none" stroke-width="2.5" stroke-linecap="round"/>
-          <!-- cejas enojadas -->
-          <path class="brow-angry" d="M22,49 Q30,54 38,51" stroke="#7a1500" fill="none" stroke-width="3" stroke-linecap="round"/>
-          <path class="brow-angry" d="M62,51 Q70,54 78,49" stroke="#7a1500" fill="none" stroke-width="3" stroke-linecap="round"/>
-
-          <!-- boca feliz -->
-          <path class="mouth-happy" d="M37,77 Q50,87 63,77" stroke="white" fill="none" stroke-width="2.5" stroke-linecap="round"/>
-          <!-- boca triste -->
-          <path class="mouth-frown" d="M37,84 Q50,74 63,84" stroke="white" fill="none" stroke-width="2.5" stroke-linecap="round"/>
-
-          <!-- PIERNAS (se dibujan al frente para solapar la base del cuerpo) -->
-          <g class="leg-left">
-            <path d="M36,95 L30,107" stroke="#1a4a27" stroke-width="10" fill="none" stroke-linecap="round"/>
-            <path d="M36,95 L30,107" stroke="#4a9062" stroke-width="7" fill="none" stroke-linecap="round"/>
-          </g>
-          <g class="leg-right">
-            <path d="M64,95 L70,107" stroke="#1a4a27" stroke-width="10" fill="none" stroke-linecap="round"/>
-            <path d="M64,95 L70,107" stroke="#4a9062" stroke-width="7" fill="none" stroke-linecap="round"/>
-          </g>
-
-          <!-- decoración celebración -->
-          <g class="star-deco">
-            <circle cx="8" cy="22" r="4" fill="#f0c040"/>
-            <line x1="8" y1="17" x2="8" y2="27" stroke="#f0c040" stroke-width="1.5"/>
-            <line x1="3" y1="22" x2="13" y2="22" stroke="#f0c040" stroke-width="1.5"/>
-            <circle cx="90" cy="16" r="3" fill="#f0c040"/>
-            <line x1="90" y1="12" x2="90" y2="20" stroke="#f0c040" stroke-width="1.5"/>
-            <line x1="86" y1="16" x2="94" y2="16" stroke="#f0c040" stroke-width="1.5"/>
-            <circle cx="96" cy="40" r="2.5" fill="#f0c040"/>
+          <g class="mascot-body-group">
+            <!-- BRAZOS (detrás del cuerpo) -->
+            <g class="arm-left">
+              <path d="M 15,96 Q -1,87 -15,91 Q -17,107 -1,113 Q 11,109 15,103 Z"
+                    fill="#3AAA47" stroke="#111" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+            </g>
+            <g class="arm-right">
+              <path d="M 125,96 Q 141,87 155,91 Q 157,107 141,113 Q 129,109 125,103 Z"
+                    fill="#3AAA47" stroke="#111" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+            </g>
+            <!-- CUERPO principal (crema) -->
+            <path d="M 14,70 L 126,70 L 126,155 Q 126,161 120,161 L 20,161 Q 14,161 14,155 Z"
+                  fill="#F2F2EC" stroke="#111" stroke-width="3.5" stroke-linejoin="round"/>
+            <!-- Panel lateral derecho -->
+            <path d="M 100,70 L 126,70 L 126,155 Q 126,161 120,161 L 100,161 Z" fill="#E2E2D8"/>
+            <line x1="100" y1="71" x2="100" y2="160" stroke="#111" stroke-width="1" opacity="0.2"/>
+            <!-- Highlight esquina superior izquierda -->
+            <rect x="18" y="74" width="52" height="9" rx="4" fill="white" opacity="0.45"/>
+            <!-- CHIMENEA (antes del techo) -->
+            <rect x="88" y="18" width="12" height="24" rx="3" fill="#2A8A35" stroke="#111" stroke-width="3.5"/>
+            <!-- TECHO -->
+            <polygon points="7,71 70,11 133,71" fill="#1A6B28"/>
+            <polygon points="10,70 70,14 130,70" fill="url(#roofGrad)" stroke="#111" stroke-width="3.5" stroke-linejoin="round"/>
+            <polygon points="44,50 70,14 96,50 90,55 70,22 50,55 Z" fill="#52C462" opacity="0.45"/>
+            <!-- VENTANA con rejilla (panel derecho) -->
+            <rect x="104" y="86" width="19" height="19" rx="3" fill="white" stroke="#111" stroke-width="2.5"/>
+            <line x1="113.5" y1="86"   x2="113.5" y2="105"  stroke="#111" stroke-width="1.5"/>
+            <line x1="104"   y1="95.5" x2="123"   y2="95.5" stroke="#111" stroke-width="1.5"/>
+            <rect x="101" y="105" width="25" height="4" rx="2" fill="#3AAA47" stroke="#111" stroke-width="1.5"/>
+            <!-- MEJILLAS -->
+            <ellipse class="cheek-left"  cx="34" cy="118" rx="10" ry="6" fill="#7DCB85" opacity="0.65"/>
+            <ellipse class="cheek-right" cx="89" cy="118" rx="10" ry="6" fill="#7DCB85" opacity="0.65"/>
+            <!-- OJOS: blancos con outline -->
+            <circle cx="50" cy="106" r="14" fill="white" stroke="#111" stroke-width="3"/>
+            <circle cx="84" cy="106" r="14" fill="white" stroke="#111" stroke-width="3"/>
+            <!-- Grupo ojos: pupilas + highlights -->
+            <g class="eye-group">
+              <circle cx="50" cy="108" r="8"   fill="#111"/>
+              <circle cx="84" cy="108" r="8"   fill="#111"/>
+              <circle cx="54" cy="102" r="3.5" fill="white"/>
+              <circle cx="88" cy="102" r="3.5" fill="white"/>
+              <circle cx="46" cy="112" r="1.5" fill="white" opacity="0.65"/>
+              <circle cx="80" cy="112" r="1.5" fill="white" opacity="0.65"/>
+            </g>
+            <!-- CEJAS neutrales (visibles por defecto) -->
+            <path class="brow-neutral" d="M 37,93 Q 50,87 63,93" stroke="#111" fill="none" stroke-width="3" stroke-linecap="round"/>
+            <path class="brow-neutral" d="M 71,93 Q 84,87 97,93" stroke="#111" fill="none" stroke-width="3" stroke-linecap="round"/>
+            <!-- CEJAS enojadas (ocultas por defecto) -->
+            <path class="brow-angry" d="M 37,90 Q 50,97 63,92" stroke="#111" fill="none" stroke-width="3.5" stroke-linecap="round"/>
+            <path class="brow-angry" d="M 71,92 Q 84,97 97,90" stroke="#111" fill="none" stroke-width="3.5" stroke-linecap="round"/>
+            <!-- CEJAS tristes (ocultas por defecto) -->
+            <path class="brow-sad" d="M 39,94 Q 50,88 62,92" stroke="#111" fill="none" stroke-width="3" stroke-linecap="round"/>
+            <path class="brow-sad" d="M 72,92 Q 84,88 95,94" stroke="#111" fill="none" stroke-width="3" stroke-linecap="round"/>
+            <!-- BOCA feliz abierta (visible por defecto) -->
+            <path class="mouth-happy" d="M 47,122 Q 48,135 66,136 Q 84,135 85,122"
+                  stroke="#111" stroke-width="3" fill="white" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- BOCA triste (oculta por defecto) -->
+            <path class="mouth-frown" d="M 49,134 Q 66,123 83,134"
+                  stroke="#111" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <!-- PUERTA arqueada -->
+            <path class="door" d="M 54,161 L 54,146 Q 54,133 67,133 Q 80,133 80,146 L 80,161 Z"
+                  fill="#3AAA47" stroke="#111" stroke-width="2.5" stroke-linejoin="round"/>
+            <circle cx="58" cy="150" r="2.5" fill="#F0C040" stroke="#111" stroke-width="1"/>
+            <!-- PIERNAS (stubby) -->
+            <g class="leg-left">
+              <path d="M 42,159 Q 37,171 33,178" stroke="#111" stroke-width="11" fill="none" stroke-linecap="round"/>
+              <path d="M 42,159 Q 37,171 33,178" stroke="#3AAA47" stroke-width="8"  fill="none" stroke-linecap="round"/>
+            </g>
+            <g class="leg-right">
+              <path d="M 91,159 Q 95,171 99,178" stroke="#111" stroke-width="11" fill="none" stroke-linecap="round"/>
+              <path d="M 91,159 Q 95,171 99,178" stroke="#3AAA47" stroke-width="8"  fill="none" stroke-linecap="round"/>
+            </g>
+            <!-- ESTRELLAS celebración (ocultas por defecto) -->
+            <g class="star-deco">
+              <g class="star-1">
+                <circle cx="10"  cy="58" r="7"   fill="#F0C040" stroke="#111" stroke-width="2"/>
+                <line x1="3"  y1="58" x2="17" y2="58" stroke="#111" stroke-width="1.5"/>
+                <line x1="10" y1="51" x2="10" y2="65" stroke="#111" stroke-width="1.5"/>
+              </g>
+              <g class="star-2">
+                <circle cx="130" cy="40" r="6"   fill="#F0C040" stroke="#111" stroke-width="1.5"/>
+                <line x1="124" y1="40" x2="136" y2="40" stroke="#111" stroke-width="1.5"/>
+                <line x1="130" y1="34" x2="130" y2="46" stroke="#111" stroke-width="1.5"/>
+              </g>
+              <g class="star-3">
+                <circle cx="70"  cy="3"  r="5.5" fill="#F0C040" stroke="#111" stroke-width="1.5"/>
+                <line x1="64" y1="3"  x2="76" y2="3"  stroke="#111" stroke-width="1.5"/>
+                <line x1="70" y1="-3" x2="70" y2="9"  stroke="#111" stroke-width="1.5"/>
+              </g>
+            </g>
           </g>
         </svg>
       </div>
