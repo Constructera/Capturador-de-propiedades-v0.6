@@ -23,7 +23,7 @@
   </div>
   <div class="home-sub">¿Qué quieres capturar hoy?</div>
   <div class="home-grid">
-    <button type="button" class="home-card" data-view="viewCapture">
+    <button type="button" class="home-card" data-view="viewAdvisor">
       <span class="home-icon">🏠</span>
       <span class="home-label">Capturar propiedad</span>
       <span class="home-desc">Casa, depto, terreno, local, bodega u otro inmueble</span>
@@ -56,12 +56,32 @@
   </div>
 </main>
 
+<!-- ===================== VISTA: SELECCIÓN DE ASESOR ===================== -->
+<main id="viewAdvisor" class="view">
+  <div class="view-header">
+    <button type="button" class="btn-back" data-view="viewHome">← Inicio</button>
+    <span class="ver-badge">v0.5</span>
+  </div>
+  <div class="doc-title">👤 ¿Quién captura?</div>
+  <div class="doc-sub">Selecciona tu nombre. El dispositivo lo recordará para la próxima vez.</div>
+  <div class="home-grid" id="asesorGrid" style="margin-top:20px"></div>
+  <div class="btn-row" style="margin-top:14px">
+    <button type="button" class="btn chip-sm" id="btnAgregarAsesor">+ Agregar asesor</button>
+  </div>
+  <div class="actions" style="margin-top:24px">
+    <button type="button" class="btn btn-big btn-accent" id="btnEmpezarCaptura" disabled>Empezar captura →</button>
+  </div>
+</main>
+
 <!-- ===================== VISTA: CAPTURA ===================== -->
 <main id="viewCapture" class="view">
 
   <div class="view-header">
     <button type="button" class="btn-back" data-view="viewHome">← Menú</button>
-    <span class="ver-badge">v0.5</span>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button type="button" class="chip chip-sm" id="asesorBadge" data-view="viewAdvisor">👤 —</button>
+      <span class="ver-badge">v0.5</span>
+    </div>
   </div>
   <div class="doc-title">📥 Captura de propiedad</div>
   <div class="doc-sub">Hauser · alimenta la base 🏠 Propiedades y bases relacionadas</div>
@@ -325,7 +345,7 @@
   </div>
   <div class="row2">
     <div class="field"><div class="field-top"><label>Responsable / quién captura</label></div>
-      <select id="f_resp"><option selected>Daniel</option><option>Erica</option><option>Carlos</option><option>Gabriel</option></select></div>
+      <select id="f_resp"></select></div>
     <div class="field"><div class="field-top"><label>Fecha de seguimiento</label></div>
       <input type="date" id="f_seguimiento"></div>
   </div>
@@ -413,7 +433,7 @@
 
   <div class="cfg-block">
     <div class="field"><div class="field-top"><label>Responsable por defecto</label></div>
-      <select id="cfg_resp"><option>Daniel</option><option>Erica</option><option>Carlos</option><option>Gabriel</option></select></div>
+      <select id="cfg_resp"></select></div>
     <div class="field"><div class="field-top"><label>Carpeta madre de Drive</label></div>
       <input type="text" id="cfg_drive" placeholder="Hauser Propiedades"></div>
   </div>

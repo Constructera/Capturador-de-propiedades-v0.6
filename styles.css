@@ -162,3 +162,7 @@ pre{background:#fbfbfa;border:1px solid var(--line);border-radius:6px;padding:16
 .btn-back{background:none;border:none;font-family:inherit;font-size:.85rem;font-weight:600;color:var(--accent);cursor:pointer;padding:6px 0;-webkit-tap-highlight-color:transparent}
 .btn-back:active{opacity:.65}
 .ver-badge{font-size:.62rem;font-weight:700;background:var(--bg-soft);color:var(--text-soft);border:1px solid var(--line);padding:2px 9px;border-radius:999px;letter-spacing:.02em}
+
+/* ===================== MÓDULO DE ASESORES ===================== */
+.asesor-sel{border-color:var(--accent)!important;background:var(--accent-bg)!important;box-shadow:0 0 0 2px var(--accent);}
+.asesor-avatar{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;font-size:1.1rem;font-weight:700;margin-bottom:4px;align-self:center}

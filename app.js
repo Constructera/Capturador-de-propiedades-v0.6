@@ -50,7 +50,85 @@ function showView(id){
   window.scrollTo(0,0);
   if(id==='viewHistory')renderHist();
   if(id==='viewConfig')renderCfgCount();
+  if(id==='viewAdvisor')renderAsesorGrid();
 }
+
+/* ===================== MÓDULO DE ASESORES ===================== */
+var ASESORES_SEED=[
+  {id:'as_daniel',nombre:'Daniel'},
+  {id:'as_erica',nombre:'Erica'},
+  {id:'as_carlos',nombre:'Carlos'},
+  {id:'as_gabriel',nombre:'Gabriel'}
+];
+var asesoresLocal=(function(){
+  var s=load('asesores',null);if(!s){save('asesores',ASESORES_SEED);return ASESORES_SEED;}
+  return s;
+})();
+var asesorActivo=load('asesor_activo',null);
+
+function getAsesores(){return load('asesores',ASESORES_SEED);}
+function saveAsesores(arr){asesoresLocal=arr;save('asesores',arr);}
+
+function poblarSelectResp(){
+  var lista=getAsesores();
+  ['f_resp','cfg_resp'].forEach(function(sid){
+    var sel=$(sid);if(!sel)return;
+    var cur=sel.value;sel.innerHTML='';
+    lista.forEach(function(a){
+      var opt=document.createElement('option');opt.value=a.nombre;opt.textContent=a.nombre;sel.appendChild(opt);
+    });
+    if(cur&&Array.prototype.some.call(sel.options,function(o){return o.value===cur;}))sel.value=cur;
+  });
+}
+
+function syncAsesor(){
+  if(!asesorActivo)return;
+  poblarSelectResp();
+  $('f_resp').value=asesorActivo.nombre;
+  if($('cfg_resp'))$('cfg_resp').value=asesorActivo.nombre;
+  CFG.resp=asesorActivo.nombre;save('cfg',CFG);
+  var badge=$('asesorBadge');
+  if(badge)badge.textContent='👤 '+asesorActivo.nombre;
+}
+
+poblarSelectResp();
+if(asesorActivo)syncAsesor();
+
+function renderAsesorGrid(){
+  var grid=$('asesorGrid');if(!grid)return;
+  grid.innerHTML='';
+  var lista=getAsesores();
+  lista.forEach(function(a){
+    var card=document.createElement('button');card.type='button';card.className='home-card';
+    if(asesorActivo&&asesorActivo.id===a.id)card.classList.add('asesor-sel');
+    var init=a.nombre.split(' ').map(function(p){return p[0];}).join('').toUpperCase().slice(0,2);
+    card.innerHTML='<span class="asesor-avatar">'+init+'</span><span class="home-label">'+a.nombre+'</span>';
+    card.addEventListener('click',function(){
+      asesorActivo=a;save('asesor_activo',a);
+      grid.querySelectorAll('.home-card').forEach(function(c){c.classList.remove('asesor-sel');});
+      card.classList.add('asesor-sel');
+      $('btnEmpezarCaptura').disabled=false;
+      syncAsesor();
+    });
+    grid.appendChild(card);
+  });
+  $('btnEmpezarCaptura').disabled=!asesorActivo;
+}
+$('btnEmpezarCaptura').addEventListener('click',function(){showView('viewCapture');});
+$('btnAgregarAsesor').addEventListener('click',function(){
+  var nombre=prompt('Nombre del nuevo asesor:');
+  if(!nombre||!nombre.trim())return;
+  nombre=nombre.trim();
+  var lista=getAsesores();
+  if(lista.some(function(a){return a.nombre.toLowerCase()===nombre.toLowerCase();})){
+    alert('Ya existe un asesor con ese nombre.');return;
+  }
+  var nuevo={id:'as'+Date.now(),nombre:nombre};
+  lista.push(nuevo);saveAsesores(lista);
+  asesorActivo=nuevo;save('asesor_activo',nuevo);
+  renderAsesorGrid();syncAsesor();
+  $('btnEmpezarCaptura').disabled=false;
+});
 
 /* ===================== CHIPS ===================== */
 function bindChips(gid,key,cb){
@@ -1117,7 +1195,12 @@ function api(action,payload){
     body:JSON.stringify({action:action,payload:payload})}).then(function(r){return r.json();});
 }
 function syncOne(rec){api('saveCapture',rec).catch(function(){});}
-$('cfg_resp').addEventListener('change',function(){CFG.resp=this.value;save('cfg',CFG);$('f_resp').value=this.value;});
+$('cfg_resp').addEventListener('change',function(){
+  var n=this.value;CFG.resp=n;save('cfg',CFG);$('f_resp').value=n;
+  var lista=getAsesores();
+  var found=lista.filter(function(a){return a.nombre===n;})[0];
+  if(found){asesorActivo=found;save('asesor_activo',found);var badge=$('asesorBadge');if(badge)badge.textContent='👤 '+n;}
+});
 $('cfg_drive').addEventListener('input',function(){CFG.drive=this.value;save('cfg',CFG);refreshDrive();});
 $('cfg_endpoint').addEventListener('input',function(){CFG.endpoint=this.value.trim();save('cfg',CFG);});
 $('cfg_test').addEventListener('click',function(){
@@ -1150,7 +1233,7 @@ $('btnReset').addEventListener('click',function(){
   setChip('madreChips','madre','No, solo individuales');setChip('driveShareChips','driveShare','Sí, carpeta común');
   setChip('crmChips','crm','No');
   buildCaract();renderCaractTerr();renderCRM();
-  $('f_unidades').value=1;$('f_comision').value='4%';$('f_resp').value=CFG.resp;
+  $('f_unidades').value=1;$('f_comision').value='4%';if(asesorActivo)syncAsesor();else $('f_resp').value=CFG.resp;
   $('f_fecha').value=hoy;$('f_seguimiento').value=hoy;$('f_estatus').value='En análisis';
   zonasSel=[];renderZonasTags();$('f_zona').value='';$('zonaHint').textContent='';
   $('f_fuente').value='Recorrido/Scouteo';$('boxFuenteOtra').style.display='none';
