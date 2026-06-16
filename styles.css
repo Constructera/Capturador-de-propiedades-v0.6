@@ -213,10 +213,14 @@ pre{background:#fbfbfa;border:1px solid var(--line);border-radius:6px;padding:16
 .timer-widget.running .timer-display{font-size:.68rem;font-weight:700;}
 
 /* ===================== MASCOTA — ESTADOS ===================== */
-.mascot .brow-angry,.mascot .brow-sad,.mascot .mouth-frown,.mascot .star-deco{display:none;}
+.mascot .brow-angry,.mascot .brow-sad,.mascot .mouth-frown,.mascot .star-deco,.mascot .sweat-drops{display:none;}
 
 .mascot.state-angry .brow-neutral{display:none;}
 .mascot.state-angry .brow-angry{display:block;}
+.mascot.state-angry .sweat-drops{display:block;}
+.mascot.state-angry .mouth-happy{transform:scaleY(1.6) translateY(-2px);transform-box:fill-box;transform-origin:center;}
+
+.mascot.state-focused .brow-neutral{transform:translateY(3px);transform-box:fill-box;}
 
 .mascot.state-sad .brow-neutral,.mascot.state-expired .brow-neutral{display:none;}
 .mascot.state-sad .brow-sad,.mascot.state-expired .brow-sad{display:block;}
@@ -228,38 +232,62 @@ pre{background:#fbfbfa;border:1px solid var(--line);border-radius:6px;padding:16
 /* ===================== MASCOTA — ANIMACIONES ===================== */
 @keyframes mBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 @keyframes mBlink{0%,82%,100%{transform:scaleY(1)}87%,95%{transform:scaleY(0.08)}}
-@keyframes mDanceBody{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
-@keyframes mDanceArmL{0%,100%{transform:rotate(-25deg)}50%{transform:rotate(20deg)}}
-@keyframes mDanceArmR{0%,100%{transform:rotate(25deg)}50%{transform:rotate(-20deg)}}
-@keyframes mDanceLegL{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(8deg)}}
-@keyframes mDanceLegR{0%,100%{transform:rotate(12deg)}50%{transform:rotate(-8deg)}}
-@keyframes mFocusPulse{0%,100%{transform:scale(1)}50%{transform:scale(0.97)}}
-@keyframes mFocusEye{0%,100%{transform:scaleY(1)}50%{transform:scaleY(0.55)}}
-@keyframes mShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 @keyframes mSadDrop{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 @keyframes mCelebrate{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
 @keyframes mStarOrbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* walking-happy */
+@keyframes mWalkBody{0%,100%{transform:rotate(3deg) translateY(0)}50%{transform:rotate(3deg) translateY(-2px)}}
+@keyframes mWalkLegL{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(18deg)}}
+@keyframes mWalkLegR{0%,100%{transform:rotate(18deg)}50%{transform:rotate(-18deg)}}
+@keyframes mWalkArmL{0%,100%{transform:rotate(20deg)}50%{transform:rotate(-20deg)}}
+@keyframes mWalkArmR{0%,100%{transform:rotate(-20deg)}50%{transform:rotate(20deg)}}
+
+/* jogging-focused */
+@keyframes mJogBody{0%,100%{transform:rotate(7deg) translateY(0)}50%{transform:rotate(7deg) translateY(-4px)}}
+@keyframes mJogLegL{0%,100%{transform:rotate(-24deg)}50%{transform:rotate(24deg)}}
+@keyframes mJogLegR{0%,100%{transform:rotate(24deg)}50%{transform:rotate(-24deg)}}
+@keyframes mJogArmL{0%,100%{transform:rotate(-45deg)}50%{transform:rotate(-5deg)}}
+@keyframes mJogArmR{0%,100%{transform:rotate(45deg)}50%{transform:rotate(5deg)}}
+@keyframes mJogEye{0%,100%{transform:scaleY(0.55)}50%{transform:scaleY(0.75)}}
+
+/* running-urgent */
+@keyframes mRunBody{0%,100%{transform:rotate(12deg) translateY(0)}50%{transform:rotate(12deg) translateY(-6px)}}
+@keyframes mRunLegL{0%,100%{transform:rotate(-30deg)}50%{transform:rotate(30deg)}}
+@keyframes mRunLegR{0%,100%{transform:rotate(30deg)}50%{transform:rotate(-30deg)}}
+@keyframes mRunArmL{0%,100%{transform:rotate(40deg)}50%{transform:rotate(15deg)}}
+@keyframes mRunArmR{0%,100%{transform:rotate(-40deg)}50%{transform:rotate(-15deg)}}
+@keyframes mSweat{0%{opacity:.9;transform:translateY(0) scaleX(1)}80%{opacity:.5;transform:translateY(10px) scaleX(.7)}100%{opacity:0;transform:translateY(16px) scaleX(.5)}}
 
 /* idle */
 .mascot.state-idle .mascot-body-group{animation:mBob 2s ease-in-out infinite;}
 .mascot.state-idle .eye-group{animation:mBlink 4s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
 
-/* dancing */
-.mascot.state-dancing .mascot-body-group{animation:mDanceBody .72s ease-in-out infinite;transform-box:fill-box;transform-origin:bottom center;}
-.mascot.state-dancing .arm-left{animation:mDanceArmL .72s ease-in-out infinite;transform-box:fill-box;transform-origin:right center;}
-.mascot.state-dancing .arm-right{animation:mDanceArmR .72s ease-in-out infinite;transform-box:fill-box;transform-origin:left center;}
-.mascot.state-dancing .leg-left{animation:mDanceLegL .72s ease-in-out infinite;transform-box:fill-box;transform-origin:top right;}
-.mascot.state-dancing .leg-right{animation:mDanceLegR .72s ease-in-out infinite;transform-box:fill-box;transform-origin:top left;}
+/* dancing → walking-happy (>5 min) */
+.mascot.state-dancing .mascot-body-group{animation:mWalkBody .6s cubic-bezier(.37,0,.63,1) infinite;transform-box:fill-box;transform-origin:bottom center;}
+.mascot.state-dancing .arm-left{animation:mWalkArmL .6s cubic-bezier(.37,0,.63,1) infinite;transform-box:fill-box;transform-origin:right center;}
+.mascot.state-dancing .arm-right{animation:mWalkArmR .6s cubic-bezier(.37,0,.63,1) infinite;transform-box:fill-box;transform-origin:left center;}
+.mascot.state-dancing .leg-left{animation:mWalkLegL .6s cubic-bezier(.37,0,.63,1) infinite;transform-box:fill-box;transform-origin:top right;}
+.mascot.state-dancing .leg-right{animation:mWalkLegR .6s cubic-bezier(.37,0,.63,1) infinite;transform-box:fill-box;transform-origin:top left;}
 
-/* focused */
-.mascot.state-focused .mascot-body-group{animation:mFocusPulse 2s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
-.mascot.state-focused .eye-group{animation:mFocusEye 2s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+/* focused → jogging-focused (2–5 min) */
+.mascot.state-focused .mascot-body-group{animation:mJogBody .38s cubic-bezier(.37,0,.63,1) infinite;transform-box:fill-box;transform-origin:bottom center;}
+.mascot.state-focused .arm-left{animation:mJogArmL .38s cubic-bezier(.37,0,.63,1) infinite;transform-box:fill-box;transform-origin:right center;}
+.mascot.state-focused .arm-right{animation:mJogArmR .38s cubic-bezier(.37,0,.63,1) infinite;transform-box:fill-box;transform-origin:left center;}
+.mascot.state-focused .leg-left{animation:mJogLegL .38s cubic-bezier(.37,0,.63,1) infinite;transform-box:fill-box;transform-origin:top right;}
+.mascot.state-focused .leg-right{animation:mJogLegR .38s cubic-bezier(.37,0,.63,1) infinite;transform-box:fill-box;transform-origin:top left;}
+.mascot.state-focused .eye-group{animation:mJogEye .38s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
 
-/* angry */
-.mascot.state-angry{filter:saturate(1.5) hue-rotate(-15deg);}
-.mascot.state-angry .mascot-body-group{animation:mShake .42s ease-in-out infinite;}
-.mascot.state-angry .arm-left{transform:rotate(-25deg);transform-box:fill-box;transform-origin:right center;}
-.mascot.state-angry .arm-right{transform:rotate(25deg);transform-box:fill-box;transform-origin:left center;}
+/* angry → running-urgent (<2 min) */
+.mascot.state-angry{filter:saturate(1.1) hue-rotate(-8deg);}
+.mascot.state-angry .mascot-body-group{animation:mRunBody .24s cubic-bezier(.37,0,.63,1) infinite;transform-box:fill-box;transform-origin:bottom center;}
+.mascot.state-angry .arm-left{animation:mRunArmL .24s cubic-bezier(.37,0,.63,1) infinite;transform-box:fill-box;transform-origin:right center;}
+.mascot.state-angry .arm-right{animation:mRunArmR .24s cubic-bezier(.37,0,.63,1) infinite;transform-box:fill-box;transform-origin:left center;}
+.mascot.state-angry .leg-left{animation:mRunLegL .24s cubic-bezier(.37,0,.63,1) infinite;transform-box:fill-box;transform-origin:top right;}
+.mascot.state-angry .leg-right{animation:mRunLegR .24s cubic-bezier(.37,0,.63,1) infinite;transform-box:fill-box;transform-origin:top left;}
+.mascot.state-angry .sweat-drop-1{animation:mSweat .8s ease-in infinite 0s;}
+.mascot.state-angry .sweat-drop-2{animation:mSweat .8s ease-in infinite .27s;}
+.mascot.state-angry .sweat-drop-3{animation:mSweat .8s ease-in infinite .53s;}
 
 /* sad */
 .mascot.state-sad{filter:saturate(0.25);}
