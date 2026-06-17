@@ -1373,7 +1373,11 @@ function mostrarResultado(strs){
 
   // mostrar vista + mascota
   showView('viewResult');
-  if(strs.count===3)setMascotState('celebrating');
+  setTimeout(function(){
+    if(strs.count===3)setMascotState('celebrating');
+    else setMascotState(strs.s2?'idle':'sad');
+    console.log('mascot state:',($('mascotSvg')||{}).className);
+  },100);
 
   // animar estrellas en secuencia
   var stars=[strs.s1,strs.s2,strs.s3];
