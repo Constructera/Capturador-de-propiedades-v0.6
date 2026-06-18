@@ -392,6 +392,13 @@
     <input type="text" inputmode="numeric" id="f_precio_renta" placeholder='Ej. 18000 o "dieciocho mil"'>
     <div class="norm" id="n_precio_renta"></div>
   </div>
+  <div class="field" id="rowRentaMin" style="display:none">
+    <div class="field-top"><label>Tiempo mínimo de renta</label></div>
+    <div class="chips" id="rentaMinChips">
+      <button type="button" class="chip" data-v="6 meses">6 meses</button>
+      <button type="button" class="chip" data-v="1 año">1 año</button>
+    </div>
+  </div>
 
   <div class="row2">
     <div class="field"><div class="field-top"><label>Moneda</label></div>
@@ -478,10 +485,15 @@
       <select id="f_pub"><option selected>Sí</option><option>No</option></select></div>
   </div>
   <div class="row2">
-    <div class="field"><div class="field-top"><label>Comisión esperada</label></div>
+    <div class="field" id="rowComisionVenta"><div class="field-top"><label>Comisión de venta</label></div>
       <select id="f_comision"><option>0.5%</option><option>1%</option><option>2%</option><option>3%</option><option selected>4%</option><option>5%</option><option>6%</option><option>7%</option></select></div>
     <div class="field"><div class="field-top"><label>Prioridad</label></div>
       <select id="f_prioridad"><option>Alta</option><option selected>Media</option><option>Baja</option></select></div>
+  </div>
+  <div class="field" id="rowComisionRenta" style="display:none">
+    <div class="field-top"><label>Comisión de renta <span class="h-hint">= 1er mes</span></label></div>
+    <input type="text" id="f_comision_renta" inputmode="numeric" placeholder="Se llena con el precio de renta">
+    <div class="hint">Ganancia = primer mes. Modificable si hay otro acuerdo.</div>
   </div>
   <div class="row2">
     <div class="field"><div class="field-top"><label>Responsable / quién captura</label></div>

@@ -31,7 +31,7 @@ function zonaTouch(n){
 var state={tipo:'',oper:'Venta',ofrece:'',crm:'No',modo:'A · Reventa de lote',
   madre:'No, solo individuales',driveShare:'Sí, carpeta común',
   serv:[],caract:[],caractTerr:[],lat:null,lng:null,
-  people:[],editId:null};
+  people:[],editId:null,rentaMin:''};
 
 var hoy=new Date().toISOString().slice(0,10);
 $('f_fecha').value=hoy;$('f_seguimiento').value=hoy;
@@ -348,8 +348,15 @@ function onTipo(v){
 function onOper(v){
   var venta=(v==='Venta'||v==='Venta y Renta');
   var renta=(v==='Renta'||v==='Venta y Renta');
+  var soloRenta=(v==='Renta');
   $('rowPrecioVenta').style.display=venta?'':'none';
   $('rowPrecioRenta').style.display=renta?'':'none';
+  $('rowRentaMin').style.display=renta?'':'none';
+  $('rowComisionVenta').style.display=venta?'':'none';
+  $('rowComisionRenta').style.display=renta?'':'none';
+  if(soloRenta&&!naOn('f_m2t')&&!siOn('f_m2t')&&!$('f_m2t').value.trim()){setNaState('f_m2t',true);_m2tAutoNA=true;}
+  else if(!soloRenta&&_m2tAutoNA){setNaState('f_m2t',false);_m2tAutoNA=false;}
+  autoFillComisionRenta();
 }
 bindChips('tipoChips','tipo',onTipo);
 bindChips('operChips','oper',onOper);
@@ -358,6 +365,7 @@ bindChips('crmChips','crm',function(v){renderCRM();});
 bindChips('modoChips','modo');
 bindChips('madreChips','madre');
 bindChips('driveShareChips','driveShare');
+bindChips('rentaMinChips','rentaMin');
 
 /* servicios multi-select */
 $('servChips').addEventListener('click',function(e){
@@ -570,6 +578,22 @@ document.querySelectorAll('.si-btn').forEach(function(siBtn){
 });
 function naOn(id){var b=document.querySelector('.na-btn[data-for-na="'+id+'"]');return !!(b&&b.classList.contains('active'));}
 
+var _m2tAutoNA=false;
+function setNaState(id,on){
+  var naB=document.querySelector('.na-btn[data-for-na="'+id+'"]');
+  var siB=document.querySelector('.si-btn[data-for="'+id+'"]');
+  var inp=$(id);if(!naB||!inp)return;
+  if(on){if(siB)siB.classList.remove('active');naB.classList.add('active');inp.disabled=true;inp.value='';
+    var normId='n_'+id.replace('f_','');var nm=$(normId);if(nm)nm.textContent='';}
+  else{naB.classList.remove('active');inp.disabled=false;}
+  updateProgress();
+}
+function autoFillComisionRenta(){
+  var inp=$('f_comision_renta');if(!inp||inp.getAttribute('data-manual')==='true')return;
+  var rv=numVal('f_precio_renta');
+  inp.value=rv!=null?(fmt(rv)+' MXN'):'';
+}
+
 /* ===================== ZONA inteligente (multi-select) ===================== */
 var zonasSel=[];  // [{n:'Nombre', nueva:bool}, ...]
 var zonaTimer=null;
@@ -696,6 +720,9 @@ function bindNorm(id,outId){
 }
 bindNorm('f_precio','n_precio');bindNorm('f_precio_renta','n_precio_renta');
 bindNorm('f_m2t','n_m2t');bindNorm('f_m2c','n_m2c');
+$('f_precio_renta').addEventListener('input',autoFillComisionRenta);
+$('f_precio_renta').addEventListener('blur',autoFillComisionRenta);
+$('f_comision_renta').addEventListener('input',function(){this.setAttribute('data-manual','true');});
 function numVal(id){var v=parseNumeroES($(id).value);return(v!=null&&$(id).value.trim()!=='')?v:null;}
 
 /* ===================== NOMBRE / UNIDADES / DRIVE ===================== */
@@ -1109,6 +1136,9 @@ function generar(){
   }else{
     md+='Crear **1 página** en 🏠 Propiedades con el nombre **'+nombre+'** (si ya existe una con esa dirección, actualizarla).\n\n';
   }
+  if(conRenta){
+    md+='> ⚠️ **Campos nuevos en esta captura:** "Ganancia renta" y "Tiempo mínimo de renta" aún no existen en la base 🏠 Propiedades. Créalos antes de llenar sus filas (ver sección 2). Si el dueño prefiere no alterar el esquema, registrar estos datos en el campo Notas.\n\n';
+  }
 
   md+='## 2. Campos de la base 🏠 Propiedades\n';
   md+='| Campo Notion | Tipo esperado | Valor para Notion | Nota interna |\n';
@@ -1144,7 +1174,11 @@ function generar(){
   var zonasNota=zonasArr.length?zonasArr.map(function(z){return z.n+(z.nueva?' [CREAR y relacionar]':' [buscar y relacionar]');}).join('; '):'S/I';
   md+=row('Zona','Relación (multi) → 📍 Zonas',{v:zonasStr,nota:zonasNota})+'\n';
   md+=row('Precio','Number',{v:valNum(pv),nota:notaNum(pv)+(pv.val&&moneda?(' ('+moneda+', sin símbolo)'):'')})+'\n';
-  if(conRenta)md+=row('Precio renta','Number',{v:valNum(pr),nota:notaNum(pr)+' renta mensual'})+'\n';
+  if(conRenta){
+    md+=row('Precio renta','Number',{v:valNum(pr),nota:notaNum(pr)+' renta mensual'})+'\n';
+    md+=row('Ganancia renta','Number',{v:pr.val!=null?String(pr.val):'',nota:(pr.val!=null?('Igual al precio del primer mes de renta ('+fmt(pr.val)+' '+moneda+').'):('S/I — precio de renta no capturado.'))+' ⚠️ CAMPO NUEVO: crear en 🏠 Propiedades si no existe (tipo: Number).'})+'\n';
+    md+=row('Tiempo mínimo de renta','Select',{v:state.rentaMin||'S/I',nota:'⚠️ CAMPO NUEVO: crear en 🏠 Propiedades si no existe (tipo: Select, opciones: "6 meses" / "1 año").'})+'\n';
+  }
   md+=row('m² terreno','Number',{v:valNum(m2t),nota:notaNum(m2t)})+'\n';
   md+=row('m² construcción','Number',{v:valNum(m2c),nota:notaNum(m2c)})+'\n';
   md+=row('Recámaras','Number',{v:valNum(rec),nota:notaNum(rec)})+'\n';
@@ -1200,7 +1234,10 @@ function generar(){
   md+='## 5. Operaciones\n';
   if(comprador){
     md+='Hay comprador interesado ('+(comprador.nombre||'S/I')+'). Crear una **Operación** en 🤝 Operaciones, relacionarla con esta propiedad y con el contacto comprador.\n';
-    md+='- Comisión esperada: '+$('f_comision').value+(comprador.presupuesto?(' · presupuesto comprador: '+comprador.presupuesto):'')+'.\n\n';
+    var comArr=[];
+    if(conVenta)comArr.push('Venta: '+$('f_comision').value);
+    if(conRenta)comArr.push('Renta: '+($('f_comision_renta').value||'S/I')+' (1er mes)');
+    md+='- Comisión esperada: '+(comArr.join(' · ')||'S/I')+(comprador.presupuesto?(' · presupuesto comprador: '+comprador.presupuesto):'')+'.\n\n';
   }else{
     md+='Sin comprador aún. No crear Operación todavía.\n\n';
   }
@@ -1676,7 +1713,7 @@ function doReset(){
   document.querySelectorAll('.si-btn').forEach(function(b){b.classList.remove('active');});
   document.querySelectorAll('.na-btn').forEach(function(b){b.classList.remove('active');});
   document.querySelectorAll('#viewCapture .chip').forEach(function(c){c.classList.remove('sel');});
-  state={tipo:'',oper:'Venta',ofrece:'',crm:'No',modo:'A · Reventa de lote',madre:'No, solo individuales',driveShare:'Sí, carpeta común',serv:[],caract:[],caractTerr:[],lat:null,lng:null,people:[],editId:null};
+  state={tipo:'',oper:'Venta',ofrece:'',crm:'No',modo:'A · Reventa de lote',madre:'No, solo individuales',driveShare:'Sí, carpeta común',serv:[],caract:[],caractTerr:[],lat:null,lng:null,people:[],editId:null,rentaMin:''};
   setChip('operChips','oper','Venta',onOper);setChip('modoChips','modo','A · Reventa de lote');
   setChip('madreChips','madre','No, solo individuales');setChip('driveShareChips','driveShare','Sí, carpeta común');
   setChip('crmChips','crm','No');
