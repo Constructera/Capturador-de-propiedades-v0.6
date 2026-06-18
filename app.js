@@ -1535,7 +1535,10 @@ function saveCapture(md,estatus,falt,stars,quality){
   var h=getHist();
   var id=state.editId&&false?null:'CAP-'+Date.now();
   var rec={
-    id:id,fecha:new Date().toISOString(),resp:$('f_resp').value,
+    id:id,fecha:new Date().toISOString(),
+    asesorId:asesorActivo?asesorActivo.id:null,
+    asesorNombre:asesorActivo?asesorActivo.nombre:($('f_resp').value||'S/I'),
+    resp:$('f_resp').value,
     nombre:nombreBase(),direccion:$('f_direccion').value.trim(),zona:zonasSel.map(function(z){return z.n;}).join(' / ')||'S/I',
     tipo:state.tipo,oper:state.oper,estatus:estatus,fuente:fuenteVal().nombre,
     people:state.people.map(function(p){return (p.nombre||'?')+' ('+p.rol+')';}),
@@ -1576,7 +1579,7 @@ function renderHist(){
     var item=document.createElement('div');item.className='hist-item';
     item.innerHTML='<div class="hi-top"><div><div class="hi-name">'+r.nombre+'</div>'+
       (r.estrellas!=null?'<div class="hi-stars">'+histStars(r.estrellas,r.calidad)+'</div>':'')+
-      '<div class="hi-meta">'+(r.tipo||'?')+' · '+r.oper+' · '+r.zona+' · '+r.resp+'<br>'+new Date(r.fecha).toLocaleString('es-MX')+'</div></div>'+
+      '<div class="hi-meta">'+(r.tipo||'?')+' · '+r.oper+' · '+r.zona+' · '+(r.asesorNombre||r.resp||'S/I')+'<br>'+new Date(r.fecha).toLocaleString('es-MX')+'</div></div>'+
       '<span class="hi-state '+stCls+'">'+stTxt+'</span></div>'+
       '<div class="hi-actions">'+
         '<button type="button" class="btn" data-copy="'+r.id+'">Copiar MD</button>'+
@@ -1869,7 +1872,9 @@ function genContact(){
   $('ctOutputArea').style.display='';
   $('ctOutputArea').scrollIntoView({behavior:'smooth',block:'start'});
   saveContactHist({id:id,fecha:now.toISOString(),nombre:nombre,tipo:tipo,
-    tel:ctVal('ct_tel'),email:ctVal('ct_email'),asesor:asesor,md:md,enviado:false});
+    tel:ctVal('ct_tel'),email:ctVal('ct_email'),
+    asesorId:asesorActivo?asesorActivo.id:null,
+    asesor:asesor,md:md,enviado:false});
   sndSuccess();
 }
 
