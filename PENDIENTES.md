@@ -4,11 +4,13 @@ Registro de decisiones pendientes e incidencias abiertas. No implementar sin ali
 
 ---
 
-## Conflictos de esquema Notion
+## Esquema Notion — estado actual
 
-- **PROP-3 / TERR-**: El terreno registrado como PROP-3 en Notion tiene prefijo incorrecto según la regla v0.5 (que usa TERR-). El dueño debe decidir si renumerar el registro existente. Mientras tanto, al auto-generar el código de un nuevo terreno se usa el prefijo TERR- sin tocar PROP-3. El markdown señala el conflicto cuando aplica.
+- ~~**PROP-3 / TERR-**~~: **RESUELTO en v0.6.** El campo Código en Notion es auto-incremental; la app ya no genera ni escribe prefijos. El conflicto PROP-3 queda sin efecto.
 
-- **Campos nuevos de terreno**: `uso_de_suelo_densidad`, `estatus_legal` y `servicios_disponibles` aún no existen como propiedades en la base 🏠 Propiedades. Por ahora se registran en el campo **Notas** de forma estructurada. Pendiente confirmar si se crearán como propiedades independientes o viven en Notas.
+- **Campos de terreno en Notas**: `uso_de_suelo_densidad`, `estatus_legal` y `servicios_disponibles` se registran en el campo **Notas** de forma estructurada. Pendiente confirmar si se crearán como propiedades independientes en la base.
+
+- **Operación "Ambas" → Venta en Notion**: Confirmado en v0.6. Cuando el asesor elige "Ambas", el markdown registra `Operación = Venta` y los datos de renta van en los campos Precio renta, Ganancia renta y Tiempo mínimo de renta.
 
 ---
 

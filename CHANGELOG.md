@@ -123,7 +123,7 @@ Ejecutar en orden. Marcar ✅ al pasar, ❌ con descripción del fallo.
 | AT-17 | Estrella 2 — Esencial | Datos esenciales completos → ⭐ Datos esenciales ganada |
 | AT-18 | Estrella 3 — Completa | Todos los campos completados o marcados S/I/N/A → ⭐ Captura completa ganada |
 | AT-19 | 3 estrellas | Estatus = "Captada" en markdown; confetti visible; mascota en "celebrating" |
-| AT-20 | Código de propiedad | PROP-XX para casa/depto; TERR-XX para terreno; nota de PROP-3 cuando aplica |
+| AT-20 | Código de propiedad | El markdown NO escribe código; Notion lo asigna automáticamente (auto-incremental) |
 
 ### AT-21 al AT-22 — Markdown de propiedad
 
@@ -155,7 +155,7 @@ Confirmación de que el markdown de la sección "2. Campos de la base 🏠 Propi
 | # | Parámetro Notion | Tipo | Cubierto en markdown |
 |---|---|---|---|
 | 1 | Propiedad (título) | Title | ✅ fila Nombre |
-| 2 | Código | Text | ✅ fila Código (PROP-/TERR-XX) |
+| 2 | Código | Text | ✅ Auto-incremental en Notion; el markdown NO lo escribe (Notion lo asigna) |
 | 3 | Tipo de inmueble | Select | ✅ fila Tipo de inmueble |
 | 4 | Operación | Select | ✅ fila Operación |
 | 5 | Precio | Number | ✅ fila Precio (+ fila Precio renta si aplica) |

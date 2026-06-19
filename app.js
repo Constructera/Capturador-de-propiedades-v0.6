@@ -1,6 +1,6 @@
 /* ============================================================
    Capturador de propiedades — Hauser / Inmobitera
-   app.js  ·  v0.5 (Capturadora Hauser — PROP-/TERR-, Notas de terreno, sin topografía)
+   app.js  ·  v0.6 (Capturadora Hauser — Código auto-Notion, Ambas=Venta en Notion, rentas/comisiones)
    ============================================================ */
 (function(){
 'use strict';
@@ -1143,9 +1143,6 @@ function generar(){
   md+='## 2. Campos de la base 🏠 Propiedades\n';
   md+='| Campo Notion | Tipo esperado | Valor para Notion | Nota interna |\n';
   md+='|---|---|---|---|\n';
-  // código PROP- / TERR- se auto-genera siempre (campo eliminado del formulario)
-  var prefijoCodigo=esTerreno?'TERR-':'PROP-';
-  var notaCodigo='Asignar '+prefijoCodigo+'siguiente disponible';
 
   // dirección genérica + instrucción de geolocalización (Decisión 1)
   var dirVal=$('f_direccion').value.trim();
@@ -1166,9 +1163,10 @@ function generar(){
   }
 
   md+=row('Nombre','Title',cell(nombre))+'\n';
-  md+=row('Código','Text',cell('',notaCodigo))+'\n';
   md+=row('Tipo de inmueble','Select',cell(state.tipo,state.tipo?'':'S/I'))+'\n';
-  md+=row('Operación','Select',cell(state.oper))+'\n';
+  var operNotion=(state.oper==='Venta y Renta')?'Venta':state.oper;
+  var operNota=(state.oper==='Venta y Renta')?'Propiedad disponible en Venta y Renta. El campo Operación se registra como "Venta". Los datos de renta van en los campos Precio renta, Ganancia renta y Tiempo mínimo de renta.':'';
+  md+=row('Operación','Select',{v:operNotion,nota:operNota})+'\n';
   md+=row('Dirección','Text',cell(dirVal,dirNota))+'\n';
   var zonasStr=zonasArr.length?zonasArr.map(function(z){return z.n;}).join(' / '):'S/I';
   var zonasNota=zonasArr.length?zonasArr.map(function(z){return z.n+(z.nueva?' [CREAR y relacionar]':' [buscar y relacionar]');}).join('; '):'S/I';
