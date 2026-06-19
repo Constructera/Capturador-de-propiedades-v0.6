@@ -1322,7 +1322,7 @@ function generar(){
   $('outputArea').style.display='block';
 
   // guardar en historial
-  lastCaptureId=saveCapture(md,estatus,falt,estrellas.count,estrellas.quality);
+  lastCaptureId=saveCapture(md,estatus,falt,estrellas.count,estrellas.quality,timerElapsed);
   if(asesorActivo)updateAsesorStats(asesorActivo.id,estrellas,timerElapsed);
   sndSuccess();
   mostrarResultado(estrellas);
@@ -1456,9 +1456,48 @@ function sortAsesores(lista){
   });
 }
 
+function buildRankingFromCapturas(capturas){
+  var map={};
+  capturas.forEach(function(c){
+    var key=(c.asesorId||'')+'\x00'+(c.asesorNombre||'?');
+    if(!map[key])map[key]={id:c.asesorId,nombre:c.asesorNombre||'S/I',totalCapturas:0,totalEstrellas:0,capturasEsenciales:0,capturasCompletas:0,mejorTiempo:null,ultimaCaptura:null};
+    var a=map[key];var st=parseInt(c.estrellas)||0;
+    a.totalCapturas++;a.totalEstrellas+=st;
+    if(st>=2)a.capturasEsenciales++;if(st>=3)a.capturasCompletas++;
+    var el=parseInt(c.elapsed)||0;
+    if(el>0&&(!a.mejorTiempo||el<a.mejorTiempo))a.mejorTiempo=el;
+    if(!a.ultimaCaptura||c.fecha>a.ultimaCaptura)a.ultimaCaptura=c.fecha;
+  });
+  return Object.keys(map).map(function(k){return map[k];});
+}
 function renderRanking(){
   var wrap=$('rankingList');if(!wrap)return;
-  var full=sortAsesores(getAsesores());
+  var modoEl=$('rankingModo');
+  if(CFG.endpoint){
+    wrap.innerHTML='<div class="empty" style="margin-top:48px">⏳ Cargando ranking compartido…</div>';
+    if(modoEl)modoEl.textContent='';
+    api('getRanking',{}).then(function(res){
+      if(res&&res.capturas&&res.capturas.length){
+        if(modoEl)modoEl.textContent='🌐 Ranking compartido ('+res.capturas.length+' capturas de todos los dispositivos)';
+        renderRankingConLista(sortAsesores(buildRankingFromCapturas(res.capturas)));
+      }else{
+        if(modoEl)modoEl.textContent='📱 Ranking local (endpoint conectado pero sin datos compartidos aún)';
+        renderRankingLocal();
+      }
+    }).catch(function(){
+      if(modoEl)modoEl.textContent='📱 Ranking local (no se pudo conectar al servidor)';
+      renderRankingLocal();
+    });
+  }else{
+    if(modoEl)modoEl.textContent='📱 Ranking local · Configura un endpoint en ⚙️ para compartir';
+    renderRankingLocal();
+  }
+}
+function renderRankingLocal(){
+  renderRankingConLista(sortAsesores(getAsesores()));
+}
+function renderRankingConLista(full){
+  var wrap=$('rankingList');if(!wrap)return;
   var lista=full.filter(function(a){return a.totalCapturas>0;});
   if(!lista.length){
     wrap.innerHTML='<div class="empty" style="margin-top:48px">Sin capturas aún.<br>Captura propiedades para aparecer en el ranking.</div>';
@@ -1529,7 +1568,7 @@ function histStars(n,quality){
 }
 function getHist(){return load('hist',[]);}
 function setHist(h){save('hist',h);updateBadge();}
-function saveCapture(md,estatus,falt,stars,quality){
+function saveCapture(md,estatus,falt,stars,quality,elapsed){
   var h=getHist();
   var id=state.editId&&false?null:'CAP-'+Date.now();
   var rec={
@@ -1542,7 +1581,7 @@ function saveCapture(md,estatus,falt,stars,quality){
     people:state.people.map(function(p){return (p.nombre||'?')+' ('+p.rol+')';}),
     anuncio:state.anuncioUrl||'',maps:$('f_maps').value,drive:$('f_drive').value,
     md:md,estado:falt.length?'Con faltantes':'Markdown generado',
-    estrellas:stars||0,calidad:quality||'',
+    estrellas:stars||0,calidad:quality||'',elapsed:elapsed||0,
     faltantes:falt,copiado:false,enviado:false,edit:new Date().toISOString()
   };
   h.unshift(rec);setHist(h);

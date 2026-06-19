@@ -610,7 +610,7 @@
   <div class="cfg-block">
     <div class="field"><div class="field-top"><label>Endpoint del backend (Apps Script / Worker)</label></div>
       <input type="url" id="cfg_endpoint" placeholder="https://script.google.com/macros/s/…/exec"></div>
-    <div class="hint">Cuando lo configures, la app podrá leer zonas reales, sincronizar historial y crear carpetas de Drive. Vacío = todo funciona local + dentro de Claude.</div>
+    <div class="hint">Con endpoint activo: ranking compartido entre todos los dispositivos del equipo, sincronización de historial y zonas. Sin endpoint: todo funciona local en este dispositivo.</div>
     <div class="btn-row">
       <button type="button" class="btn" id="cfg_test">Probar conexión</button>
       <button type="button" class="btn" id="cfg_sync">Sincronizar historial</button>
@@ -727,6 +727,7 @@
   </div>
   <div class="doc-title">⭐ Ranking de asesores</div>
   <div class="doc-sub">Estrellas acumuladas · Hauser / Inmobitera</div>
+  <div id="rankingModo" style="font-size:0.78rem;color:#666;text-align:center;margin:4px 0 8px;min-height:18px"></div>
   <div id="rankingList"></div>
 </main>
 
