@@ -1951,7 +1951,7 @@ $('btnCancelEdit').addEventListener('click',function(){doReset();showView('viewH
 // -- Contactos --
 var ctEditId=null;var ctCapturadoEn=null;
 function calcCtStars(){
-  var s1=!!(ctVal('ct_nombre')&&ctState.tipo&&ctVal('ct_tel'));
+  var s1=!!(ctVal('ct_nombre')&&ctState.tipos.length&&ctVal('ct_tel'));
   var s2=s1&&!!(ctVal('ct_email')||($('ct_fuente')&&$('ct_fuente').value));
   var s3=s2&&!!(ctVal('ct_zona_interes')||ctVal('ct_zona_oper')||ctVal('ct_zona_oper_aliado'));
   return{count:s3?3:s2?2:s1?1:0,s1:s1,s2:s2,s3:s3};
@@ -1967,10 +1967,10 @@ function snapshotCtForm(){
 function restoreCtForm(snap){
   if(!snap)return;
   if(snap._ctState){Object.assign(ctState,snap._ctState);
-    if(ctState.tipo){
-      document.querySelectorAll('#ctTipoChips .chip').forEach(function(c){c.classList.toggle('sel',c.dataset.v===ctState.tipo);});
-      ctOnTipo(ctState.tipo);
-    }
+    // backwards compat: old records stored tipo as string
+    if(!Array.isArray(ctState.tipos)){ctState.tipos=ctState.tipo?[ctState.tipo]:[];delete ctState.tipo;}
+    document.querySelectorAll('#ctTipoChips .chip').forEach(function(c){c.classList.toggle('sel',ctState.tipos.indexOf(c.dataset.v)>=0);});
+    ctOnTipos();
     ['ctConfianzaChips','ctUrgenciaChips','ctConfianzaAliado','ctEstatusChips'].forEach(function(cid){
       var key={ctConfianzaChips:'confianza',ctUrgenciaChips:'urgencia',ctConfianzaAliado:'confianzaAliado',ctEstatusChips:'estatus'}[cid];
       var w=$(cid);if(!w)return;
@@ -2011,31 +2011,31 @@ $('btnCancelEditCt').addEventListener('click',function(){
 /* ===================== CONTACTOS — FASE 7 ===================== */
 var CT_COMPRADOR=['Comprador','Inversionista'];
 var CT_PROPIETARIO=['Propietario','Desarrollador'];
-var CT_ALIADO=['Arquitecto','Notario','Maestro de obra'];
+var CT_ALIADO=['Arquitecto','Notario','Maestro de obra','Broker','Asesor inmobiliario'];
 
-var ctState={tipo:'',confianza:'',estatus:'Nuevo',urgencia:'',confianzaAliado:''};
+var ctState={tipos:[],confianza:'',estatus:'Nuevo',urgencia:'',confianzaAliado:''};
 var ctMd='';
 
 function ctVal(id){var el=$(id);return el?el.value.trim():'';}
 function ctSI(v){return v||'S/I';}
 
-function ctOnTipo(v){
-  ctState.tipo=v;
-  var esCom=CT_COMPRADOR.indexOf(v)>=0;
-  var esProp=CT_PROPIETARIO.indexOf(v)>=0;
-  var esAliado=CT_ALIADO.indexOf(v)>=0;
-  $('ctOtroTipoBox').style.display=(v==='Otro')?'':'none';
-  $('ctSecOper').style.display=(v&&v!=='')?'':'none';
+function ctOnTipos(){
+  var ts=ctState.tipos;
+  var esCom=ts.some(function(v){return CT_COMPRADOR.indexOf(v)>=0;});
+  var esProp=ts.some(function(v){return CT_PROPIETARIO.indexOf(v)>=0;});
+  var esAliado=ts.some(function(v){return CT_ALIADO.indexOf(v)>=0;});
+  $('ctOtroTipoBox').style.display=(ts.indexOf('Otro')>=0)?'':'none';
+  $('ctSecOper').style.display=(esCom||esProp||esAliado)?'':'none';
   $('ctSecComprador').style.display=esCom?'':'none';
   $('ctSecPropietario').style.display=esProp?'':'none';
   $('ctSecAliado').style.display=esAliado?'':'none';
-  $('ctConfianzaRow').style.display=esAliado?'none':'';
+  $('ctConfianzaRow').style.display=(!esCom&&!esProp&&esAliado)?'none':'';
   ctUpdateProgress();
 }
 
 function ctUpdateProgress(){
   var kNombre=ctVal('ct_nombre')?1:0;
-  var kTipo=ctState.tipo?1:0;
+  var kTipo=ctState.tipos.length?1:0;
   var kContacto=(ctVal('ct_tel')||ctVal('ct_wa')||ctVal('ct_email'))?1:0;
   var filled=kNombre+kTipo+kContacto;
   var extras=[ctVal('ct_alias'),ctVal('ct_empresa'),ctVal('ct_puesto'),ctVal('ct_notas'),
@@ -2068,9 +2068,10 @@ ctWireChips('ctConfianzaAliado','confianzaAliado');
   var wrap=$('ctTipoChips');if(!wrap)return;
   wrap.querySelectorAll('.chip').forEach(function(btn){
     btn.addEventListener('click',function(){
-      wrap.querySelectorAll('.chip').forEach(function(x){x.classList.remove('sel');});
-      btn.classList.add('sel');
-      ctOnTipo(btn.dataset.v);
+      btn.classList.toggle('sel');
+      var v=btn.dataset.v;var idx=ctState.tipos.indexOf(v);
+      if(idx>=0)ctState.tipos.splice(idx,1);else ctState.tipos.push(v);
+      ctOnTipos();
     });
   });
 })();
@@ -2085,16 +2086,16 @@ ctWireChips('ctConfianzaAliado','confianzaAliado');
 function genContact(){
   var nombre=ctVal('ct_nombre');
   if(!nombre){alert('El nombre completo es obligatorio.');return;}
-  if(!ctState.tipo){alert('Selecciona el tipo de contacto.');return;}
-  var tipo=ctState.tipo==='Otro'?(ctVal('ct_otro_tipo')||'Otro'):ctState.tipo;
+  if(!ctState.tipos.length){alert('Selecciona al menos un tipo de contacto.');return;}
+  var tipo=ctState.tipos.map(function(v){return v==='Otro'?(ctVal('ct_otro_tipo')||'Otro'):v;}).join(' / ');
   var now=new Date();
   var fecha=now.toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});
   var isCtEdit=!!ctEditId;
   var id=isCtEdit?ctEditId:('CT-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substr(2,8).toUpperCase());
   var asesor=ctVal('ct_asesor')||CFG.resp||'S/I';
-  var esCom=CT_COMPRADOR.indexOf(ctState.tipo)>=0;
-  var esProp=CT_PROPIETARIO.indexOf(ctState.tipo)>=0;
-  var esAliado=CT_ALIADO.indexOf(ctState.tipo)>=0;
+  var esCom=ctState.tipos.some(function(v){return CT_COMPRADOR.indexOf(v)>=0;});
+  var esProp=ctState.tipos.some(function(v){return CT_PROPIETARIO.indexOf(v)>=0;});
+  var esAliado=ctState.tipos.some(function(v){return CT_ALIADO.indexOf(v)>=0;});
 
   var md='# Alta de contacto en Notion — '+nombre+'\n\n';
   md+='> **Acción:** Crear nuevo registro en base **Contactos / CRM**.\n\n';
@@ -2131,7 +2132,7 @@ function genContact(){
   }
   md+='## Gestión\n| Campo | Valor |\n|---|---|\n';
   md+='| Fuente | '+ctSI($('ct_fuente')&&$('ct_fuente').value)+' |\n';
-  if(!esAliado)md+='| Nivel de confianza | '+ctSI(ctState.confianza)+' |\n';
+  if(!esAliado||esCom||esProp)md+='| Nivel de confianza | '+ctSI(ctState.confianza)+' |\n';
   md+='| Estatus | '+(ctState.estatus||'Nuevo')+' |\n';
   md+='| Próxima acción | '+ctSI(ctVal('ct_proxima'))+' |\n';
   md+='| Fecha de seguimiento | '+ctSI(ctVal('ct_seguimiento'))+' |\n\n';
@@ -2226,7 +2227,7 @@ function ctDoReset(){
   if(estatusWrap){
     estatusWrap.querySelectorAll('.chip').forEach(function(b){b.classList.toggle('sel',b.dataset.v==='Nuevo');});
   }
-  ctState={tipo:'',confianza:'',estatus:'Nuevo',urgencia:'',confianzaAliado:''};
+  ctState={tipos:[],confianza:'',estatus:'Nuevo',urgencia:'',confianzaAliado:''};
   $('ctOtroTipoBox').style.display='none';
   $('ctSecOper').style.display='none';
   $('ctSecComprador').style.display='none';
