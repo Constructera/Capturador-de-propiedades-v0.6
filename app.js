@@ -2064,22 +2064,19 @@ ctWireChips('ctEstatusChips','estatus');
 ctWireChips('ctUrgenciaChips','urgencia');
 ctWireChips('ctConfianzaAliado','confianzaAliado');
 
-(function(){
-  var wrap=$('ctTipoChips');if(!wrap)return;
-  wrap.querySelectorAll('.chip').forEach(function(btn){
-    btn.addEventListener('click',function(){
-      btn.classList.toggle('sel');
-      var v=btn.dataset.v;var idx=ctState.tipos.indexOf(v);
-      if(idx>=0)ctState.tipos.splice(idx,1);else ctState.tipos.push(v);
-      ctOnTipos();
-    });
-  });
-})();
+$('ctTipoChips').addEventListener('click',function(e){
+  var c=e.target.closest('.chip');if(!c)return;
+  c.classList.toggle('sel');
+  var v=c.dataset.v;var idx=ctState.tipos.indexOf(v);
+  if(idx>=0)ctState.tipos.splice(idx,1);else ctState.tipos.push(v);
+  ctOnTipos();
+});
 
 ['ct_nombre','ct_alias','ct_empresa','ct_puesto','ct_tel','ct_wa','ct_email',
  'ct_presupuesto','ct_zona_interes','ct_tipo_busca','ct_zona_oper','ct_tipo_ofrece',
  'ct_propiedad_rel','ct_zona_oper_aliado','ct_servicio','ct_otro_tipo',
- 'ct_proxima','ct_seguimiento','ct_asesor','ct_notas'].forEach(function(id){
+ 'ct_proxima','ct_seguimiento','ct_asesor','ct_notas',
+ 'ct_notas_busca','ct_notas_oferta','ct_notas_servicio'].forEach(function(id){
   var el=$(id);if(el)el.addEventListener('input',ctUpdateProgress);
 });
 
@@ -2115,20 +2112,26 @@ function genContact(){
     md+='| Presupuesto | '+ctSI(ctVal('ct_presupuesto'))+' |\n';
     md+='| Zona de interés | '+ctSI(ctVal('ct_zona_interes'))+' |\n';
     md+='| Tipo de propiedad que busca | '+ctSI(ctVal('ct_tipo_busca'))+' |\n';
-    md+='| Urgencia | '+ctSI(ctState.urgencia)+' |\n\n';
+    md+='| Urgencia | '+ctSI(ctState.urgencia)+' |\n';
+    if(ctVal('ct_notas_busca'))md+='| Notas | '+ctVal('ct_notas_busca')+' |\n';
+    md+='\n';
   }
   if(esProp){
     md+='## Oferta\n| Campo | Valor |\n|---|---|\n';
     md+='| Zona de operación | '+ctSI(ctVal('ct_zona_oper'))+' |\n';
     md+='| Tipo de propiedad que ofrece | '+ctSI(ctVal('ct_tipo_ofrece'))+' |\n';
-    md+='| Propiedad relacionada | '+ctSI(ctVal('ct_propiedad_rel'))+' |\n\n';
+    md+='| Propiedad relacionada | '+ctSI(ctVal('ct_propiedad_rel'))+' |\n';
+    if(ctVal('ct_notas_oferta'))md+='| Notas | '+ctVal('ct_notas_oferta')+' |\n';
+    md+='\n';
     if(ctVal('ct_propiedad_rel')){md+='> ⚠️ Si la propiedad existe en la base, vincular en el campo **Propiedades** de este contacto.\n\n';}
   }
   if(esAliado){
     md+='## Servicio\n| Campo | Valor |\n|---|---|\n';
     md+='| Zona de operación | '+ctSI(ctVal('ct_zona_oper_aliado'))+' |\n';
     md+='| Servicio que ofrece | '+ctSI(ctVal('ct_servicio'))+' |\n';
-    md+='| Nivel de confianza | '+ctSI(ctState.confianzaAliado)+' |\n\n';
+    md+='| Nivel de confianza | '+ctSI(ctState.confianzaAliado)+' |\n';
+    if(ctVal('ct_notas_servicio'))md+='| Notas | '+ctVal('ct_notas_servicio')+' |\n';
+    md+='\n';
   }
   md+='## Gestión\n| Campo | Valor |\n|---|---|\n';
   md+='| Fuente | '+ctSI($('ct_fuente')&&$('ct_fuente').value)+' |\n';
@@ -2216,7 +2219,8 @@ function ctDoReset(){
   ['ct_nombre','ct_alias','ct_empresa','ct_puesto','ct_tel','ct_wa','ct_email',
    'ct_presupuesto','ct_zona_interes','ct_tipo_busca','ct_zona_oper','ct_tipo_ofrece',
    'ct_propiedad_rel','ct_zona_oper_aliado','ct_servicio','ct_otro_tipo',
-   'ct_proxima','ct_notas','ct_asesor'].forEach(function(id){var el=$(id);if(el)el.value='';});
+   'ct_proxima','ct_notas','ct_asesor',
+   'ct_notas_busca','ct_notas_oferta','ct_notas_servicio'].forEach(function(id){var el=$(id);if(el)el.value='';});
   if($('ct_seguimiento'))$('ct_seguimiento').value=hoy;
   if($('ct_fuente'))$('ct_fuente').value='';
   document.querySelectorAll('#ctTipoChips .chip').forEach(function(b){b.classList.remove('sel');});
