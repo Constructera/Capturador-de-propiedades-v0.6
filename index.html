@@ -818,12 +818,97 @@
         <input type="text" id="ct_presupuesto" inputmode="numeric" placeholder="Ej. 2,500,000">
       </div>
       <div class="field">
-        <div class="field-top"><label for="ct_zona_interes">Zona de interés</label></div>
-        <input type="text" id="ct_zona_interes" placeholder="Ej. Lomas de Cortés, Lomas Tetela">
+        <div class="field-top"><label>Forma de pago</label><span class="hint-inline">Puedes elegir varias</span></div>
+        <div class="chips" id="ctFormaPagoChips">
+          <button type="button" class="chip chip-sm" data-v="Contado">Contado</button>
+          <button type="button" class="chip chip-sm" data-v="Crédito hipotecario">Crédito hipotecario</button>
+          <button type="button" class="chip chip-sm" data-v="Infonavit">Infonavit</button>
+          <button type="button" class="chip chip-sm" data-v="Fovissste">Fovissste</button>
+          <button type="button" class="chip chip-sm" data-v="Mixto">Mixto</button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-top"><label>Zona(s) de interés</label><span class="hint-inline">Selecciona una o varias</span></div>
+        <div class="chips" id="ctZonasInteresChips" style="gap:6px"></div>
+        <input type="text" id="ct_zona_interes_extra" placeholder="Otra zona no listada (escribe aquí)" style="margin-top:8px">
+      </div>
+      <div class="field">
+        <div class="field-top"><label>Uso de la propiedad</label></div>
+        <div class="chips" id="ctUsoChips">
+          <button type="button" class="chip chip-sm" data-v="Vivienda propia">Vivienda propia</button>
+          <button type="button" class="chip chip-sm" data-v="Negocio / Comercial">Negocio / Comercial</button>
+          <button type="button" class="chip chip-sm" data-v="Inversión / Renta">Inversión / Renta</button>
+          <button type="button" class="chip chip-sm" data-v="Mixto (vivir y rentar)">Mixto (vivir y rentar)</button>
+        </div>
       </div>
       <div class="field">
         <div class="field-top"><label for="ct_tipo_busca">Tipo de propiedad que busca</label></div>
         <input type="text" id="ct_tipo_busca" placeholder="Ej. Casa con jardín 3+ recámaras">
+      </div>
+      <div class="field">
+        <div class="field-top"><label>Amenidades deseadas</label><span class="hint-inline">Selecciona todas las que apliquen</span></div>
+        <div class="chips ct-amenidades-chips" id="ctAmenidadesChips">
+          <button type="button" class="chip chip-sm" data-v="Recámara en PB">Recámara en PB</button>
+          <button type="button" class="chip chip-sm" data-v="Estudio / home office">Estudio / home office</button>
+          <button type="button" class="chip chip-sm" data-v="Cuarto de servicio">Cuarto de servicio</button>
+          <button type="button" class="chip chip-sm" data-v="Cuarto de lavado">Cuarto de lavado</button>
+          <button type="button" class="chip chip-sm" data-v="Bodega">Bodega</button>
+          <button type="button" class="chip chip-sm" data-v="Sala de TV / cine">Sala de TV / cine</button>
+          <button type="button" class="chip chip-sm" data-v="Sala de juegos">Sala de juegos</button>
+          <button type="button" class="chip chip-sm" data-v="Cuarto de visitas">Cuarto de visitas</button>
+          <button type="button" class="chip chip-sm" data-v="Gimnasio privado">Gimnasio privado</button>
+          <button type="button" class="chip chip-sm" data-v="Jardín">Jardín</button>
+          <button type="button" class="chip chip-sm" data-v="Patio">Patio</button>
+          <button type="button" class="chip chip-sm" data-v="Roof garden">Roof garden</button>
+          <button type="button" class="chip chip-sm" data-v="Terraza">Terraza</button>
+          <button type="button" class="chip chip-sm" data-v="Balcón">Balcón</button>
+          <button type="button" class="chip chip-sm" data-v="Alberca privada">Alberca privada</button>
+          <button type="button" class="chip chip-sm" data-v="Jacuzzi">Jacuzzi</button>
+          <button type="button" class="chip chip-sm" data-v="Asador / BBQ">Asador / BBQ</button>
+          <button type="button" class="chip chip-sm" data-v="Palapa / pérgola">Palapa / pérgola</button>
+          <button type="button" class="chip chip-sm" data-v="Garage techado">Garage techado</button>
+          <button type="button" class="chip chip-sm" data-v="Garage doble o más">Garage doble o más</button>
+          <button type="button" class="chip chip-sm" data-v="Cajones de visitas">Cajones de visitas</button>
+          <button type="button" class="chip chip-sm" data-v="Espacio moto / bici">Espacio moto / bici</button>
+          <button type="button" class="chip chip-sm" data-v="Acceso controlado">Acceso controlado</button>
+          <button type="button" class="chip chip-sm" data-v="Caseta de vigilancia">Caseta de vigilancia</button>
+          <button type="button" class="chip chip-sm" data-v="CCTV / cámaras">CCTV / cámaras</button>
+          <button type="button" class="chip chip-sm" data-v="Alarma">Alarma</button>
+          <button type="button" class="chip chip-sm" data-v="Seguridad 24/7">Seguridad 24/7</button>
+          <button type="button" class="chip chip-sm" data-v="Cocina integral">Cocina integral</button>
+          <button type="button" class="chip chip-sm" data-v="Cocina abierta">Cocina abierta</button>
+          <button type="button" class="chip chip-sm" data-v="Walk-in closet">Walk-in closet</button>
+          <button type="button" class="chip chip-sm" data-v="Vestidor">Vestidor</button>
+          <button type="button" class="chip chip-sm" data-v="Baño en suite">Baño en suite</button>
+          <button type="button" class="chip chip-sm" data-v="Bañera / tina">Bañera / tina</button>
+          <button type="button" class="chip chip-sm" data-v="Smart home / domótica">Smart home / domótica</button>
+          <button type="button" class="chip chip-sm" data-v="Gas natural">Gas natural</button>
+          <button type="button" class="chip chip-sm" data-v="Cisterna propia">Cisterna propia</button>
+          <button type="button" class="chip chip-sm" data-v="Tinaco / booster">Tinaco / booster</button>
+          <button type="button" class="chip chip-sm" data-v="Paneles solares">Paneles solares</button>
+          <button type="button" class="chip chip-sm" data-v="Generador eléctrico">Generador eléctrico</button>
+          <button type="button" class="chip chip-sm" data-v="Elevador">Elevador</button>
+          <button type="button" class="chip chip-sm" data-v="Áreas verdes comunes">Áreas verdes comunes</button>
+          <button type="button" class="chip chip-sm" data-v="Salón de eventos">Salón de eventos</button>
+          <button type="button" class="chip chip-sm" data-v="Juegos infantiles">Juegos infantiles</button>
+          <button type="button" class="chip chip-sm" data-v="Cancha de tenis">Cancha de tenis</button>
+          <button type="button" class="chip chip-sm" data-v="Cancha de pádel">Cancha de pádel</button>
+          <button type="button" class="chip chip-sm" data-v="Cancha de basket">Cancha de basket</button>
+          <button type="button" class="chip chip-sm" data-v="Gym del condominio">Gym del condominio</button>
+          <button type="button" class="chip chip-sm" data-v="Yoga / wellness">Yoga / wellness</button>
+          <button type="button" class="chip chip-sm" data-v="Alberca común">Alberca común</button>
+          <button type="button" class="chip chip-sm" data-v="Pet friendly">Pet friendly</button>
+          <button type="button" class="chip chip-sm" data-v="Lobby / concierge">Lobby / concierge</button>
+          <button type="button" class="chip chip-sm" data-v="Vigilancia 24h">Vigilancia 24h</button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-top"><label for="ct_habitantes">Número de habitantes</label></div>
+        <input type="number" id="ct_habitantes" min="1" max="30" placeholder="Ej. 4">
+      </div>
+      <div class="field">
+        <div class="field-top"><label for="ct_ocupacion">Ocupación del comprador</label></div>
+        <input type="text" id="ct_ocupacion" placeholder="Ej. Médico, empresario, docente…">
       </div>
       <div class="field">
         <div class="field-top"><label>Urgencia de compra</label></div>

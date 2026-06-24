@@ -1953,7 +1953,7 @@ var ctEditId=null;var ctCapturadoEn=null;
 function calcCtStars(){
   var s1=!!(ctVal('ct_nombre')&&ctState.tipos.length&&ctVal('ct_tel'));
   var s2=s1&&!!(ctVal('ct_email')||($('ct_fuente')&&$('ct_fuente').value));
-  var s3=s2&&!!(ctVal('ct_zona_interes')||ctVal('ct_zona_oper')||ctVal('ct_zona_oper_aliado'));
+  var s3=s2&&!!(ctState.zonasInteres.length||ctVal('ct_zona_interes_extra')||ctVal('ct_zona_oper')||ctVal('ct_zona_oper_aliado'));
   return{count:s3?3:s2?2:s1?1:0,s1:s1,s2:s2,s3:s3};
 }
 function snapshotCtForm(){
@@ -1969,8 +1969,15 @@ function restoreCtForm(snap){
   if(snap._ctState){Object.assign(ctState,snap._ctState);
     // backwards compat: old records stored tipo as string
     if(!Array.isArray(ctState.tipos)){ctState.tipos=ctState.tipo?[ctState.tipo]:[];delete ctState.tipo;}
+    if(!Array.isArray(ctState.zonasInteres))ctState.zonasInteres=[];
+    if(!Array.isArray(ctState.formaPago))ctState.formaPago=[];
+    if(!Array.isArray(ctState.amenidades))ctState.amenidades=[];
+    if(typeof ctState.uso!=='string')ctState.uso='';
     document.querySelectorAll('#ctTipoChips .chip').forEach(function(c){c.classList.toggle('sel',ctState.tipos.indexOf(c.dataset.v)>=0);});
-    ctOnTipos();
+    ctOnTipos(); // renders zona chips + section visibility
+    var fpW=$('ctFormaPagoChips');if(fpW)fpW.querySelectorAll('.chip').forEach(function(c){c.classList.toggle('sel',ctState.formaPago.indexOf(c.dataset.v)>=0);});
+    var uW=$('ctUsoChips');if(uW)uW.querySelectorAll('.chip').forEach(function(c){c.classList.toggle('sel',c.dataset.v===ctState.uso);});
+    var amW=$('ctAmenidadesChips');if(amW)amW.querySelectorAll('.chip').forEach(function(c){c.classList.toggle('sel',ctState.amenidades.indexOf(c.dataset.v)>=0);});
     ['ctConfianzaChips','ctUrgenciaChips','ctConfianzaAliado','ctEstatusChips'].forEach(function(cid){
       var key={ctConfianzaChips:'confianza',ctUrgenciaChips:'urgencia',ctConfianzaAliado:'confianzaAliado',ctEstatusChips:'estatus'}[cid];
       var w=$(cid);if(!w)return;
@@ -2013,7 +2020,8 @@ var CT_COMPRADOR=['Comprador','Inversionista'];
 var CT_PROPIETARIO=['Propietario','Desarrollador'];
 var CT_ALIADO=['Arquitecto','Notario','Maestro de obra','Broker','Asesor inmobiliario'];
 
-var ctState={tipos:[],confianza:'',estatus:'Nuevo',urgencia:'',confianzaAliado:''};
+var ctState={tipos:[],confianza:'',estatus:'Nuevo',urgencia:'',confianzaAliado:'',
+  zonasInteres:[],formaPago:[],amenidades:[],uso:''};
 var ctMd='';
 
 function ctVal(id){var el=$(id);return el?el.value.trim():'';}
@@ -2030,6 +2038,7 @@ function ctOnTipos(){
   $('ctSecPropietario').style.display=esProp?'':'none';
   $('ctSecAliado').style.display=esAliado?'':'none';
   $('ctConfianzaRow').style.display=(!esCom&&!esProp&&esAliado)?'none':'';
+  if(esCom)renderCtZonaChips();
   ctUpdateProgress();
 }
 
@@ -2063,6 +2072,40 @@ ctWireChips('ctConfianzaChips','confianza');
 ctWireChips('ctEstatusChips','estatus');
 ctWireChips('ctUrgenciaChips','urgencia');
 ctWireChips('ctConfianzaAliado','confianzaAliado');
+ctWireChips('ctUsoChips','uso');
+
+function renderCtZonaChips(){
+  var wrap=$('ctZonasInteresChips');if(!wrap)return;
+  wrap.innerHTML='';
+  var zonas=zonasAll().sort(function(a,b){return(b.uses||0)-(a.uses||0);});
+  zonas.forEach(function(z){
+    var b=document.createElement('button');b.type='button';
+    b.className='chip chip-sm';b.textContent=z.n;b.dataset.v=z.n;
+    b.classList.toggle('sel',ctState.zonasInteres.indexOf(z.n)>=0);
+    wrap.appendChild(b);
+  });
+}
+$('ctZonasInteresChips').addEventListener('click',function(e){
+  var c=e.target.closest('.chip');if(!c)return;
+  c.classList.toggle('sel');
+  var v=c.dataset.v;var idx=ctState.zonasInteres.indexOf(v);
+  if(idx>=0)ctState.zonasInteres.splice(idx,1);else ctState.zonasInteres.push(v);
+  ctUpdateProgress();
+});
+$('ctFormaPagoChips').addEventListener('click',function(e){
+  var c=e.target.closest('.chip');if(!c)return;
+  c.classList.toggle('sel');
+  var v=c.dataset.v;var idx=ctState.formaPago.indexOf(v);
+  if(idx>=0)ctState.formaPago.splice(idx,1);else ctState.formaPago.push(v);
+  ctUpdateProgress();
+});
+$('ctAmenidadesChips').addEventListener('click',function(e){
+  var c=e.target.closest('.chip');if(!c)return;
+  c.classList.toggle('sel');
+  var v=c.dataset.v;var idx=ctState.amenidades.indexOf(v);
+  if(idx>=0)ctState.amenidades.splice(idx,1);else ctState.amenidades.push(v);
+  ctUpdateProgress();
+});
 
 $('ctTipoChips').addEventListener('click',function(e){
   var c=e.target.closest('.chip');if(!c)return;
@@ -2073,10 +2116,11 @@ $('ctTipoChips').addEventListener('click',function(e){
 });
 
 ['ct_nombre','ct_alias','ct_empresa','ct_puesto','ct_tel','ct_wa','ct_email',
- 'ct_presupuesto','ct_zona_interes','ct_tipo_busca','ct_zona_oper','ct_tipo_ofrece',
+ 'ct_presupuesto','ct_zona_interes_extra','ct_tipo_busca','ct_zona_oper','ct_tipo_ofrece',
  'ct_propiedad_rel','ct_zona_oper_aliado','ct_servicio','ct_otro_tipo',
  'ct_proxima','ct_seguimiento','ct_asesor','ct_notas',
- 'ct_notas_busca','ct_notas_oferta','ct_notas_servicio'].forEach(function(id){
+ 'ct_notas_busca','ct_notas_oferta','ct_notas_servicio',
+ 'ct_ocupacion','ct_habitantes'].forEach(function(id){
   var el=$(id);if(el)el.addEventListener('input',ctUpdateProgress);
 });
 
@@ -2108,12 +2152,21 @@ function genContact(){
   md+='| Correo | '+ctSI(ctVal('ct_email'))+' |\n\n';
 
   if(esCom){
+    var zonasBusca=ctState.zonasInteres.slice();
+    if(ctVal('ct_zona_interes_extra'))zonasBusca.push(ctVal('ct_zona_interes_extra')+'*');
+    var zonasBuscaStr=zonasBusca.length?zonasBusca.join(' / '):'S/I';
     md+='## Búsqueda\n| Campo | Valor |\n|---|---|\n';
     md+='| Presupuesto | '+ctSI(ctVal('ct_presupuesto'))+' |\n';
-    md+='| Zona de interés | '+ctSI(ctVal('ct_zona_interes'))+' |\n';
-    md+='| Tipo de propiedad que busca | '+ctSI(ctVal('ct_tipo_busca'))+' |\n';
+    md+='| Forma de pago | '+ctSI(ctState.formaPago.join(', '))+' |\n';
+    md+='| Zona(s) de interés | '+zonasBuscaStr+' |\n';
+    md+='| Uso | '+ctSI(ctState.uso)+' |\n';
+    md+='| Tipo de propiedad | '+ctSI(ctVal('ct_tipo_busca'))+' |\n';
+    md+='| Amenidades deseadas | '+ctSI(ctState.amenidades.length?ctState.amenidades.join(', '):'')+' |\n';
+    md+='| Nº de habitantes | '+ctSI(ctVal('ct_habitantes'))+' |\n';
+    md+='| Ocupación | '+ctSI(ctVal('ct_ocupacion'))+' |\n';
     md+='| Urgencia | '+ctSI(ctState.urgencia)+' |\n';
     if(ctVal('ct_notas_busca'))md+='| Notas | '+ctVal('ct_notas_busca')+' |\n';
+    if(ctVal('ct_zona_interes_extra'))md+='\n> ⚠️ Zona "'+ctVal('ct_zona_interes_extra')+'" (marcada con *) — verificar si existe en 📍 Zonas o crear.\n';
     md+='\n';
   }
   if(esProp){
@@ -2217,21 +2270,25 @@ $('ctBtnReset').addEventListener('click',function(){
 });
 function ctDoReset(){
   ['ct_nombre','ct_alias','ct_empresa','ct_puesto','ct_tel','ct_wa','ct_email',
-   'ct_presupuesto','ct_zona_interes','ct_tipo_busca','ct_zona_oper','ct_tipo_ofrece',
+   'ct_presupuesto','ct_zona_interes_extra','ct_tipo_busca','ct_zona_oper','ct_tipo_ofrece',
    'ct_propiedad_rel','ct_zona_oper_aliado','ct_servicio','ct_otro_tipo',
    'ct_proxima','ct_notas','ct_asesor',
-   'ct_notas_busca','ct_notas_oferta','ct_notas_servicio'].forEach(function(id){var el=$(id);if(el)el.value='';});
+   'ct_notas_busca','ct_notas_oferta','ct_notas_servicio',
+   'ct_ocupacion','ct_habitantes'].forEach(function(id){var el=$(id);if(el)el.value='';});
   if($('ct_seguimiento'))$('ct_seguimiento').value=hoy;
   if($('ct_fuente'))$('ct_fuente').value='';
   document.querySelectorAll('#ctTipoChips .chip').forEach(function(b){b.classList.remove('sel');});
-  ['ctConfianzaChips','ctUrgenciaChips','ctConfianzaAliado'].forEach(function(cid){
+  ['ctConfianzaChips','ctUrgenciaChips','ctConfianzaAliado',
+   'ctFormaPagoChips','ctUsoChips','ctAmenidadesChips'].forEach(function(cid){
     var w=$(cid);if(w)w.querySelectorAll('.chip').forEach(function(b){b.classList.remove('sel');});
   });
+  renderCtZonaChips();
   var estatusWrap=$('ctEstatusChips');
   if(estatusWrap){
     estatusWrap.querySelectorAll('.chip').forEach(function(b){b.classList.toggle('sel',b.dataset.v==='Nuevo');});
   }
-  ctState={tipos:[],confianza:'',estatus:'Nuevo',urgencia:'',confianzaAliado:''};
+  ctState={tipos:[],confianza:'',estatus:'Nuevo',urgencia:'',confianzaAliado:'',
+    zonasInteres:[],formaPago:[],amenidades:[],uso:''};
   $('ctOtroTipoBox').style.display='none';
   $('ctSecOper').style.display='none';
   $('ctSecComprador').style.display='none';
@@ -2248,6 +2305,7 @@ function ctDoReset(){
   else if($('ct_asesor'))$('ct_asesor').value=CFG.resp||'';
   var ew=$('ctEstatusChips');
   if(ew)ew.querySelectorAll('.chip').forEach(function(b){b.classList.toggle('sel',b.dataset.v==='Nuevo');});
+  renderCtZonaChips();
   updateCtBadge();renderCtHist();
 })();
 
