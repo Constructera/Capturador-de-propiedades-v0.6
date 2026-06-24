@@ -160,6 +160,10 @@ function setMascotState(st){
   var svg=$('mascotSvg');if(!svg)return;
   svg.setAttribute('class','mascot state-'+st);
 }
+function setResMascotState(st){
+  var svg=$('resMascotSvg');if(!svg)return;
+  svg.setAttribute('class','mascot state-'+st);
+}
 function updateTimerUI(){
   var d=$('timerDisplay');if(d)d.textContent=timerFmt(timerRemaining);
   setTimerArc(timerRemaining,timerLimit);
@@ -1409,12 +1413,13 @@ function mostrarResultado(strs){
     $('resFaltCallout').style.display='none';
   }
 
-  // mostrar vista + mascota
+  // mostrar vista + mascota resultado
   showView('viewResult');
+  var msg0=$('res0StarMsg');if(msg0)msg0.style.display=strs.count===0?'':'none';
   setTimeout(function(){
-    if(strs.count===3)setMascotState('celebrating');
-    else setMascotState(strs.s2?'idle':'sad');
-    console.log('mascot state:',($('mascotSvg')||{}).className);
+    if(strs.count>=2)setResMascotState('celebrating');
+    else if(strs.count===1)setResMascotState('idle');
+    else setResMascotState('sad');
   },100);
 
   // animar estrellas en secuencia
