@@ -996,6 +996,8 @@ function updateProgress(){
   var pct=total?Math.round(done/total*100):0;
   $('progText').textContent=done+' de '+total+' campos clave';
   $('progPct').textContent=pct+'%';$('progFill').style.width=pct+'%';
+  var lw=$('btnLimpiarWrap');
+  if(lw)lw.style.display=(done>0||state.tipo||state.ofrece||zonasSel.length)?'':'none';
 }
 ['f_zona','f_uso','f_frente','f_fondo','f_rec','f_ban','f_est','f_notas','f_m2c'].forEach(function(id){
   var el=$(id);if(el){el.addEventListener('input',updateProgress);el.addEventListener('change',updateProgress);}
@@ -1880,6 +1882,10 @@ function doReset(){
   var bg=$('btnGen');if(bg)bg.textContent='Generar Markdown';
   updateProgress();window.scrollTo({top:0,behavior:'smooth'});
 }
+$('btnLimpiarDatos').addEventListener('click',function(){
+  if(!confirm('¿Limpiar todos los datos del formulario? (El historial NO se borra)'))return;
+  doReset();
+});
 $('btnReset').addEventListener('click',function(){
   if(!confirm('¿Limpiar todos los campos? (El historial NO se borra)'))return;
   doReset();

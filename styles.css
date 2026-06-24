@@ -185,8 +185,6 @@ pre{background:#fbfbfa;border:1px solid var(--line);border-radius:6px;padding:16
 /* mascot */
 .mascot-wrap{flex-shrink:0;}
 .mascot{height:90px;width:auto;display:block;overflow:visible;transition:filter .4s;}
-.res-mascot-wrap{width:100px;margin:0 auto 4px;}.res-mascot-wrap .mascot{height:100px;}
-
 /* ring (ready mode) */
 .timer-ring-wrap{position:relative;width:90px;height:90px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 .timer-ring{width:100%;height:100%;}
