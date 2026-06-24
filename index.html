@@ -927,8 +927,9 @@
     <!-- Propietario / Desarrollador -->
     <div id="ctSecPropietario" style="display:none">
       <div class="field">
-        <div class="field-top"><label for="ct_zona_oper">Zona de operación</label></div>
-        <input type="text" id="ct_zona_oper" placeholder="Ej. Palmira, Lomas de Cortés">
+        <div class="field-top"><label>Zona de operación</label><span class="hint-inline">Selecciona o escribe nueva</span></div>
+        <div class="chips" id="ctZonasOperChips"></div>
+        <input type="text" id="ct_zona_oper_extra" placeholder="Zona nueva (se creará en Notion)" style="margin-top:6px">
       </div>
       <div class="field">
         <div class="field-top"><label for="ct_tipo_ofrece">Tipo de propiedad que ofrece</label></div>
@@ -948,8 +949,9 @@
     <!-- Aliados (Arquitecto / Notario / Maestro de obra) -->
     <div id="ctSecAliado" style="display:none">
       <div class="field">
-        <div class="field-top"><label for="ct_zona_oper_aliado">Zona de operación</label></div>
-        <input type="text" id="ct_zona_oper_aliado" placeholder="Ej. Cuernavaca y zona metropolitana">
+        <div class="field-top"><label>Zona de operación</label><span class="hint-inline">Selecciona o escribe nueva</span></div>
+        <div class="chips" id="ctZonasOperAliadoChips"></div>
+        <input type="text" id="ct_zona_oper_aliado_extra" placeholder="Zona nueva (se creará en Notion)" style="margin-top:6px">
       </div>
       <div class="field">
         <div class="field-top"><label for="ct_servicio">Servicio que ofrece</label></div>

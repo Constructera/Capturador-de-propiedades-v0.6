@@ -1,5 +1,5 @@
 /* Service Worker — Capturador Hauser */
-const CACHE='capturador-v0.5-4B';
+const CACHE='capturador-v0.5-4C';
 const ASSETS=['./','./index.html','./app.js','./styles.css','./manifest.json','./icons/icon-192.png','./icons/icon-512.png'];
 
 self.addEventListener('install',e=>{
