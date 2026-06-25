@@ -268,6 +268,11 @@ $('btnPausarTimer').addEventListener('click',function(){
   if(timerState==='running')pauseTimer();
   else if(timerState==='paused')resumeTimer();
 });
+// 5.2 — Auto-start: arranca en el primer input/cambio/chip si el timer sigue en ready
+function autoStartTimer(){if(timerState==='ready')startTimer();}
+['input','change','click'].forEach(function(ev){
+  $('viewCapture').addEventListener(ev,autoStartTimer,{passive:true});
+});
 
 /* ===================== MÓDULO DE SONIDOS — FASE 4 ===================== */
 var sndCfg=load('cfg_sounds',{on:true,vol:0.6});
