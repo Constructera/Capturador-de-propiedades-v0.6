@@ -183,7 +183,7 @@ function updateTimerUI(){
   if(ts!=='ready')_timerAudioTs=ts;else _timerAudioTs='ready';
   var w=$('timerWidget');
   if(w){
-    w.className='timer-widget'+(timerState!=='ready'?' running':'');
+    w.className='timer-widget'+(timerState!=='ready'?' running':'')+(timerState==='paused'?' paused':'');
     if(ts!=='ready')w.classList.add('state-'+ts);
   }
   var MSGS={
@@ -218,6 +218,7 @@ function pauseTimer(){
   timerState='paused';timerWasPaused=true;timerPauseCount++;
   clearInterval(timerInterval);timerInterval=null;
   var pb=$('btnPausarTimer');if(pb)pb.textContent='▶ Reanudar';
+  updateTimerUI();
 }
 function resumeTimer(){
   if(timerState!=='paused')return;
@@ -229,6 +230,7 @@ function resumeTimer(){
     if(timerRemaining===0){timerState='expired';clearInterval(timerInterval);timerInterval=null;}
   },1000);
   var pb=$('btnPausarTimer');if(pb)pb.textContent='⏸ Pausar';
+  updateTimerUI();
 }
 function resetTimerToReady(){
   clearInterval(timerInterval);timerInterval=null;
@@ -264,7 +266,13 @@ $('btnIniciarCaptura').addEventListener('click',function(){
   startTimer();
   window.scrollTo({top:0,behavior:'smooth'});
 });
-$('btnPausarTimer').addEventListener('click',function(){
+$('btnPausarTimer').addEventListener('click',function(e){
+  e.stopPropagation();
+  if(timerState==='running')pauseTimer();
+  else if(timerState==='paused')resumeTimer();
+});
+// 5.3 — Tap en el widget fijo pausa/reanuda
+$('timerWidget').addEventListener('click',function(){
   if(timerState==='running')pauseTimer();
   else if(timerState==='paused')resumeTimer();
 });

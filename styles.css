@@ -195,6 +195,9 @@ pre{background:#fbfbfa;border:1px solid var(--line);border-radius:6px;padding:16
 .timer-widget.state-focused #timerArc{stroke:var(--warn);}
 .timer-widget.state-urgent #timerArc{stroke:var(--danger);}
 .timer-widget.state-expired #timerArc{stroke:#c4554d;opacity:.45;}
+.timer-widget.paused #timerArc{stroke:#f97316;}
+.timer-widget.paused .timer-top{border-color:#f97316;background:rgba(249,115,22,.06);}
+.timer-widget.paused .timer-display{color:#f97316;}
 
 /* ready controls */
 .timer-ready-msg{text-align:center;font-size:.83rem;color:var(--text-soft);margin-bottom:12px;}
