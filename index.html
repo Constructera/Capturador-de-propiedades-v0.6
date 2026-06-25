@@ -275,16 +275,17 @@
   </div>
 
   <div class="field">
-    <div class="field-top"><label>¿Cuántas unidades iguales se ofertan?</label></div>
+    <div class="field-top"><label>¿Cuántas unidades se ofertan?</label></div>
     <input type="number" id="f_unidades" inputmode="numeric" value="1" min="1" max="200" style="max-width:140px">
-    <div class="hint">Para fraccionamientos o conjuntos con varias casas/deptos/lotes.</div>
+    <div class="hint">Para fraccionamientos o conjuntos con varias propiedades.</div>
     <div class="subbox" id="unitsBox" style="display:none">
       <div class="field">
         <div class="field-top"><label>Detalle por unidad</label></div>
-        <div class="hint">Se pre-llenan con los valores globales de m² y precio. Edita unidad por unidad si alguna varía.</div>
+        <div class="hint">Edita cada unidad si tienen datos distintos, o usa "Igualar" si todas son iguales.</div>
         <div class="btn-row" style="margin-top:6px">
-          <button type="button" class="btn chip-sm" id="btnIgualaTodo">🔄 Igualar todas desde valores globales</button>
+          <button type="button" class="btn chip-sm" id="btnIgualaTodo">🔄 Igualar todas</button>
         </div>
+        <div id="unitsIgualMsg" style="display:none;margin-top:8px;font-size:.82rem;color:var(--accent)"></div>
         <div class="units-list" id="unitsList"></div>
       </div>
       <div class="field">
@@ -681,8 +682,8 @@
   <div class="help-q">8. ¿Cómo mando la propiedad a Notion?</div>
   <div class="help-a">Genera el Markdown, cópialo y pégalo en el chat del agente de Notion. El agente crea la página en 🏠 Propiedades, vincula Zona, Contactos y Tareas, y confirma los campos creados.</div>
 
-  <div class="help-q">9. Varias unidades iguales (conjuntos)</div>
-  <div class="help-a">Pon el número de unidades en el campo correspondiente; la app genera instrucciones para crear una página por unidad. La página madre del conjunto es opcional. Los datos comunes se copian a todas las unidades.</div>
+  <div class="help-q">9. Varias unidades (conjuntos)</div>
+  <div class="help-a">Pon el número de unidades. Si todas son iguales, toca "Igualar" para copiar los datos globales a todas. Si difieren, edítalas individualmente.</div>
 
   <div class="help-q">10. ¿Cómo capturo un cliente o socio?</div>
   <div class="help-a">Usa la tarjeta <strong>Capturar cliente / socio</strong> del menú. Selecciona el tipo (Comprador, Propietario, Arquitecto, etc.) y aparecerán solo los campos relevantes. El markdown se envía al agente para dar de alta en la base Contactos / CRM. Puedes vincularlo después con una propiedad capturada.</div>

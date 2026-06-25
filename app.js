@@ -271,13 +271,17 @@ $('btnPausarTimer').addEventListener('click',function(e){
   if(timerState==='running')pauseTimer();
   else if(timerState==='paused')resumeTimer();
 });
-// 5.3 — Tap en el widget fijo pausa/reanuda
-$('timerWidget').addEventListener('click',function(){
+// 5.3 — Tap en el widget fijo pausa/reanuda (stopPropagation evita doble disparo con autoStartTimer)
+$('timerWidget').addEventListener('click',function(e){
+  e.stopPropagation();
   if(timerState==='running')pauseTimer();
   else if(timerState==='paused')resumeTimer();
 });
-// 5.2 — Auto-start: arranca en el primer input/cambio/chip si el timer sigue en ready
-function autoStartTimer(){if(timerState==='ready')startTimer();}
+// 5.2 — Auto-start en primer input; 5.3b — auto-resume si estaba pausado al tocar un campo
+function autoStartTimer(){
+  if(timerState==='ready')startTimer();
+  else if(timerState==='paused')resumeTimer();
+}
 ['input','change','click'].forEach(function(ev){
   $('viewCapture').addEventListener(ev,autoStartTimer,{passive:true});
 });
@@ -828,7 +832,10 @@ function refreshUnits(){
   var n=Math.max(1,parseInt($('f_unidades').value,10)||1);
   $('unitsBox').style.display=(n>1)?'':'none';
   var list=$('unitsList');
-  if(n<=1){list.innerHTML='';return;}
+  if(n<=1){list.innerHTML='';var m=$('unitsIgualMsg');if(m)m.style.display='none';return;}
+  // Expandir si cambia n (el usuario está modificando, no igualando)
+  list.style.display='';
+  var m=$('unitsIgualMsg');if(m)m.style.display='none';
   var base=nombreBase();
   var prev=Array.prototype.map.call(list.querySelectorAll('.unit-card'),function(card){
     return {nombre:card.querySelector('[data-u=nombre]').value,
@@ -870,6 +877,16 @@ $('btnIgualaTodo').addEventListener('click',function(){
     if(gM2t)card.querySelector('[data-u=m2t]').value=gM2t;
     if(gM2c)card.querySelector('[data-u=m2c]').value=gM2c;
     if(gPrecio)card.querySelector('[data-u=precio]').value=gPrecio;
+  });
+  // Colapsar lista y mostrar resumen
+  var n=$('unitsList').querySelectorAll('.unit-card').length;
+  $('unitsList').style.display='none';
+  var msg=$('unitsIgualMsg');
+  msg.innerHTML='✓ '+n+' unidades igualadas desde valores globales. <button type="button" class="btn chip-sm" id="btnEditarIndiv" style="margin-left:6px">Editar individualmente</button>';
+  msg.style.display='';
+  $('btnEditarIndiv').addEventListener('click',function(){
+    $('unitsList').style.display='';
+    msg.style.display='none';
   });
 });
 $('f_nombre').addEventListener('input',function(){refreshDrive();});
