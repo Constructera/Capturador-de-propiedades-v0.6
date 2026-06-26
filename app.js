@@ -23,7 +23,7 @@ function save(k,v){try{localStorage.setItem('cap_'+k,JSON.stringify(v));}catch(e
     // ícono = modo destino (🌙 para ir a dark, ☀️ para ir a light)
     var icon=dark?'☀️':'🌙';
     // #btnTheme en home (solo texto), #btnThemeNav en navbar (tiene <span class="ic">)
-    [$('btnTheme'),$('btnThemeNav')].forEach(function(b){
+    [$('btnTheme'),$('btnThemeNav'),$('captureFabTheme')].forEach(function(b){
       if(!b)return;
       var ic=b.querySelector('.ic');
       if(ic)ic.textContent=icon;else b.textContent=icon;
@@ -32,7 +32,21 @@ function save(k,v){try{localStorage.setItem('cap_'+k,JSON.stringify(v));}catch(e
   function doToggle(){applyTheme(document.documentElement.getAttribute('data-theme')!=='dark');}
   var saved=load('theme',null);
   applyTheme(saved==='dark'); // default: light si no hay preferencia guardada
-  [$('btnTheme'),$('btnThemeNav')].forEach(function(b){if(b)b.addEventListener('click',doToggle);});
+  [$('btnTheme'),$('btnThemeNav'),$('captureFabTheme')].forEach(function(b){if(b)b.addEventListener('click',doToggle);});
+  // FAB menú/salir de captura
+  (function(){
+    var modal=$('captureExitModal');
+    function openExit(){modal.classList.add('show');}
+    function closeExit(){modal.classList.remove('show');}
+    function exitTo(view){closeExit();showView(view);}
+    $('captureFabMenu').addEventListener('click',openExit);
+    $('captureExitClose').addEventListener('click',closeExit);
+    $('capExitCancel').addEventListener('click',closeExit);
+    $('capExitHome').addEventListener('click',function(){exitTo('viewHome');});
+    $('capExitHistory').addEventListener('click',function(){exitTo('viewHistory');});
+    $('capExitHelp').addEventListener('click',function(){exitTo('viewHelp');});
+    modal.addEventListener('click',function(e){if(e.target===modal)closeExit();});
+  })();
 })();
 
 /* zonas conocidas: semilla + las que se agreguen/usen */
@@ -73,6 +87,7 @@ function showView(id){
   if(id!=='viewResult'){var vr=$('viewResult');if(vr&&vr.classList.contains('active')){id==='viewCapture'?updateTimerUI():setMascotState('idle');}}
   document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('active',v.id===id);});
   document.querySelectorAll('#navbar button').forEach(function(b){b.classList.toggle('active',b.dataset.view===id);});
+  document.body.classList.toggle('capture-active',id==='viewCapture');
   window.scrollTo(0,0);
   if(id==='viewHistory')renderHist();
   if(id==='viewConfig')renderCfgCount();
@@ -955,6 +970,36 @@ $('f_precio_renta').addEventListener('input',autoFillComisionRenta);
 $('f_precio_renta').addEventListener('blur',autoFillComisionRenta);
 $('f_comision_renta').addEventListener('input',function(){this.setAttribute('data-manual','true');});
 function numVal(id){var v=parseNumeroES($(id).value);return(v!=null&&$(id).value.trim()!=='')?v:null;}
+
+/* ===================== FORMATEO DE PRECIOS CON COMAS ===================== */
+function bindPriceFormat(id){
+  var el=$(id);if(!el)return;
+  el.addEventListener('input',function(){
+    var raw=el.value;
+    // Solo formatear si es puramente numérico (no texto como "3 millones")
+    if(!/^[\d,]*$/.test(raw))return;
+    var digits=raw.replace(/,/g,'');
+    if(!digits){el.value='';return;}
+    var num=parseInt(digits,10);
+    if(isNaN(num))return;
+    var formatted=num.toLocaleString('en-US');
+    if(formatted===raw)return;
+    // Preservar posición del cursor contando dígitos antes del cursor
+    var sel=el.selectionStart;
+    var digitsBeforeCursor=raw.substring(0,sel).replace(/,/g,'').length;
+    el.value=formatted;
+    // Restaurar cursor
+    var newPos=0,dCount=0;
+    for(var i=0;i<formatted.length;i++){
+      if(/\d/.test(formatted[i])){dCount++;if(dCount===digitsBeforeCursor){newPos=i+1;break;}}
+    }
+    if(dCount<digitsBeforeCursor)newPos=formatted.length;
+    el.setSelectionRange(newPos,newPos);
+  });
+}
+bindPriceFormat('f_precio');
+bindPriceFormat('f_precio_renta');
+bindPriceFormat('ct_presupuesto');
 
 /* ===================== NOMBRE / UNIDADES / DRIVE ===================== */
 function nombreBase(){

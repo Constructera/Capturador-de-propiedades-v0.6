@@ -33,32 +33,32 @@
   </div>
   <div class="home-sub">¿Qué quieres capturar hoy?</div>
   <div class="home-grid">
-    <button type="button" class="home-card" data-view="viewAdvisor">
+    <button type="button" class="home-card btn-accent" data-view="viewAdvisor">
       <span class="home-icon">🏠</span>
       <span class="home-label">Capturar propiedad</span>
       <span class="home-desc">Casa, depto, terreno, local, bodega u otro inmueble</span>
     </button>
-    <button type="button" class="home-card" data-view="viewContact">
+    <button type="button" class="home-card btn-blue" data-view="viewContact">
       <span class="home-icon">👤</span>
       <span class="home-label">Capturar cliente / socio</span>
       <span class="home-desc">Propietarios, compradores, arquitectos, notarios y aliados</span>
     </button>
-    <button type="button" class="home-card" data-view="viewLeaderboard">
+    <button type="button" class="home-card btn-orange" data-view="viewLeaderboard">
       <span class="home-icon">⭐</span>
       <span class="home-label">Ranking de asesores</span>
       <span class="home-desc">Estrellas acumuladas, capturas y tiempos</span>
     </button>
-    <button type="button" class="home-card" data-view="viewHistory">
+    <button type="button" class="home-card btn-purple" data-view="viewHistory">
       <span class="home-icon">🗂️</span>
       <span class="home-label">Historial</span>
       <span class="home-desc">Capturas guardadas en este dispositivo</span>
     </button>
-    <button type="button" class="home-card" data-view="viewConfig">
+    <button type="button" class="home-card btn-blue" data-view="viewConfig">
       <span class="home-icon">⚙️</span>
       <span class="home-label">Configuración</span>
       <span class="home-desc">Asesores, sonidos, animación y datos locales</span>
     </button>
-    <button type="button" class="home-card" data-view="viewHelp">
+    <button type="button" class="home-card btn-orange" data-view="viewHelp">
       <span class="home-icon">❓</span>
       <span class="home-label">Ayuda rápida</span>
       <span class="home-desc">Criterios de captura y uso correcto</span>
@@ -979,6 +979,30 @@
     <div class="modal-foot">
       <button type="button" class="btn" id="personCancel">Cancelar</button>
       <button type="button" class="btn btn-accent" id="personSave" style="flex:1">Guardar persona</button>
+    </div>
+  </div>
+</div>
+
+<!-- FABs flotantes: visible solo durante viewCapture -->
+<div class="capture-float">
+  <button type="button" class="capture-fab" id="captureFabTheme" title="Cambiar tema">🌙</button>
+  <button type="button" class="capture-fab" id="captureFabMenu" title="Menú / Salir">⚙️</button>
+</div>
+
+<!-- Modal: salir de captura -->
+<div class="overlay" id="captureExitModal">
+  <div class="modal" style="max-width:340px">
+    <div class="modal-head"><h3>¿Salir de la captura?</h3><button type="button" class="close-x" id="captureExitClose">×</button></div>
+    <div class="modal-body">
+      <p style="font-size:.9rem;color:var(--text-soft)">Los datos no guardados se perderán. ¿A dónde quieres ir?</p>
+      <div class="btn-row" style="margin-top:16px;flex-direction:column;gap:10px">
+        <button type="button" class="btn btn-ghost" id="capExitHome">🏠 Ir a Inicio</button>
+        <button type="button" class="btn btn-ghost" id="capExitHistory">🗂️ Ir a Historial</button>
+        <button type="button" class="btn btn-ghost" id="capExitHelp">❓ Ir a Ayuda</button>
+      </div>
+    </div>
+    <div class="modal-foot" style="justify-content:flex-end">
+      <button type="button" class="btn btn-accent" id="capExitCancel">Seguir capturando</button>
     </div>
   </div>
 </div>
