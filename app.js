@@ -91,7 +91,7 @@ function initHomeMascot(){
   v.autoplay=true;v.loop=true;v.muted=true;
   v.setAttribute('playsinline','');
   v.className='mascot state-idle';
-  v.style.height='110px';v.style.width='auto';
+  v.style.cssText='width:100%;height:100%;object-fit:contain';
   v.dataset.mst='idle';v.dataset.state='idle';
   v.src='./mascota/idle.mp4';
   wrap.appendChild(v);
@@ -185,6 +185,8 @@ var timerInterval=null;
 var timerStartedAt=null;
 var timerWasPaused=false;
 var timerPauseCount=0;
+// tiempo real desde inicio de captura (ignora pausas del contador visual)
+function realElapsed(){return timerStartedAt?Math.round((Date.now()-timerStartedAt)/1000):timerElapsed;}
 
 function timerFmt(s){
   var m=Math.floor(s/60),sc=s%60;
@@ -242,7 +244,7 @@ function startTimer(){
     if(timerState!=='running')return;
     timerElapsed++;timerRemaining=Math.max(0,timerLimit-timerElapsed);
     updateTimerUI();
-    if(timerRemaining===0){timerState='expired';clearInterval(timerInterval);timerInterval=null;}
+    if(timerRemaining===0){timerState='expired';clearInterval(timerInterval);timerInterval=null;updateTimerUI();}
   },1000);
 }
 function pauseTimer(){
@@ -259,7 +261,7 @@ function resumeTimer(){
     if(timerState!=='running')return;
     timerElapsed++;timerRemaining=Math.max(0,timerLimit-timerElapsed);
     updateTimerUI();
-    if(timerRemaining===0){timerState='expired';clearInterval(timerInterval);timerInterval=null;}
+    if(timerRemaining===0){timerState='expired';clearInterval(timerInterval);timerInterval=null;updateTimerUI();}
   },1000);
   var pb=$('btnPausarTimer');if(pb)pb.textContent='⏸ Pausar';
   updateTimerUI();
@@ -1245,8 +1247,9 @@ function calcularEstrellas(){
   function ok(id){return siOn(id)||naOn(id)||($(id)&&$(id).value.trim()!=='');}
   function okNum(id){return siOn(id)||naOn(id)||numVal(id)!=null;}
 
-  // ⭐ 1: velocidad ≤ 5 min
-  var s1=timerElapsed>0&&timerElapsed<=300;
+  // ⭐ 1: velocidad ≤ 5 min (tiempo real, no el countdown pausable)
+  var re=realElapsed();
+  var s1=re>0&&re<=300;
 
   // ⭐ 2: datos esenciales
   var falt2=[];
@@ -1549,8 +1552,9 @@ function generar(){
   $('outputArea').style.display='block';
 
   // guardar en historial
-  lastCaptureId=saveCapture(md,estatus,falt,estrellas.count,estrellas.quality,timerElapsed);
-  if(asesorActivo)updateAsesorStats(asesorActivo.id,estrellas,timerElapsed);
+  var re=realElapsed();
+  lastCaptureId=saveCapture(md,estatus,falt,estrellas.count,estrellas.quality,re);
+  if(asesorActivo)updateAsesorStats(asesorActivo.id,estrellas,re);
   sndSuccess();
   mostrarResultado(estrellas);
 }
@@ -1607,7 +1611,8 @@ function launchConfetti(){
 
 function mostrarResultado(strs){
   $('resPropName').textContent=nombreBase();
-  var elapsedFmt=timerElapsed>0?timerFmt(timerElapsed):'sin cronómetro';
+  var re=realElapsed();
+  var elapsedFmt=re>0?timerFmt(re):'sin cronómetro';
   $('resMeta').textContent=($('f_resp').value||'Asesor')+' · '+elapsedFmt+' · '+$('f_fecha').value;
 
   // badge de calidad
@@ -1617,7 +1622,7 @@ function mostrarResultado(strs){
   qBadge.className='res-quality-badge res-q-'+(strs.quality||'').toLowerCase();
 
   // detalle de cada estrella
-  var s1Txt=strs.s1?'¡En '+timerFmt(timerElapsed)+' (≤ 5 min)!':'No alcanzó 5 min'+(timerElapsed>0?' ('+timerFmt(timerElapsed)+')':' — sin cronómetro')+'.';
+  var s1Txt=strs.s1?'¡En '+timerFmt(re)+' (≤ 5 min)!':'No alcanzó 5 min'+(re>0?' ('+timerFmt(re)+')':' — sin cronómetro')+'.';
   var s2Txt=strs.s2?'Todos los campos esenciales completos.':'Faltan: '+strs.falt2.slice(0,4).join(', ')+(strs.falt2.length>4?' y '+(strs.falt2.length-4)+' más':'')+'.';
   var s3Txt=strs.s3?'¡Excelente, captura íntegra!':(!strs.s2?'Completa primero los datos esenciales.':(strs.falt3Extra.length?'Falta: '+strs.falt3Extra.slice(0,3).join(', ')+'.':'Revisa todos los campos.'));
   $('resStarsDetail').innerHTML=

@@ -188,8 +188,8 @@ pre{background:#fbfbfa;border:1px solid var(--line);border-radius:6px;padding:16
 .mascot[data-state="idle"]        {filter:brightness(1.0);}
 .mascot[data-state="walking"]     {filter:brightness(1.0);}
 .mascot[data-state="jogging"]     {filter:brightness(1.2);}
-.mascot[data-state="running"]     {filter:brightness(1.25);}
-.mascot[data-state="sad"]         {filter:brightness(1.5);}
+.mascot[data-state="running"]     {filter:brightness(1.6);}
+.mascot[data-state="sad"]         {filter:brightness(1.8) saturate(1.2) contrast(0.9);}
 .mascot[data-state="celebrating"] {filter:brightness(1.0);}
 /* ring (ready mode) */
 .timer-ring-wrap{position:relative;width:90px;height:90px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
