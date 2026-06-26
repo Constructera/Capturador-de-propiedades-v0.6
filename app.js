@@ -18,7 +18,7 @@ function save(k,v){try{localStorage.setItem('cap_'+k,JSON.stringify(v));}catch(e
   function applyTheme(dark){
     document.documentElement.setAttribute('data-theme',dark?'dark':'light');
     var meta=document.querySelector('meta[name="theme-color"]');
-    if(meta)meta.content=dark?'#1a1a1a':'#2e6f40';
+    if(meta)meta.content=dark?'#1a1a1a':'#27a048';
     save('theme',dark?'dark':'light');
     // ícono = modo destino (🌙 para ir a dark, ☀️ para ir a light)
     var icon=dark?'☀️':'🌙';
