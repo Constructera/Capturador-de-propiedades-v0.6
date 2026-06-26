@@ -1680,7 +1680,7 @@ $('resBtnOtra').addEventListener('click',function(){doReset();showView('viewCapt
 $('resBtnCompletar').addEventListener('click',function(){showView('viewCapture');window.scrollTo({top:0,behavior:'smooth'});});
 
 /* ===================== RANKING — FASE 6 ===================== */
-function repStar(n){var s='';for(var i=0;i<Math.min(n,9);i++)s+='⭐';return s+(n>9?'+':'');}
+function repStar(n){return (n||0)+' ⭐';}
 
 function sortAsesores(lista){
   return lista.slice().sort(function(a,b){
