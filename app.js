@@ -58,6 +58,15 @@ function showView(id){
   if(id==='viewLeaderboard')renderRanking();
   if(id==='viewContact'){renderCtHist();if(asesorActivo&&$('ct_asesor'))$('ct_asesor').value=asesorActivo.nombre||CFG.resp||'';}
   if(id==='viewCapture')updateProgress();
+  if(id==='viewHome')initHomeMascot();
+}
+function initHomeMascot(){
+  var wrap=$('homeMascotWrap');if(!wrap||wrap.hasChildNodes())return;
+  var src=$('mascotSvg');if(!src)return;
+  var c=src.cloneNode(true);
+  c.removeAttribute('id');c.style.height='110px';c.style.width='auto';
+  c.setAttribute('class','mascot state-idle');
+  wrap.appendChild(c);
 }
 
 /* ===================== MÓDULO DE ASESORES ===================== */
@@ -714,7 +723,7 @@ function renderCaractTerr(){
   _renderCaractPool(function(){return CAR_TERR;},state.caractTerr,'caractTerrChips','btnCaractTerrMas',caractTerrExpanded,renderCaractTerr);
 }
 $('btnCaractTerrMas').addEventListener('click',function(){caractTerrExpanded=!caractTerrExpanded;renderCaractTerr();});
-renderCaract();renderCaractTerr();renderCRM();
+renderCaract();renderCaractTerr();renderCRM();initHomeMascot();
 
 /* ===================== S/I + N/A ===================== */
 document.querySelectorAll('.si-btn').forEach(function(b){
@@ -1002,7 +1011,7 @@ $('f_direccion').addEventListener('input',function(){
   refreshDrive();updateProgress();
   var q=$('f_direccion').value.trim();clearTimeout(sugTimer);
   if(q.length<5){$('dirSuggest').style.display='none';return;}
-  sugTimer=setTimeout(function(){buscarDireccion(q);},650);
+  sugTimer=setTimeout(function(){buscarDireccion(q);},300);
 });
 function buscarDireccion(q){
   fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=mx&accept-language=es&q='+encodeURIComponent(q+' Cuernavaca'))

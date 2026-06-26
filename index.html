@@ -17,6 +17,7 @@
 
 <!-- ===================== VISTA: HOME ===================== -->
 <main id="viewHome" class="view active">
+  <div id="homeMascotWrap" style="text-align:center;padding:20px 0 4px"></div>
   <div class="home-header">
     <div class="home-title">Capturadora Hauser</div>
     <span class="ver-badge">v0.5</span>
@@ -88,7 +89,6 @@
     <button type="button" class="btn" id="btnCancelEdit">Cancelar edición</button>
   </div>
   <div class="doc-title">📥 Captura de propiedad</div>
-  <div class="doc-sub">Hauser · alimenta la base 🏠 Propiedades y bases relacionadas</div>
 
   <div id="btnLimpiarWrap" style="display:none;margin:8px 0 2px">
     <button type="button" class="btn btn-danger chip-sm" id="btnLimpiarDatos">🧹 Limpiar datos</button>
@@ -513,15 +513,6 @@
     <textarea id="f_riesgos" placeholder="Uno por línea."></textarea></div>
   <div class="field"><div class="field-top"><label>Notas de campo</label></div>
     <textarea id="f_notas" placeholder="Entorno, vecinos, urgencia del vendedor, contexto…"></textarea></div>
-  <div class="field">
-    <div class="field-top"><label>Carpeta de fotos en Drive</label></div>
-    <input type="text" id="f_drive" placeholder="Se sugiere sola">
-    <div class="btn-row">
-      <button type="button" class="btn" id="btnDrive">📁 Crear / confirmar carpeta</button>
-      <button type="button" class="btn" id="btnFotos" disabled>📷 Subir fotos</button>
-    </div>
-    <div class="status" id="driveStatus"></div>
-  </div>
 
   <!-- 9 CRM -->
   <h2>Personas involucradas / CRM</h2>
@@ -533,6 +524,17 @@
     </div>
   </div>
   <div id="crmCards"></div>
+
+  <!-- FOTOS / DRIVE (pendiente de conexión) -->
+  <div class="field" style="margin-top:4px;opacity:.6">
+    <div class="field-top"><label>📸 Fotos en Drive <span class="h-hint">pendiente — configura el endpoint para activar</span></label></div>
+    <input type="text" id="f_drive" placeholder="Se sugiere sola">
+    <div class="btn-row">
+      <button type="button" class="btn" id="btnDrive">📁 Crear carpeta</button>
+      <button type="button" class="btn" id="btnFotos" disabled>📷 Subir fotos</button>
+    </div>
+    <div class="status" id="driveStatus"></div>
+  </div>
 
   <!-- ACCIONES -->
   <div class="actions">
