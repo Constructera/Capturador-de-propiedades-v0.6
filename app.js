@@ -894,8 +894,8 @@ function autoFillComisionRenta(){
   inp.value=rv!=null?(fmt(rv)+' MXN'):'';
 }
 
-/* ===================== ZONA / COLONIA — chip cloud single-select ===================== */
-var zonasSel=[];  // [{n:'Nombre', nueva:bool}] — máx 1 elemento
+/* ===================== ZONA / COLONIA — chip cloud multi-select ===================== */
+var zonasSel=[];  // [{n:'Nombre', nueva:bool}] — multi-select, sin límite
 var zonaExpanded=false;
 var ZONA_TOP=20;
 
@@ -910,7 +910,11 @@ function renderZonaChips(){
     var b=document.createElement('button');b.type='button';b.className='chip chip-sm';b.textContent=z.n;b.dataset.v=z.n;
     b.classList.toggle('sel',zonasSel.some(function(s){return s.n===z.n;}));
     b.addEventListener('click',function(){
-      zonasSel=zonasSel.some(function(s){return s.n===z.n;})?[]:[{n:z.n,nueva:!!(z.nueva)}];
+      if(zonasSel.some(function(s){return s.n===z.n;})){
+        zonasSel=zonasSel.filter(function(s){return s.n!==z.n;});
+      }else{
+        zonasSel.push({n:z.n,nueva:!!(z.nueva)});
+      }
       renderZonaChips();updateHintZona();updateProgress();
     });
     return b;
@@ -927,18 +931,23 @@ function addZonaCaptura(){
   var v=inp.value.trim();if(!v)return;
   var isNueva=zonasAll().every(function(z){return z.n.toLowerCase()!==v.toLowerCase();});
   if(isNueva)addZonaToLocal(v);
-  zonasSel=[{n:v,nueva:isNueva}];
+  if(!zonasSel.some(function(s){return s.n.toLowerCase()===v.toLowerCase();})){
+    zonasSel.push({n:v,nueva:isNueva});
+  }
   inp.value='';renderZonaChips();updateHintZona();updateProgress();
 }
 $('btnZonaAdd').addEventListener('click',addZonaCaptura);
 $('f_zona_extra').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addZonaCaptura();}});
 function updateHintZona(){
   var h=$('zonaHint');if(!h)return;
-  h.textContent=zonasSel.some(function(z){return z.nueva;})?'Zona nueva (*): el markdown instruirá crearla en 📍 Zonas.':'';
+  var nuevas=zonasSel.filter(function(z){return z.nueva;});
+  h.textContent=nuevas.length?'Zona'+(nuevas.length>1?'s nuevas (*)':' nueva (*)')+': el markdown instruirá crearlas en 📍 Zonas.':'';
 }
 function pickZona(n,nueva){
   if(!n)return;
-  zonasSel=[{n:n,nueva:!!nueva}];
+  if(!zonasSel.some(function(s){return s.n===n;})){
+    zonasSel.push({n:n,nueva:!!nueva});
+  }
   renderZonaChips();updateHintZona();updateProgress();
 }
 function zonaVal(){return zonasSel.length?zonasSel[0].n:'S/I';}
@@ -1459,7 +1468,7 @@ function generar(){
   else{operArr=[state.oper];}
   var operStr=operArr.join(', ');
 
-  var zonasStr=zonasArr.length?zonasArr.map(function(z){return z.n;}).join(' / '):'S/I';
+  var zonasStr=zonasArr.length?zonasArr.map(function(z){return z.n+(z.nueva?'*':'');}).join(', '):'S/I';
   var zonasNota=zonasArr.length?zonasArr.map(function(z){return z.n+(z.nueva?' [CREAR y relacionar]':' [buscar y relacionar]');}).join('; '):'S/I';
 
   md+=row('Propiedad','Title',cell(nombre))+'\n';
@@ -1740,8 +1749,9 @@ function mostrarResultado(strs){
     },(i+1)*420);
   });
 
-  // confetti con 3 estrellas
+  // confetti con 3 estrellas; sonido de fallo con 0
   if(strs.count===3)setTimeout(launchConfetti,1380);
+  if(strs.count===0)setTimeout(function(){sndError();},1000);
 }
 
 /* listeners pantalla de resultado */
