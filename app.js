@@ -575,17 +575,18 @@ $('personSave').addEventListener('click',function(){
 
 /* ===================== CARACTERÍSTICAS por tipo ===================== */
 var CAR_CASA=[
-  'Alberca','Terraza','Jardín privado','Roof garden','Balcón','Patio privado','Área de BBQ',
-  'Juegos infantiles','Parque privado','Amenidades completas',
-  'Cocina integral','Cocina americana','Isla de cocina','Clóset vestidor','Recámara en PB',
-  'Recámara principal amplia','Baño en suite','Jacuzzi','Sauna',
-  'Cuarto de servicio','Cuarto de lavado','Estudio / home office','Sala de cine',
-  'Bodega','Elevador','Doble altura','Iluminación natural','Ventilación natural',
-  'Vista panorámica','Vista al jardín','Vista a la montaña',
-  'Paneles solares','Cisterna propia','Gas natural','Internet de fibra','Domótica',
-  'Portón automático','Acceso controlado','Vigilancia 24h','Cámaras de seguridad','Videoportero',
-  'En condominio','Áreas comunes','Gimnasio','Salón de eventos','Coworking en amenidades',
-  'Cochera techada','Acabados de lujo','Pisos de madera','Amueblada','Acepta mascotas','Nueva'
+  // Top 30 — visibles por defecto
+  'Alberca','Jardín privado','Terraza','Vigilancia 24h','Acceso controlado',
+  'Cocina integral','Amenidades completas','Estacionamiento techado','Cuarto de servicio','Estudio / home office',
+  'Acepta mascotas','Elevador','Balcón','Roof garden','Clóset vestidor',
+  'Recámara en PB','Cuarto de lavado','Cámaras de seguridad','Bodega','Jacuzzi',
+  'Área de BBQ / asador','Iluminación natural','Ventilación natural','Vista panorámica','Juegos infantiles',
+  'Salón de eventos','Gimnasio','Paneles solares','Cisterna propia','Acabados de lujo',
+  // Siguientes 21 — colapsados bajo "Ver más"
+  'Cocina americana','Isla de cocina','Recámara principal amplia','Baño en suite','Patio privado',
+  'Vista al jardín','En condominio','Áreas comunes','Coworking en amenidades','Parque privado / pet park',
+  'Videoportero','Portón automático','Domótica','Internet de fibra','Doble altura',
+  'Pisos de madera','Vista a la montaña','Sauna / vapor','Amueblada','Nueva','Gas instalado'
 ];
 var CAR_TERR=[
   'Plano','Gran frente','Frente amplio','Esquina','Doble esquina','Dos accesos','Forma regular',
@@ -620,35 +621,79 @@ function poolFor(){
   if(['Local comercial','Oficina','Bodega'].indexOf(state.tipo)!==-1)return CAR_LOCAL;
   return CAR_CASA;
 }
-var carShown=6;
-function buildCaract(){carShown=6;renderCaract();}
+var CARACT_TOP=30;
+var caractExpanded=false;
+var caractTerrExpanded=false;
+var CARACT_ALIASES={
+  'seguridad privada':'Vigilancia 24h','guardia':'Vigilancia 24h','vigilancia 24/7':'Vigilancia 24h',
+  'control de acceso':'Acceso controlado','filtro de acceso':'Acceso controlado',
+  'estacionamiento':'Estacionamiento techado',
+  'pet friendly':'Acepta mascotas','permite mascotas':'Acepta mascotas',
+  'walking closet':'Clóset vestidor','vestidor':'Clóset vestidor',
+  'baño propio':'Baño en suite','baño en recámara':'Baño en suite',
+  'asador':'Área de BBQ / asador','parrilla':'Área de BBQ / asador','grill':'Área de BBQ / asador',
+  'celdas solares':'Paneles solares','fotovoltaicos':'Paneles solares',
+  'fibra óptica':'Internet de fibra'
+};
+function normalizeCaract(arr){
+  return arr.map(function(c){return CARACT_ALIASES[c.toLowerCase()]||c;});
+}
+function buildCaract(){caractExpanded=false;renderCaract();}
+
+function _renderCaractPool(poolFn,selArr,chipsEl,btnMasId,expanded,refreshFn){
+  var pool=poolFn();
+  var chips=$(chipsEl);chips.innerHTML='';
+  // Top CARACT_TOP — unselected only
+  pool.slice(0,CARACT_TOP).forEach(function(c){
+    if(selArr.indexOf(c)>=0)return;
+    var b=document.createElement('button');b.type='button';b.className='chip chip-sm';b.textContent=c;
+    b.addEventListener('click',function(){selArr.push(c);refreshFn();updateProgress();});
+    chips.appendChild(b);
+  });
+  // Hidden zone selected — always visible as .sel chips (clickable to deselect)
+  pool.slice(CARACT_TOP).forEach(function(c){
+    if(selArr.indexOf(c)<0)return;
+    var b=document.createElement('button');b.type='button';b.className='chip chip-sm sel';b.textContent=c;
+    b.addEventListener('click',function(){
+      var idx=selArr.indexOf(c);if(idx>=0)selArr.splice(idx,1);
+      refreshFn();updateProgress();
+    });
+    chips.appendChild(b);
+  });
+  // Hidden zone unselected — only when expanded
+  if(expanded){
+    pool.slice(CARACT_TOP).forEach(function(c){
+      if(selArr.indexOf(c)>=0)return;
+      var b=document.createElement('button');b.type='button';b.className='chip chip-sm';b.textContent=c;
+      b.addEventListener('click',function(){selArr.push(c);refreshFn();updateProgress();});
+      chips.appendChild(b);
+    });
+  }
+  // Update Ver más button text
+  var btn=$(btnMasId);if(btn)btn.textContent=expanded?'Ver menos ↑':'Ver más ↓';
+}
+
 function renderCaract(){
-  // tags seleccionados
+  state.caract=normalizeCaract(state.caract);
+  // Tags seleccionados
   var tags=$('caractTags');tags.innerHTML='';
   state.caract.forEach(function(c){
     var t=document.createElement('span');t.className='tag';t.appendChild(document.createTextNode(c));
     var x=document.createElement('button');x.type='button';x.textContent='✕';
-    x.addEventListener('click',function(){state.caract=state.caract.filter(function(v){return v!==c;});renderCaract();});
+    x.addEventListener('click',function(){state.caract=state.caract.filter(function(v){return v!==c;});renderCaract();updateProgress();});
     t.appendChild(x);tags.appendChild(t);
   });
-  // chips sugeridos (los del pool no seleccionados)
-  var pool=poolFor().filter(function(c){return state.caract.indexOf(c)===-1;});
-  var chips=$('caractChips');chips.innerHTML='';
-  pool.slice(0,carShown).forEach(function(c){
-    var b=document.createElement('button');b.type='button';b.className='chip chip-sm';b.textContent=c;
-    b.addEventListener('click',function(){state.caract.push(c);renderCaract();updateProgress();});
-    chips.appendChild(b);
-  });
+  _renderCaractPool(poolFor,state.caract,'caractChips','btnCaractMas',caractExpanded,renderCaract);
 }
 function addCaract(c){if(c&&state.caract.indexOf(c)===-1){state.caract.push(c);renderCaract();}}
-$('btnCaractMas').addEventListener('click',function(){carShown+=6;renderCaract();});
-$('btnCaractRefresh').addEventListener('click',function(){carShown=6;renderCaract();});
+$('btnCaractMas').addEventListener('click',function(){caractExpanded=!caractExpanded;renderCaract();});
+$('btnCaractRefresh').addEventListener('click',function(){caractExpanded=false;renderCaract();});
 $('f_caract_buscar').addEventListener('keydown',function(e){
   if(e.key==='Enter'){e.preventDefault();var v=this.value.trim();if(v){addCaract(v);this.value='';updateProgress();}}
 });
 $('f_caract_buscar').addEventListener('input',function(){
   var q=this.value.trim().toLowerCase();if(!q){renderCaract();return;}
-  var pool=poolFor().filter(function(c){return state.caract.indexOf(c)===-1 && c.toLowerCase().indexOf(q)!==-1;});
+  var pool=poolFor().filter(function(c){return state.caract.indexOf(c)===-1&&c.toLowerCase().indexOf(q)!==-1;});
   var chips=$('caractChips');chips.innerHTML='';
   pool.forEach(function(c){
     var b=document.createElement('button');b.type='button';b.className='chip chip-sm';b.textContent=c;
@@ -658,7 +703,6 @@ $('f_caract_buscar').addEventListener('input',function(){
 });
 
 /* características de terreno (sección aparte) */
-var carTerrShown=8;
 function renderCaractTerr(){
   var tags=$('caractTerrTags');tags.innerHTML='';
   state.caractTerr.forEach(function(c){
@@ -667,15 +711,9 @@ function renderCaractTerr(){
     x.addEventListener('click',function(){state.caractTerr=state.caractTerr.filter(function(v){return v!==c;});renderCaractTerr();});
     t.appendChild(x);tags.appendChild(t);
   });
-  var pool=CAR_TERR.filter(function(c){return state.caractTerr.indexOf(c)===-1;});
-  var chips=$('caractTerrChips');chips.innerHTML='';
-  pool.slice(0,carTerrShown).forEach(function(c){
-    var b=document.createElement('button');b.type='button';b.className='chip chip-sm';b.textContent=c;
-    b.addEventListener('click',function(){state.caractTerr.push(c);renderCaractTerr();});
-    chips.appendChild(b);
-  });
+  _renderCaractPool(function(){return CAR_TERR;},state.caractTerr,'caractTerrChips','btnCaractTerrMas',caractTerrExpanded,renderCaractTerr);
 }
-$('btnCaractTerrMas').addEventListener('click',function(){carTerrShown+=8;renderCaractTerr();});
+$('btnCaractTerrMas').addEventListener('click',function(){caractTerrExpanded=!caractTerrExpanded;renderCaractTerr();});
 renderCaract();renderCaractTerr();renderCRM();
 
 /* ===================== S/I + N/A ===================== */
