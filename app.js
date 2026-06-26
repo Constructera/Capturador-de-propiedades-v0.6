@@ -60,13 +60,35 @@ function showView(id){
   if(id==='viewCapture')updateProgress();
   if(id==='viewHome')initHomeMascot();
 }
+var MASCOT_SRC={
+  'idle':       './mascota/idle.mp4',
+  'dancing':    './mascota/walking.mp4',
+  'focused':    './mascota/jogging.mp4',
+  'angry':      './mascota/running.mp4',
+  'sad':        './mascota/sad.mp4',
+  'expired':    './mascota/sad.mp4',
+  'celebrating':'./mascota/walking.mp4'
+};
+function _setMascotVideo(v,st){
+  if(!v)return;
+  v.setAttribute('class','mascot state-'+st);
+  var src=MASCOT_SRC[st]||MASCOT_SRC['idle'];
+  if(v.dataset.mst!==st){
+    v.dataset.mst=st;
+    v.src=src;v.load();v.play().catch(function(){});
+  }
+}
 function initHomeMascot(){
   var wrap=$('homeMascotWrap');if(!wrap||wrap.hasChildNodes())return;
-  var src=$('mascotSvg');if(!src)return;
-  var c=src.cloneNode(true);
-  c.removeAttribute('id');c.style.height='110px';c.style.width='auto';
-  c.setAttribute('class','mascot state-idle');
-  wrap.appendChild(c);
+  var v=document.createElement('video');
+  v.autoplay=true;v.loop=true;v.muted=true;
+  v.setAttribute('playsinline','');
+  v.className='mascot state-idle';
+  v.style.height='110px';v.style.width='auto';
+  v.dataset.mst='idle';
+  v.src='./mascota/idle.mp4';
+  wrap.appendChild(v);
+  v.play().catch(function(){});
 }
 
 /* ===================== MÓDULO DE ASESORES ===================== */
@@ -166,14 +188,8 @@ function setTimerArc(rem,lim){
   var pct=lim>0?rem/lim:0;
   arc.style.strokeDashoffset=TIMER_C*(1-Math.max(0,Math.min(1,pct)));
 }
-function setMascotState(st){
-  var svg=$('mascotSvg');if(!svg)return;
-  svg.setAttribute('class','mascot state-'+st);
-}
-function setResMascotState(st){
-  var svg=$('resMascotSvg');if(!svg)return;
-  svg.setAttribute('class','mascot state-'+st);
-}
+function setMascotState(st){_setMascotVideo($('mascotSvg'),st);}
+function setResMascotState(st){_setMascotVideo($('resMascotSvg'),st);}
 function updateTimerUI(){
   var d=$('timerDisplay');if(d)d.textContent=timerFmt(timerRemaining);
   setTimerArc(timerRemaining,timerLimit);

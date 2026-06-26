@@ -47,3 +47,16 @@ referencial y evitar campos huérfanos:
 ## Pendientes abiertos (no decidir solo)
 - Conflicto de código PROP-3 (terreno) vs regla TERR-.
 - Si los campos nuevos de terreno van como propiedades de Notion o en Notas.
+
+## Animaciones MP4 de la mascota (para Fase 7)
+Ruta de los archivos: D:\respaldo\TODO EN UNO\1.-ESCRITORIO\ESCRITORIO\CLAUDE\Mascota
+Archivos MP4 disponibles y su mapeo a estados:
+- "Idle.mp4"        -> estado idle (esperando)
+- "1 caminando.mp4" -> estado walking-happy (>5 min) Y TAMBIEN se usa como celebrating (no hay animacion de celebracion propia)
+- "2 apurado.mp4"   -> estado jogging-focused (2-5 min)
+- "3 nervioso.mp4"  -> estado running-urgent (<2 min)
+- "4 cansado.mp4"   -> estado sad / expired (tiempo agotado / 0 estrellas)
+Notas:
+- NO existe animacion de celebracion; usar "1 caminando.mp4" para celebrating.
+- Los MP4 NO tienen fondo transparente; en Fase 7 evaluar conversion a WebM con alpha (ffmpeg) o aceptar recuadro.
+- Mapeo de estados de resultado: 2-3 estrellas -> celebrating (1 caminando), 1 estrella -> idle, 0 estrellas -> sad (4 cansado).
