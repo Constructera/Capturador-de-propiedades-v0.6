@@ -2058,7 +2058,7 @@ $('cfg_resp').addEventListener('change',function(){
   var found=lista.filter(function(a){return a.nombre===n;})[0];
   if(found){asesorActivo=found;save('asesor_activo',found);var badge=$('asesorBadge');if(badge)badge.textContent='👤 '+n;}
 });
-$('cfg_drive').addEventListener('input',function(){CFG.drive=this.value;save('cfg',CFG);refreshDrive();});
+// cfg_drive removed (Drive feature not implemented)
 $('cfg_endpoint').addEventListener('input',function(){CFG.endpoint=this.value.trim();save('cfg',CFG);});
 $('cfg_test').addEventListener('click',function(){
   if(!CFG.endpoint){$('cfgStatus').textContent='Pega primero el endpoint.';return;}
@@ -2110,9 +2110,8 @@ function doReset(){
   document.querySelectorAll('.si-btn').forEach(function(b){b.classList.remove('active');});
   document.querySelectorAll('.na-btn').forEach(function(b){b.classList.remove('active');});
   document.querySelectorAll('#viewCapture .chip').forEach(function(c){c.classList.remove('sel');});
-  state={tipo:'',oper:'Venta',ofrece:'',crm:'No',modo:'A · Reventa de lote',driveShare:'Sí, carpeta común',serv:[],caract:[],caractTerr:[],lat:null,lng:null,people:[],editId:null,rentaMin:''};
+  state={tipo:'',oper:'Venta',ofrece:'',crm:'No',modo:'A · Reventa de lote',serv:[],caract:[],caractTerr:[],lat:null,lng:null,people:[],editId:null,rentaMin:''};
   setChip('operChips','oper','Venta',onOper);setChip('modoChips','modo','A · Reventa de lote');
-  setChip('driveShareChips','driveShare','Sí, carpeta común');
   setChip('crmChips','crm','No');
   buildCaract();renderCaractTerr();renderCRM();
   $('f_unidades').value=1;$('f_comision').value='4%';if(asesorActivo)syncAsesor();else $('f_resp').value=CFG.resp;
@@ -2121,9 +2120,8 @@ function doReset(){
   $('f_fuente').value='Recorrido/Scouteo';$('boxFuenteOtra').style.display='none';
   ['unitsBox','terrenoExtra','dirSuggest','zonaSuggest'].forEach(function(id){$(id).style.display='none';});
   document.querySelectorAll('[data-construccion]').forEach(function(el){el.style.display='';});
-  ['n_precio','n_precio_renta','n_m2t','n_m2c','geoStatus','anuncioStatus','aiStatus','driveStatus','estatusHint'].forEach(function(id){$(id).textContent='';});
-  delete $('f_drive').dataset.manual;refreshDrive();
-  $('outputArea').style.display='none';$('btnFotos').disabled=true;
+  ['n_precio','n_precio_renta','n_m2t','n_m2c','geoStatus','anuncioStatus','aiStatus','estatusHint'].forEach(function(id){var e=$(id);if(e)e.textContent='';});
+  $('outputArea').style.display='none';
   resetTimerToReady();
   // Limpiar modo edición
   var eb=$('editBanner');if(eb)eb.style.display='none';
@@ -2160,7 +2158,6 @@ function restoreForm(snap){
   if(snap._state){var s=snap._state;
     state.tipo=s.tipo||'';state.oper=s.oper||'Venta';state.ofrece=s.ofrece||'';
     state.crm=s.crm||'No';state.modo=s.modo||'A · Reventa de lote';
-    state.driveShare=s.driveShare||'Sí, carpeta común';
     state.serv=s.serv||[];state.caract=s.caract||[];state.caractTerr=s.caractTerr||[];
     state.lat=s.lat||null;state.lng=s.lng||null;state.people=s.people||[];
     state.rentaMin=s.rentaMin||'';state.anuncioUrl=s.anuncioUrl||'';
@@ -2170,7 +2167,6 @@ function restoreForm(snap){
   if(state.ofrece)setChip('ofreceChips','ofrece',state.ofrece,onOfrece);
   setChip('crmChips','crm',state.crm||'No');
   if(state.modo)setChip('modoChips','modo',state.modo);
-  if(state.driveShare)setChip('driveShareChips','driveShare',state.driveShare);
   if(state.rentaMin)setChip('rentaMinChips','rentaMin',state.rentaMin);
   Object.keys(snap).forEach(function(k){
     if(k.startsWith('_'))return;
@@ -2184,7 +2180,7 @@ function restoreForm(snap){
   });
   if(snap._zonasSel){zonasSel=snap._zonasSel.slice();renderZonasTags();updateHintZona();}
   buildCaract();renderCaractTerr();renderCRM();
-  refreshDrive();updateProgress();
+  updateProgress();
 }
 function abrirEdicion(id){
   var h=getHist();var rec=h.filter(function(r){return r.id===id;})[0];
@@ -2197,7 +2193,7 @@ function abrirEdicion(id){
     if(rec.tipo)setChip('tipoChips','tipo',rec.tipo,onTipo);
     if(rec.oper)setChip('operChips','oper',rec.oper,onOper);
     if(rec.estatus)$('f_estatus').value=rec.estatus;
-    if(rec.zona&&rec.zona!=='S/I'){var zn=rec.zona.split(' / ');zn.forEach(function(n){addZona(n.trim(),false);});}
+    if(rec.zona&&rec.zona!=='S/I'){var zn=rec.zona.split(' / ');zn.forEach(function(n){pickZona(n.trim(),false);});}
   }
   var eb=$('editBanner');var ebn=$('editBannerNombre');
   if(eb){eb.style.display='';if(ebn)ebn.textContent=rec.nombre||'(sin nombre)';}
@@ -2344,6 +2340,8 @@ function renderCtZonaChips(){
   var wrap=$('ctZonasInteresChips');if(!wrap)return;
   wrap.innerHTML='';
   var zonas=zonasAll().sort(function(a,b){return(b.uses||0)-(a.uses||0);});
+  var knownNamesLow=zonas.map(function(z){return z.n.toLowerCase();});
+  ctState.zonasInteres.forEach(function(n){if(knownNamesLow.indexOf(n.toLowerCase())<0)zonas.push({n:n,uses:0,last:0});});
   zonas.forEach(function(z){
     var b=document.createElement('button');b.type='button';
     b.className='chip chip-sm';b.textContent=z.n;b.dataset.v=z.n;
@@ -2470,8 +2468,10 @@ function genContact(){
 
   if(esCom){
     var zonasBusca=ctState.zonasInteres.slice();
-    if(ctVal('ct_zona_interes_extra'))zonasBusca.push(ctVal('ct_zona_interes_extra')+'*');
-    var zonasBuscaStr=zonasBusca.length?zonasBusca.join(' / '):'S/I';
+    var extraZonaInt=ctVal('ct_zona_interes_extra').trim();
+    if(extraZonaInt&&zonasBusca.indexOf(extraZonaInt)<0)zonasBusca.push(extraZonaInt);
+    var knownZonaNames=zonasAll().map(function(z){return z.n.toLowerCase();});
+    var zonasBuscaStr=zonasBusca.length?zonasBusca.map(function(z){return knownZonaNames.indexOf(z.toLowerCase())<0?z+'*':z;}).join(' / '):'S/I';
     md+='## Búsqueda\n| Campo | Valor |\n|---|---|\n';
     md+='| Presupuesto | '+ctSI(ctVal('ct_presupuesto'))+' |\n';
     md+='| Forma de pago | '+ctSI(ctState.formaPago.join(', '))+' |\n';
@@ -2483,7 +2483,7 @@ function genContact(){
     md+='| Ocupación | '+ctSI(ctVal('ct_ocupacion'))+' |\n';
     md+='| Urgencia | '+ctSI(ctState.urgencia)+' |\n';
     if(ctVal('ct_notas_busca'))md+='| Notas | '+ctVal('ct_notas_busca')+' |\n';
-    if(ctVal('ct_zona_interes_extra'))md+='\n> ⚠️ Zona "'+ctVal('ct_zona_interes_extra')+'" (marcada con *) — verificar si existe en 📍 Zonas o crear.\n';
+    zonasBusca.filter(function(z){return knownZonaNames.indexOf(z.toLowerCase())<0;}).forEach(function(z){md+='\n> ⚠️ Zona "'+z+'" (marcada con *) — verificar si existe en 📍 Zonas o crear.\n';});
     md+='\n';
   }
   if(esProp){
@@ -2593,6 +2593,17 @@ $('ctBtnReset').addEventListener('click',function(){
   if(!confirm('¿Limpiar el formulario de contacto?'))return;
   ctDoReset();
 });
+function ctAddZonaInteres(){
+  var inp=$('ct_zona_interes_extra');if(!inp)return;
+  var v=inp.value.trim();if(!v)return;
+  if(ctState.zonasInteres.indexOf(v)<0){ctState.zonasInteres.push(v);renderCtZonaChips();}
+  inp.value='';ctUpdateProgress();
+}
+(function(){
+  var btn=$('ctBtnZonaInteresAdd');if(btn)btn.addEventListener('click',ctAddZonaInteres);
+  var inp=$('ct_zona_interes_extra');
+  if(inp)inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();ctAddZonaInteres();}});
+})();
 function ctDoReset(){
   ['ct_nombre','ct_alias','ct_empresa','ct_puesto','ct_tel','ct_wa','ct_email',
    'ct_presupuesto','ct_zona_interes_extra','ct_tipo_busca','ct_zona_oper_extra','ct_tipo_ofrece',

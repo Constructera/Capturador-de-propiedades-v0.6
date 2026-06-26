@@ -18,6 +18,7 @@ Repo COPIA del estable. Aislado: no mezclar con otros proyectos.
 - Respetar las 16 decisiones de producto (sección 18 del prompt maestro).
 - Trabajar por fases. Pedir mi aprobación antes de cada fase grande.
 - No tocar el repo estable original. Esto es una copia.
+- **Los cambios estéticos NO deben modificar el funcionamiento de la capturadora.** Antes de aplicar cualquier cambio visual, verificar que todos los listeners JS siguen activos (especialmente los posteriores al bloque de configuración).
 
 ## Esquema destino: base de datos Notion 🏠 Propiedades
 El markdown que genera la app es la interfaz de salida hacia un agente Notion. DEBE
