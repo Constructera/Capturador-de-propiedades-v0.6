@@ -1388,17 +1388,13 @@ function generar(){
   var zonasArr=zonasSel.slice();var zona=zonaVal();var fuente=fuenteVal();var nombre=nombreBase();
   var nU=Math.max(1,parseInt($('f_unidades').value,10)||1);
 
-  // estrellas + estatus automático (Decisión 14)
+  // estrellas + estatus
   var estrellas=calcularEstrellas();
   var faltC=faltantesCompletitud();
-  var estatus=$('f_estatus').value;
-  if(estrellas.count===3){
-    estatus='Captada';$('f_estatus').value='Captada';
-    $('estatusHint').textContent='🌟 Captura completa (3 ⭐) → estatus: Captada.';
-  }else if(faltC.length&&estatus==='Captada'){
-    estatus='En análisis';$('f_estatus').value='En análisis';
-    $('estatusHint').textContent='Se ajustó a "En análisis" porque faltan datos mínimos.';
-  }
+  var estatusCaptura=estrellas.count===3?'Listo':(estrellas.count>=2?'En progreso':'Sin empezar');
+  var estatusProp=$('f_estatus').value||'Disponible';
+  if(estrellas.count===3)$('estatusHint').textContent='🌟 Captura completa (3 ⭐) → Estatus de captura: Listo.';
+  else if(faltC.length)$('estatusHint').textContent='Faltan datos: '+faltC.slice(0,3).join(', ')+(faltC.length>3?' …':'')+'.';
 
   var pv=conVenta?numCell('f_precio'):{val:null,pend:false,na:true};
   var pr=conRenta?numCell('f_precio_renta'):{val:null,pend:false,na:true};
@@ -1430,12 +1426,9 @@ function generar(){
 
   md+='## 1. Acción principal\n';
   if(nU>1){
-    md+='Crear **'+unidades.length+' páginas** en 🏠 Propiedades, una por unidad (no agrupar en una sola). Clonar los datos comunes de abajo y respetar los datos específicos de cada unidad.\n';
+    md+='Crear **'+unidades.length+' páginas** en 🏠 Propiedades, una por unidad (no agrupar en una sola). Clonar los datos comunes de abajo y respetar los datos específicos de cada unidad.\n\n';
   }else{
     md+='Crear **1 página** en 🏠 Propiedades con el nombre **'+nombre+'** (si ya existe una con esa dirección, actualizarla).\n\n';
-  }
-  if(conRenta){
-    md+='> ⚠️ **Campos nuevos en esta captura:** "Ganancia renta" y "Tiempo mínimo de renta" aún no existen en la base 🏠 Propiedades. Créalos antes de llenar sus filas (ver sección 2). Si el dueño prefiere no alterar el esquema, registrar estos datos en el campo Notas.\n\n';
   }
 
   md+='## 2. Campos de la base 🏠 Propiedades\n';
@@ -1460,37 +1453,44 @@ function generar(){
     notaNotionRow='';
   }
 
-  md+=row('Nombre','Title',cell(nombre))+'\n';
-  md+=row('Tipo de inmueble','Select',cell(state.tipo,state.tipo?'':'S/I'))+'\n';
-  var operNotion=(state.oper==='Venta y Renta')?'Venta':state.oper;
-  var operNota=(state.oper==='Venta y Renta')?'Propiedad disponible en Venta y Renta. El campo Operación se registra como "Venta". Los datos de renta van en los campos Precio renta, Ganancia renta y Tiempo mínimo de renta.':'';
-  md+=row('Operación','Select',{v:operNotion,nota:operNota})+'\n';
-  md+=row('Dirección','Text',cell(dirVal,dirNota))+'\n';
+  // Operación → multi_select de Notion
+  var operArr=[];
+  if(state.oper==='Venta y Renta'){operArr=['Venta','Renta'];}
+  else{operArr=[state.oper];}
+  var operStr=operArr.join(', ');
+
   var zonasStr=zonasArr.length?zonasArr.map(function(z){return z.n;}).join(' / '):'S/I';
   var zonasNota=zonasArr.length?zonasArr.map(function(z){return z.n+(z.nueva?' [CREAR y relacionar]':' [buscar y relacionar]');}).join('; '):'S/I';
+
+  md+=row('Nombre','Title',cell(nombre))+'\n';
+  md+=row('Tipo de inmueble','Select',cell(state.tipo,state.tipo?'':'S/I'))+'\n';
+  md+=row('Operación','Multi-select',{v:operStr,nota:operArr.length>1?'Registrar ambas opciones en el multi-select de Operación':''})+'\n';
+  md+=row('Dirección','Text',cell(dirVal,dirNota))+'\n';
   md+=row('Zona','Relación (multi) → 📍 Zonas',{v:zonasStr,nota:zonasNota})+'\n';
-  md+=row('Precio','Number',{v:valNum(pv),nota:notaNum(pv)+(pv.val&&moneda?(' ('+moneda+', sin símbolo)'):'')})+'\n';
+  if(conVenta)md+=row('Precio de Venta','Number',{v:valNum(pv),nota:notaNum(pv)+(pv.val&&moneda?' ('+moneda+', sin símbolo)':'')})+'\n';
   if(conRenta){
-    md+=row('Precio renta','Number',{v:valNum(pr),nota:notaNum(pr)+' renta mensual'})+'\n';
-    md+=row('Ganancia renta','Number',{v:pr.val!=null?String(pr.val):'',nota:(pr.val!=null?('Igual al precio del primer mes de renta ('+fmt(pr.val)+' '+moneda+').'):('S/I — precio de renta no capturado.'))+' ⚠️ CAMPO NUEVO: crear en 🏠 Propiedades si no existe (tipo: Number).'})+'\n';
-    md+=row('Tiempo mínimo de renta','Select',{v:state.rentaMin||'S/I',nota:'⚠️ CAMPO NUEVO: crear en 🏠 Propiedades si no existe (tipo: Select, opciones: "6 meses" / "1 año").'})+'\n';
+    md+=row('Precio de Renta','Number',{v:valNum(pr),nota:notaNum(pr)+(pr.val&&moneda?' renta mensual, '+moneda:'')})+'\n';
+    md+=row('Ganancia renta','Number',{v:pr.val!=null?String(pr.val):'',nota:pr.val!=null?'= un mes de renta ('+fmt(pr.val)+' '+moneda+')':'S/I — precio de renta no capturado.'})+'\n';
+    md+=row('Tiempo mínimo de renta','Select',{v:state.rentaMin||'S/I',nota:'Opciones: 6 meses / 1 año'})+'\n';
   }
   md+=row('m² terreno','Number',{v:valNum(m2t),nota:notaNum(m2t)})+'\n';
-  md+=row('m² construcción','Number',{v:valNum(m2c),nota:notaNum(m2c)})+'\n';
-  md+=row('Recámaras','Number',{v:valNum(rec),nota:notaNum(rec)})+'\n';
-  md+=row('Baños','Text',{v:(banTxt.na?'':(banTxt.pend?'':banTxt.v)),nota:(banTxt.na?'N/A':(banTxt.pend?'S/I':''))})+'\n';
-  md+=row('Estacionamientos','Number',{v:valNum(est),nota:notaNum(est)})+'\n';
-  md+=row('Estatus','Select',cell(estatus))+'\n';
-  md+=row('Publicable','Select / Checkbox',cell($('f_pub').value))+'\n';
-  md+=row('Fuente','Select',cell(fuente.nombre,fuente.nueva?'OPCIÓN NUEVA: agregar al select de Fuente':''))+'\n';
+  if(!esTerreno)md+=row('m² construcción','Number',{v:valNum(m2c),nota:notaNum(m2c)})+'\n';
+  if(!esTerreno)md+=row('Recámaras','Number',{v:valNum(rec),nota:notaNum(rec)})+'\n';
+  if(!esTerreno)md+=row('Baños','Number',{v:(banTxt.na?'':(banTxt.pend?'':banTxt.v)),nota:(banTxt.na?'N/A':(banTxt.pend?'S/I':''))})+'\n';
+  if(!esTerreno)md+=row('Estacionamientos','Number',{v:valNum(est),nota:notaNum(est)})+'\n';
+  if(nU>1)md+=row('Cantidad disponible','Number',{v:String(nU),nota:'Unidades en el conjunto'})+'\n';
+  md+=row('Estatus de captura','Select',{v:estatusCaptura,nota:'3⭐→Listo, 2⭐→En progreso, <2⭐→Sin empezar'})+'\n';
+  md+=row('Estatus de propiedad','Select',{v:estatusProp,nota:''})+'\n';
+  md+=row('Fuente','Select',cell(fuente.nombre,fuente.nueva?'OPCIÓN NUEVA: agregar al select de Fuente en Notion':''))+'\n';
   md+=row('Propietario','Relación → 👥 Contactos',cell(propietarioNombre(),propietarioNota()))+'\n';
+  md+=row('Contacto operativo','Relación → 👥 Contactos',cell(contactoOperativoNombre(),contactoOperativoNota()))+'\n';
   md+=row('Notas','Texto',{v:notasValorNotion,nota:notaNotionRow})+'\n';
-  md+=row('Precio / m²','Fórmula',{v:'',nota:'lo calcula Notion; no escribir'})+'\n';
   md+='\n';
 
   md+='## 3. Reglas de relaciones\n';
-  md+='- **Zona**: es relación multi-valor a 📍 Zonas. Para cada zona: busca y relaciona si existe; si no existe, crea el registro (Municipio: Cuernavaca por defecto) y luego relaciona. No dejar como texto suelto.\n';
-  md+='- **Propietario**: relación a 👥 Contactos. El **asesor/broker NO es el propietario legal**; si solo hay asesor, el Propietario legal queda **S/I**.\n';
+  md+='- **Zona**: relación multi-valor a 📍 Zonas. Para cada zona: busca y relaciona si existe; si no, crea el registro (Municipio: Cuernavaca por defecto) y luego relaciona. No dejar como texto suelto.\n';
+  md+='- **Propietario**: relación a 👥 Contactos (el dueño legal del inmueble). El asesor/broker NO es el propietario; si solo hay asesor, Propietario queda S/I.\n';
+  md+='- **Contacto operativo**: relación a 👥 Contactos (quien gestiona la operación: asesor, portero, admin). Es distinto del propietario.\n';
   md+='- **Operaciones / Proyectos / Tareas**: son relaciones; créalas como registros aparte y vincula, no las metas como texto en Propiedades.\n';
   md+='- Las frases largas (notas, descripción) van en el **contenido de la página**, no en campos de relación.\n\n';
 
@@ -1602,7 +1602,7 @@ function generar(){
   // 13. Resumen
   md+='## 13. Resumen de la captura\n';
   md+='- '+nombre+' · '+(state.tipo||'tipo S/I')+' · '+state.oper+(nU>1?(' · '+unidades.length+' unidades'):'')+'\n';
-  md+='- Zona: '+zonasStr+' · Estatus: '+estatus+' · Responsable: '+$('f_resp').value+'\n';
+  md+='- Zona: '+zonasStr+' · Captura: '+estatusCaptura+' · Propiedad: '+estatusProp+' · Responsable: '+$('f_resp').value+'\n';
   md+='- Capturada: '+$('f_fecha').value+' · Fuente: '+fuente.nombre+'\n\n';
 
   // 14. Confirmación
@@ -1625,7 +1625,7 @@ function generar(){
 
   // guardar en historial
   var re=realElapsed();
-  lastCaptureId=saveCapture(md,estatus,falt,estrellas.count,estrellas.quality,re);
+  lastCaptureId=saveCapture(md,estatusProp,falt,estrellas.count,estrellas.quality,re);
   if(asesorActivo)updateAsesorStats(asesorActivo.id,estrellas,re);
   sndSuccess();
   mostrarResultado(estrellas);
@@ -1639,6 +1639,15 @@ function propietarioNota(){
   var prop=state.people.filter(function(p){return personTipos(p).some(function(t){return /Propietario|Cliente B/.test(t);});})[0];
   if(prop&&prop.nombre)return 'relacionar contacto';
   if(state.ofrece==='Asesor / broker')return 'S/I — ofrecido por asesor, NO usar al asesor como propietario';
+  return 'S/I';
+}
+function contactoOperativoNombre(){
+  var op=state.people.filter(function(p){return personTipos(p).some(function(t){return /Asesor|Admin|Portero|Proveedor|Referido/.test(t);});})[0];
+  return op&&op.nombre?op.nombre:'';
+}
+function contactoOperativoNota(){
+  var op=state.people.filter(function(p){return personTipos(p).some(function(t){return /Asesor|Admin|Portero|Proveedor|Referido/.test(t);});})[0];
+  if(op&&op.nombre)return 'relacionar contacto ('+personTipos(op).join(', ')+')';
   return 'S/I';
 }
 function camposSI(){
@@ -1881,7 +1890,7 @@ function saveCapture(md,estatus,falt,stars,quality,elapsed){
     asesorNombre:asesorActivo?asesorActivo.nombre:($('f_resp').value||'S/I'),
     resp:$('f_resp').value,
     nombre:nombreBase(),direccion:$('f_direccion').value.trim(),zona:zonasSel.map(function(z){return z.n;}).join(' / ')||'S/I',
-    tipo:state.tipo,oper:state.oper,estatus:estatus,fuente:fuenteVal().nombre,
+    tipo:state.tipo,oper:state.oper,estatus:estatusProp,estatusCaptura:estatusCaptura,fuente:fuenteVal().nombre,
     people:state.people.map(function(p){return (p.nombre||'?')+' ('+personTipos(p).join(', ')+')';}),
     anuncio:state.anuncioUrl||'',maps:$('f_maps').value,
     md:md,estado:falt.length?'Con faltantes':'Markdown generado',
@@ -2151,7 +2160,7 @@ function doReset(){
   setChip('crmChips','crm','No');
   buildCaract();renderCaractTerr();renderCRM();
   $('f_unidades').value=1;$('f_comision').value='4%';if(asesorActivo)syncAsesor();else $('f_resp').value=CFG.resp;
-  $('f_fecha').value=hoy;$('f_seguimiento').value=hoy;$('f_estatus').value='En análisis';
+  $('f_fecha').value=hoy;$('f_seguimiento').value=hoy;$('f_estatus').value='Disponible';
   zonasSel=[];renderZonaChips();updateHintZona();
   $('f_fuente').value='Recorrido/Scouteo';$('boxFuenteOtra').style.display='none';
   ['unitsBox','terrenoExtra','dirSuggest'].forEach(function(id){$(id).style.display='none';});

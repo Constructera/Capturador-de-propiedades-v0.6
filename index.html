@@ -160,14 +160,17 @@
   <div class="field">
     <div class="field-top"><label>Tipo <span class="req">*</span></label></div>
     <div class="chips" id="tipoChips">
-      <button type="button" class="chip" data-v="Terreno">Terreno</button>
       <button type="button" class="chip" data-v="Casa">Casa</button>
-      <button type="button" class="chip" data-v="Casa fin de semana">Casa fin de semana</button>
-      <button type="button" class="chip" data-v="Departamento">Departamento</button>
+      <button type="button" class="chip" data-v="Casa fin de semana">Casa fin semana</button>
+      <button type="button" class="chip" data-v="Casa en condominio">Casa cond.</button>
+      <button type="button" class="chip" data-v="Departamento">Depto</button>
+      <button type="button" class="chip" data-v="Penthouse">Penthouse</button>
+      <button type="button" class="chip" data-v="Terreno">Terreno</button>
       <button type="button" class="chip" data-v="Local comercial">Local</button>
       <button type="button" class="chip" data-v="Oficina">Oficina</button>
-      <button type="button" class="chip" data-v="Bodega">Bodega</button>
-      <button type="button" class="chip" data-v="Otro">Otro</button>
+      <button type="button" class="chip" data-v="Bodega / Nave">Bodega</button>
+      <button type="button" class="chip" data-v="Edificio">Edificio</button>
+      <button type="button" class="chip" data-v="Rancho / Quinta">Rancho</button>
     </div>
   </div>
 
@@ -177,6 +180,8 @@
       <button type="button" class="chip sel" data-v="Venta">Venta</button>
       <button type="button" class="chip" data-v="Renta">Renta</button>
       <button type="button" class="chip" data-v="Venta y Renta">Ambas</button>
+      <button type="button" class="chip" data-v="Preventa">Preventa</button>
+      <button type="button" class="chip" data-v="Traspaso">Traspaso</button>
     </div>
   </div>
 
@@ -239,8 +244,13 @@
     <div class="field-top"><label>Fuente <span class="h-hint">(cómo se consiguió)</span></label></div>
     <select id="f_fuente">
       <option selected>Recorrido/Scouteo</option>
-      <option>Socio inmobiliario</option>
       <option>Referido</option>
+      <option>Portal</option>
+      <option>Socio inmobiliario</option>
+      <option>Llamada directa</option>
+      <option>Oferta desarrollador</option>
+      <option>Cliente directo</option>
+      <option>Cuidador</option>
       <option>Portal</option>
       <option>Letrero / lona</option>
       <option>Redes sociales</option>
@@ -381,8 +391,8 @@
   <!-- 7 COMERCIAL -->
   <h2>Datos comerciales</h2>
   <div class="row2">
-    <div class="field"><div class="field-top"><label>Estatus</label></div>
-      <select id="f_estatus"><option>Captada</option><option selected>En análisis</option><option>Disponible</option><option>En obra gris</option><option>Apartada</option><option>Vendida</option></select>
+    <div class="field"><div class="field-top"><label>Estatus de propiedad</label></div>
+      <select id="f_estatus"><option selected>Disponible</option><option>Apartada</option><option>Vendida</option></select>
       <div class="hint" id="estatusHint"></div></div>
     <div class="field"><div class="field-top"><label>Publicable</label></div>
       <select id="f_pub"><option selected>Sí</option><option>No</option></select></div>
@@ -535,7 +545,7 @@
   <div class="help-a">
     <strong>⭐ Velocidad</strong> — Terminar en ≤ 5 minutos (activa el cronómetro antes de empezar).<br>
     <strong>⭐ Datos esenciales</strong> — Llenar todos los campos del punto 1.<br>
-    <strong>⭐ Captura completa</strong> — Llenar todos los campos relevantes o marcarlos S/I / N/A explícitamente. Con 3 estrellas el estatus pasa automáticamente a "Captada" en el markdown.
+    <strong>⭐ Captura completa</strong> — Llenar todos los campos relevantes o marcarlos S/I / N/A explícitamente. Con 3 estrellas el Estatus de captura pasa a "Listo" en el markdown.
   </div>
 
   <div class="help-q">3. ¿Qué diferencia hay entre S/I y N/A?</div>
