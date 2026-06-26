@@ -82,7 +82,9 @@ function _setMascotVideo(v,st){
   var src=MASCOT_SRC[st]||MASCOT_SRC['idle'];
   if(v.dataset.mst!==st){
     v.dataset.mst=st;
-    v.src=src;v.load();v.play().catch(function(){});
+    v.muted=true; // iOS requiere muted antes de play
+    v.src=src;v.load();
+    v.play().catch(function(){});
   }
 }
 function initHomeMascot(){
@@ -90,11 +92,13 @@ function initHomeMascot(){
   var v=document.createElement('video');
   v.autoplay=true;v.loop=true;v.muted=true;
   v.setAttribute('playsinline','');
+  v.setAttribute('preload','auto');
   v.className='mascot state-idle';
   v.style.cssText='width:100%;height:100%;object-fit:contain';
   v.dataset.mst='idle';v.dataset.state='idle';
   v.src='./mascota/idle.mp4';
   wrap.appendChild(v);
+  v.muted=true;
   v.play().catch(function(){});
 }
 
