@@ -1279,7 +1279,7 @@ function updateProgress(){
   if(zonasSel.length)done++;
   if(t){total+=1;if(state.serv.length)done++;}
   var pct=total?Math.round(done/total*100):0;
-  $('progText').textContent=done+' de '+total+' campos clave';
+  animCountUp($('progText'),_progPrev,done,total);_progPrev=done;
   $('progPct').textContent=pct+'%';$('progFill').style.width=pct+'%';
   syncLimpiarBtn(done>0||state.tipo||state.ofrece||zonasSel.length);
 }
@@ -2102,6 +2102,35 @@ function gasCapturasToLocalHist(capturas){
 if(CFG.endpoint)setTimeout(processQueue,3000);
 // Stub para acciones legadas (Drive) no soportadas por GAS v2B
 function api(action){return Promise.reject(new Error('No implementado: '+action));}
+
+/* ===================== BLOQUE 4 — MICROINTERACCIONES ===================== */
+
+// 1. Vibración háptica en botones primarios (.btn-accent)
+document.addEventListener('click',function(e){
+  if(e.target.closest('.btn-accent')&&navigator.vibrate)navigator.vibrate(30);
+},{passive:true});
+
+// 2. Chip snap: scale(1.08) 100ms al seleccionar
+document.addEventListener('click',function(e){
+  var c=e.target.closest('.chip');if(!c)return;
+  c.classList.add('snap');
+  setTimeout(function(){c.classList.remove('snap');},120);
+},{passive:true});
+
+// 3. countUp animado para el contador de progreso
+var _progPrev=0;
+function animCountUp(el,from,to,total){
+  if(from===to){el.textContent=to+' de '+total+' campos clave';return;}
+  var start=null,dur=280;
+  function step(ts){
+    if(!start)start=ts;
+    var p=Math.min((ts-start)/dur,1);
+    var ease=1-Math.pow(1-p,3);
+    el.textContent=Math.round(from+(to-from)*ease)+' de '+total+' campos clave';
+    if(p<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
 
 $('cfg_resp').addEventListener('change',function(){
   var n=this.value;CFG.resp=n;save('cfg',CFG);$('f_resp').value=n;
