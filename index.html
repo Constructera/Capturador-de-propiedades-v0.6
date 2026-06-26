@@ -218,9 +218,12 @@
 
   <div class="field">
     <div class="field-top"><label>Zona / Colonia <span class="req">*</span></label></div>
-    <div class="tags" id="zonasTags"></div>
-    <input type="text" id="f_zona" placeholder="Escribe para buscar o agregar zonas (Enter para confirmar)" autocomplete="off">
-    <div class="suggest" id="zonaSuggest"></div>
+    <div class="chips" id="zonaChips"></div>
+    <button type="button" class="btn btn-ghost chip-sm" id="btnZonaMas" style="margin-top:6px;display:none">Ver más ↓</button>
+    <div style="display:flex;gap:6px;margin-top:8px;align-items:center">
+      <input type="text" id="f_zona_extra" placeholder="Zona nueva (se creará en Notion)" autocomplete="off" style="flex:1;margin:0">
+      <button type="button" class="btn chip-sm btn-accent" id="btnZonaAdd" style="flex-shrink:0;padding:10px 14px">+</button>
+    </div>
     <div class="hint" id="zonaHint"></div>
   </div>
 
@@ -977,6 +980,9 @@
   <button type="button" class="capture-fab" id="captureFabTheme" title="Cambiar tema">🌙</button>
   <button type="button" class="capture-fab" id="captureFabMenu" title="Menú / Salir">⚙️</button>
 </div>
+
+<!-- Mascota flotante: visible solo durante viewContact -->
+<div class="ct-mascot-float" id="ctMascotFloat" title="Toca para animar"></div>
 
 <!-- Modal: salir de captura -->
 <div class="overlay" id="captureExitModal">

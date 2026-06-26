@@ -191,6 +191,9 @@ pre{background:#fbfbfa;border:1px solid var(--line);border-radius:6px;padding:16
 .capture-float{display:none;position:fixed;bottom:80px;right:16px;z-index:200;flex-direction:column;gap:10px}
 body.capture-active .capture-float{display:flex}
 body.capture-active .navbar{display:none}
+/* Mascota flotante en viewContact */
+.ct-mascot-float{display:none;position:fixed;bottom:80px;right:16px;z-index:150;width:72px;height:72px;border-radius:14px;cursor:pointer;overflow:hidden;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.20);align-items:center;justify-content:center;}
+body.contact-active .ct-mascot-float{display:flex;}
 .capture-fab{width:36px;height:36px;border-radius:50%;border:none;background:var(--bg);box-shadow:0 2px 8px rgba(0,0,0,.22);cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;font-family:inherit;color:var(--text);padding:0}
 .capture-fab:active{transform:scale(.9)}
 
