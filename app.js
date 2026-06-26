@@ -1891,7 +1891,7 @@ function saveCapture(md,estatus,falt,stars,quality,elapsed){
     asesorNombre:asesorActivo?asesorActivo.nombre:($('f_resp').value||'S/I'),
     resp:$('f_resp').value,
     nombre:nombreBase(),direccion:$('f_direccion').value.trim(),zona:zonasSel.map(function(z){return z.n;}).join(' / ')||'S/I',
-    tipo:state.tipo,oper:state.oper,estatus:estatusProp,estatusCaptura:estatusCaptura,fuente:fuenteVal().nombre,
+    tipo:state.tipo,oper:state.oper,estatus:estatus,estatusCaptura:stars===3?'Listo':(stars>=2?'En progreso':'Sin empezar'),fuente:fuenteVal().nombre,
     people:state.people.map(function(p){return (p.nombre||'?')+' ('+personTipos(p).join(', ')+')';}),
     anuncio:state.anuncioUrl||'',maps:$('f_maps').value,
     md:md,estado:falt.length?'Con faltantes':'Markdown generado',
