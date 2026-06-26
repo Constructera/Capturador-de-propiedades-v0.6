@@ -13,6 +13,25 @@ if(!CFG.endpoint)CFG.endpoint=GAS_DEFAULT; // migrar instancias sin endpoint
 function load(k,def){try{var v=localStorage.getItem('cap_'+k);return v?JSON.parse(v):def;}catch(e){return def;}}
 function save(k,v){try{localStorage.setItem('cap_'+k,JSON.stringify(v));}catch(e){}}
 
+/* ===================== TEMA (dark / light) ===================== */
+(function(){
+  function applyTheme(dark){
+    document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+    var meta=document.querySelector('meta[name="theme-color"]');
+    if(meta)meta.content=dark?'#1a1a1a':'#2e6f40';
+    save('theme',dark?'dark':'light');
+    var btn=$('btnTheme');if(btn)btn.textContent=dark?'☀️':'🌙';
+  }
+  var saved=load('theme',null);
+  var prefersDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;
+  var isDark=saved==='dark'||(saved===null&&prefersDark);
+  applyTheme(isDark);
+  var btn=$('btnTheme');
+  if(btn)btn.addEventListener('click',function(){
+    applyTheme(document.documentElement.getAttribute('data-theme')!=='dark');
+  });
+})();
+
 /* zonas conocidas: semilla + las que se agreguen/usen */
 var ZONAS_SEED=['Lomas de Cortés','Rancho Tetela','Nueva Francia','Domingo Diez / Gayosso','Compositores','Lomas de Atzingo','Vista Hermosa','Tabachines','Burgos','Burgos Bugambilias','Sumiya','Real de Tetela','Acapantzingo','Delicias','Palmira'];
 var zonasLocal=load('zonas',[]);

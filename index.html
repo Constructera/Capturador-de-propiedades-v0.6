@@ -12,6 +12,9 @@
 <meta name="apple-mobile-web-app-title" content="Capturadora">
 <title>Capturadora Hauser v0.5</title>
 <link rel="stylesheet" href="styles.css">
+<script>
+(function(){try{var t=JSON.parse(localStorage.getItem('cap_theme'));var d=t==='dark'||(t===null&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches);if(d)document.documentElement.setAttribute('data-theme','dark');}catch(e){}}());
+</script>
 </head>
 <body>
 
@@ -20,7 +23,10 @@
   <div id="homeMascotWrap" style="width:160px;height:160px;margin:0 auto;display:block"></div>
   <div class="home-header">
     <div class="home-title">Capturadora Hauser</div>
-    <span class="ver-badge">v0.5</span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button type="button" id="btnTheme" class="btn-theme" title="Modo oscuro">🌙</button>
+      <span class="ver-badge">v0.5</span>
+    </div>
   </div>
   <div class="home-sub">¿Qué quieres capturar hoy?</div>
   <div class="home-grid">
