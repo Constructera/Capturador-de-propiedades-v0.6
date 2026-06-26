@@ -8,7 +8,7 @@ var $=function(id){return document.getElementById(id);};
 
 /* ---------- config local ---------- */
 var GAS_DEFAULT='https://script.google.com/macros/s/AKfycbwz6hm5MtyZdkaGXNpxi-AVJlCZvLntyMHGe055bsyrBubI862il09AR_CQmejfYu9p/exec';
-var CFG=load('cfg',{resp:'Daniel',drive:'Hauser Propiedades',endpoint:GAS_DEFAULT});
+var CFG=load('cfg',{resp:'Daniel',endpoint:GAS_DEFAULT});
 if(!CFG.endpoint)CFG.endpoint=GAS_DEFAULT; // migrar instancias sin endpoint
 function load(k,def){try{var v=localStorage.getItem('cap_'+k);return v?JSON.parse(v):def;}catch(e){return def;}}
 function save(k,v){try{localStorage.setItem('cap_'+k,JSON.stringify(v));}catch(e){}}
@@ -67,14 +67,13 @@ function zonaTouch(n){
 }
 
 var state={tipo:'',oper:'Venta',ofrece:'',crm:'No',modo:'A · Reventa de lote',
-  driveShare:'Sí, carpeta común',
   serv:[],caract:[],caractTerr:[],lat:null,lng:null,
   people:[],editId:null,rentaMin:''};
 
 var hoy=new Date().toISOString().slice(0,10);
 $('f_fecha').value=hoy;$('f_seguimiento').value=hoy;
 $('f_resp').value=CFG.resp;
-$('cfg_resp').value=CFG.resp;$('cfg_drive').value=CFG.drive;$('cfg_endpoint').value=CFG.endpoint;save('cfg',CFG);
+$('cfg_resp').value=CFG.resp;$('cfg_endpoint').value=CFG.endpoint;save('cfg',CFG);
 
 /* ===================== NAVEGACIÓN ===================== */
 // Un solo listener cubre navbar, tarjetas del menú y botones "← Menú"
@@ -442,7 +441,7 @@ function onTipo(v){
   var t=(v==='Terreno');
   document.querySelectorAll('[data-construccion]').forEach(function(el){el.style.display=t?'none':'';});
   $('terrenoExtra').style.display=t?'':'none';
-  buildCaract();refreshUnits();refreshDrive();
+  buildCaract();refreshUnits();
 }
 function onOper(v){
   var venta=(v==='Venta'||v==='Venta y Renta');
@@ -462,7 +461,6 @@ bindChips('operChips','oper',onOper);
 bindChips('ofreceChips','ofrece',onOfrece);
 bindChips('crmChips','crm',function(v){renderCRM();});
 bindChips('modoChips','modo');
-bindChips('driveShareChips','driveShare');
 bindChips('rentaMinChips','rentaMin');
 
 /* servicios multi-select */
@@ -866,7 +864,7 @@ function renderZonasTags(){
     var x=document.createElement('button');x.type='button';x.textContent='✕';
     x.addEventListener('click',function(){
       zonasSel=zonasSel.filter(function(zz){return zz.n!==z.n;});
-      renderZonasTags();updateHintZona();updateProgress();refreshDrive();
+      renderZonasTags();updateHintZona();updateProgress();
     });
     t.appendChild(x);tags.appendChild(t);
   });
@@ -906,7 +904,7 @@ function pickZona(n,nueva){
   if(zonasSel.some(function(z){return z.n===n;}))return;
   zonasSel.push({n:n,nueva:nueva});
   $('f_zona').value='';$('zonaSuggest').style.display='none';
-  renderZonasTags();updateHintZona();updateProgress();refreshDrive();
+  renderZonasTags();updateHintZona();updateProgress();
 }
 function zonaVal(){return zonasSel.length?zonasSel[0].n:'S/I';}
 
@@ -1075,42 +1073,10 @@ $('btnIgualaTodo').addEventListener('click',function(){
     msg.style.display='none';
   });
 });
-$('f_nombre').addEventListener('input',function(){refreshDrive();});
-function refreshDrive(){
-  if($('f_drive').dataset.manual)return;
-  $('f_drive').value=(CFG.drive||'Hauser Propiedades')+' / '+nombreBase();
-}
-$('f_drive').addEventListener('input',function(){this.dataset.manual='1';});
-refreshDrive();
-
-/* botón crear/confirmar carpeta drive */
-$('btnDrive').addEventListener('click',function(){
-  var name=$('f_drive').value.trim();
-  if(!name){$('driveStatus').textContent='Escribe primero el nombre de la carpeta.';return;}
-  if(CFG.endpoint){
-    $('driveStatus').className='status';$('driveStatus').textContent='Creando carpeta en Drive…';
-    api('createFolder',{name:name}).then(function(res){
-      if(res&&res.url){$('driveStatus').className='status ok';
-        $('driveStatus').textContent='✓ Carpeta lista. Ya puedes subir fotos.';
-        $('btnFotos').disabled=false;$('btnFotos').dataset.url=res.url;}
-      else throw new Error('sin url');
-    }).catch(function(){
-      $('driveStatus').className='status err';$('driveStatus').textContent='No se pudo crear automáticamente; el markdown llevará la instrucción de crearla.';
-    });
-  }else{
-    $('driveStatus').className='status';
-    $('driveStatus').textContent='Sin backend configurado: el markdown indicará crear esta carpeta. Configúralo en ⚙️ para automatizarlo.';
-  }
-});
-$('btnFotos').addEventListener('click',function(){
-  var url=this.dataset.url;if(url)window.open(url,'_blank');
-  else alert('Primero crea/confirma la carpeta de Drive.');
-});
-
 /* ===================== DIRECCIÓN: autocompletado ===================== */
 var sugTimer=null;
 $('f_direccion').addEventListener('input',function(){
-  refreshDrive();updateProgress();
+  updateProgress();
   var q=$('f_direccion').value.trim();clearTimeout(sugTimer);
   if(q.length<5){$('dirSuggest').style.display='none';return;}
   sugTimer=setTimeout(function(){buscarDireccion(q);},300);
@@ -1126,7 +1092,7 @@ function buscarDireccion(q){
       d.addEventListener('click',function(){
         $('f_direccion').value=it.display_name;
         setGeo(parseFloat(it.lat),parseFloat(it.lon),'Dirección y coordenadas cargadas. Corrige el número exterior si hace falta.');
-        autoZonaFromAddr(it);box.style.display='none';refreshDrive();updateProgress();
+        autoZonaFromAddr(it);box.style.display='none';updateProgress();
       });
       box.appendChild(d);
     });
@@ -1156,7 +1122,7 @@ function reverseGeo(lat,lng){
   fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=es&lat='+lat+'&lon='+lng)
   .then(function(r){return r.json();})
   .then(function(d){
-    if(d&&d.display_name&&!$('f_direccion').value.trim()){$('f_direccion').value=d.display_name;refreshDrive();}
+    if(d&&d.display_name&&!$('f_direccion').value.trim()){$('f_direccion').value=d.display_name;}
     if(d)autoZonaFromAddr(d);updateProgress();
   }).catch(function(){});
 }
@@ -1253,7 +1219,7 @@ $('btnAnuncio').addEventListener('click',function(){
     state.anuncioUrl=url;
     $('anuncioStatus').className='status ok';
     $('anuncioStatus').textContent='✓ Anuncio leído. Rellenado: '+(llenos.join(', ')||'nada')+'. Revisa y corrige.';
-    updateProgress();refreshDrive();
+    updateProgress();
   })
   .catch(function(){
     $('anuncioStatus').className='status err';
@@ -1429,7 +1395,6 @@ function generar(){
   md+='## 1. Acción principal\n';
   if(nU>1){
     md+='Crear **'+unidades.length+' páginas** en 🏠 Propiedades, una por unidad (no agrupar en una sola). Clonar los datos comunes de abajo y respetar los datos específicos de cada unidad.\n';
-    md+='- Carpeta de Drive: **'+state.driveShare+'**.\n\n';
   }else{
     md+='Crear **1 página** en 🏠 Propiedades con el nombre **'+nombre+'** (si ya existe una con esa dirección, actualizarla).\n\n';
   }
@@ -1554,15 +1519,9 @@ function generar(){
   if(faltC.length)md+='- Completar datos mínimos faltantes: '+faltC.join(', ')+'.\n';
   md+='\n';
 
-  // 7. Drive
-  md+='## 7. Carpeta de Drive y fotos\n';
-  md+='- Carpeta: **'+$('f_drive').value.trim()+'** (dentro de la carpeta compartida de propiedades).\n';
-  md+='- Notion guarda el **link** de la carpeta, no las fotos.\n';
-  md+='- Fotos pendientes: '+(esTerreno?'panorámicas del lote, frente, colindancias, calle/contexto':'fachada, interiores, '+(state.caract.indexOf('Alberca')!==-1?'alberca, ':'')+'áreas comunes, calle/contexto')+'.\n\n';
-
-  // 8. Terreno extra
+  // 7. Terreno extra
   if(esTerreno){
-    md+='## 8. Datos de terreno (contexto para corrida financiera)\n';
+    md+='## 7. Datos de terreno (contexto para corrida financiera)\n';
     md+='> Servicios, Uso de suelo y Estatus legal ya estan en el campo Notas de la seccion 2. Esta seccion es contexto adicional para el analisis financiero.\n\n';
     md+='- Servicios: '+(state.serv.length?state.serv.join(', '):'S/I')+'\n';
     md+='- Frente: '+txt('f_frente')+' m · Fondo: '+txt('f_fondo')+' m\n';
@@ -1621,7 +1580,7 @@ function generar(){
   $('exitoBox').innerHTML='<strong>✅ Markdown generado</strong>Cópialo y pégalo en el chat del agente de Notion, o usa 📤 Enviar. Quedó guardado en el Historial.';
   $('resumenBox').innerHTML='<strong>Resumen</strong>'+nombre+' · '+(state.tipo||'tipo S/I')+' · '+state.oper+
     (nU>1?(' · '+unidades.length+' unidades'):'')+(precioTxt?(' · '+precioTxt):'')+(rentaTxt?(' · '+rentaTxt):'')+
-    ' · Zona: '+zonasStr+'.<br>Incluye alta en Propiedades, '+people.length+' contacto(s) CRM, carpeta Drive y contenido de página.';
+    ' · Zona: '+zonasStr+'.<br>Incluye alta en Propiedades, '+people.length+' contacto(s) CRM y contenido de página.';
   if(falt.length){
     $('faltanteBox').style.display='';
     $('faltanteBox').innerHTML='<strong>⚠ Información faltante ('+falt.length+')</strong><ul>'+falt.map(function(f){return '<li>'+f+'</li>';}).join('')+'</ul>Ya quedó como pendiente en el markdown.';
@@ -1888,7 +1847,7 @@ function saveCapture(md,estatus,falt,stars,quality,elapsed){
     nombre:nombreBase(),direccion:$('f_direccion').value.trim(),zona:zonasSel.map(function(z){return z.n;}).join(' / ')||'S/I',
     tipo:state.tipo,oper:state.oper,estatus:estatus,fuente:fuenteVal().nombre,
     people:state.people.map(function(p){return (p.nombre||'?')+' ('+personTipos(p).join(', ')+')';}),
-    anuncio:state.anuncioUrl||'',maps:$('f_maps').value,drive:$('f_drive').value,
+    anuncio:state.anuncioUrl||'',maps:$('f_maps').value,
     md:md,estado:falt.length?'Con faltantes':'Markdown generado',
     estrellas:stars||0,calidad:quality||'',elapsed:elapsed||0,
     faltantes:falt,copiado:false,enviado:false,edit:now,
@@ -2026,18 +1985,6 @@ $('btnShare').addEventListener('click',function(){
 });
 $('btnMarkSent').addEventListener('click',function(){
   if(lastCaptureId){var h=getHist();var r=h.filter(function(x){return x.id===lastCaptureId;})[0];if(r){r.enviado=true;setHist(h);}this.textContent='Enviada ✓';}
-});
-
-/* ===================== GUARDAR sin generar ===================== */
-$('btnSave').addEventListener('click',function(){
-  var h=getHist();
-  h.unshift({id:genUUID(),fecha:new Date().toISOString(),resp:$('f_resp').value,
-    nombre:nombreBase(),direccion:$('f_direccion').value.trim(),zona:zonasSel.map(function(z){return z.n;}).join(' / ')||'S/I',tipo:state.tipo,oper:state.oper,
-    estatus:$('f_estatus').value,fuente:fuenteVal().nombre,people:[],anuncio:state.anuncioUrl||'',
-    maps:$('f_maps').value,drive:$('f_drive').value,md:'(borrador sin markdown)',estado:'Borrador',
-    faltantes:[],copiado:false,enviado:false,edit:new Date().toISOString()});
-  setHist(h);
-  this.textContent='Guardada ✓';var self=this;setTimeout(function(){self.textContent='💾 Guardar captura (sin generar)';},1800);
 });
 
 /* ===================== IA: AJUSTES ===================== */

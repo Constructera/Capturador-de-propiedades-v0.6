@@ -33,32 +33,32 @@
   </div>
   <div class="home-sub">¿Qué quieres capturar hoy?</div>
   <div class="home-grid">
-    <button type="button" class="home-card btn-accent" data-view="viewAdvisor">
+    <button type="button" class="home-card hc-property" data-view="viewAdvisor">
       <span class="home-icon">🏠</span>
       <span class="home-label">Capturar propiedad</span>
       <span class="home-desc">Casa, depto, terreno, local, bodega u otro inmueble</span>
     </button>
-    <button type="button" class="home-card btn-blue" data-view="viewContact">
+    <button type="button" class="home-card hc-contact" data-view="viewContact">
       <span class="home-icon">👤</span>
       <span class="home-label">Capturar cliente / socio</span>
       <span class="home-desc">Propietarios, compradores, arquitectos, notarios y aliados</span>
     </button>
-    <button type="button" class="home-card btn-orange" data-view="viewLeaderboard">
+    <button type="button" class="home-card hc-ranking" data-view="viewLeaderboard">
       <span class="home-icon">⭐</span>
       <span class="home-label">Ranking de asesores</span>
       <span class="home-desc">Estrellas acumuladas, capturas y tiempos</span>
     </button>
-    <button type="button" class="home-card btn-purple" data-view="viewHistory">
+    <button type="button" class="home-card hc-history" data-view="viewHistory">
       <span class="home-icon">🗂️</span>
       <span class="home-label">Historial</span>
       <span class="home-desc">Capturas guardadas en este dispositivo</span>
     </button>
-    <button type="button" class="home-card btn-blue" data-view="viewConfig">
+    <button type="button" class="home-card hc-config" data-view="viewConfig">
       <span class="home-icon">⚙️</span>
       <span class="home-label">Configuración</span>
       <span class="home-desc">Asesores, sonidos, animación y datos locales</span>
     </button>
-    <button type="button" class="home-card btn-orange" data-view="viewHelp">
+    <button type="button" class="home-card hc-help" data-view="viewHelp">
       <span class="home-icon">❓</span>
       <span class="home-label">Ayuda rápida</span>
       <span class="home-desc">Criterios de captura y uso correcto</span>
@@ -193,13 +193,6 @@
         </div>
         <div id="unitsIgualMsg" style="display:none;margin-top:8px;font-size:.82rem;color:var(--accent)"></div>
         <div class="units-list" id="unitsList"></div>
-      </div>
-      <div class="field">
-        <div class="field-top"><label>¿Comparten carpeta de Drive?</label></div>
-        <div class="chips" id="driveShareChips">
-          <button type="button" class="chip chip-sm sel" data-v="Sí, carpeta común">Sí, común</button>
-          <button type="button" class="chip chip-sm" data-v="No, una por unidad">Una por unidad</button>
-        </div>
       </div>
     </div>
   </div>
@@ -431,20 +424,9 @@
   </div>
   <div id="crmCards"></div>
 
-  <!-- FOTOS / DRIVE (pendiente de conexión) -->
-  <div class="field" style="margin-top:4px;opacity:.6">
-    <div class="field-top"><label>📸 Fotos en Drive <span class="h-hint">pendiente — configura el endpoint para activar</span></label></div>
-    <input type="text" id="f_drive" placeholder="Se sugiere sola">
-    <div class="btn-row">
-      <button type="button" class="btn" id="btnDrive">📁 Crear carpeta</button>
-      <button type="button" class="btn" id="btnFotos" disabled>📷 Subir fotos</button>
-    </div>
-    <div class="status" id="driveStatus"></div>
-  </div>
 
   <!-- ACCIONES -->
   <div class="actions">
-    <button type="button" class="btn btn-big" id="btnSave">💾 Guardar captura (sin generar)</button>
     <button type="button" class="btn btn-big btn-accent" id="btnGen">Generar Markdown</button>
     <div class="danger-zone">
       <button type="button" class="btn btn-big btn-danger" id="btnReset" style="width:100%">Limpiar todo</button>
@@ -495,8 +477,6 @@
   <div class="cfg-block">
     <div class="field"><div class="field-top"><label>Responsable por defecto</label></div>
       <select id="cfg_resp"></select></div>
-    <div class="field"><div class="field-top"><label>Carpeta madre de Drive</label></div>
-      <input type="text" id="cfg_drive" placeholder="Hauser Propiedades"></div>
   </div>
 
   <div class="cfg-block">
