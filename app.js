@@ -23,8 +23,7 @@ function save(k,v){try{localStorage.setItem('cap_'+k,JSON.stringify(v));}catch(e
     var btn=$('btnTheme');if(btn)btn.textContent=dark?'☀️':'🌙';
   }
   var saved=load('theme',null);
-  var prefersDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;
-  var isDark=saved==='dark'||(saved===null&&prefersDark);
+  var isDark=saved==='dark'; // default: light si no hay preferencia guardada
   applyTheme(isDark);
   var btn=$('btnTheme');
   if(btn)btn.addEventListener('click',function(){
