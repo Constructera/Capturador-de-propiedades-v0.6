@@ -106,7 +106,7 @@ La más extensa. Hacer por sub-pasos con validación visual.
 
 ---
 
-## FASE 7 — Animaciones MP4 + sonido + vibración (MEDIA)
+## FASE 7 — Animaciones MP4 + sonido + vibración (MEDIA) ✅ COMPLETA
 
 Claude Code DEBE guiar paso a paso al dueño para mover/renombrar/convertir los MP4.
 
@@ -134,6 +134,13 @@ Claude Code debe:
 
 **Riesgo:** medio-alto. La transparencia es el punto delicado; Claude Code verifica el formato real antes de decidir la ruta de conversión.
 
+**Lo que entró (F7-r1 → r4):** 5 MP4 en `mascota/` (idle, walking, jogging, running, sad, celebrating); `_setMascotVideo()` cambia src+load+play; `mix-blend-mode:multiply` + `darken` para running/sad; `data-state` para brightness por estado; `realElapsed()` para estrella 1 con tiempo real; mascota 160×160 en home y resultado; `preload=auto` + `muted` antes de play para iOS.
+
+**Diferido a v0.7 (no más parches sobre blend-mode):**
+- iOS Safari (iPhone 12 / iOS 26.5): autoplay manual requiere interacción — solución correcta es reexportar MP4 con fondo blanco limpio (o chroma key con canvas).
+- Running y sad: fondo gris persistente — el fondo de esos MP4 no es blanco puro; `multiply`/`darken` no lo eliminan del todo. Solución en v0.7: reexportar con fondo #FFFFFF puro, o implementar chroma key con canvas + `getImageData`.
+- Items 32 (sonido) y 33 (vibración) de esta fase no se implementaron.
+
 ---
 
 ## FASE 8 — Visual estilo Duolingo + modo oscuro (BAJA)
@@ -159,6 +166,22 @@ Claude Code debe:
 7. Fase 6 (limpieza de textos).
 8. Fase 7 (MP4 + sonido + vibración).
 9. Fase 8 (visual Duolingo + dark mode).
+
+---
+
+## Estado de las fases
+
+| Fase | Tema | Estado |
+|---|---|---|
+| 1 | Rentas y comisiones | ✅ Completa |
+| 2A | Persistencia local del asesor | ✅ Completa |
+| 2B | Ranking compartido (GAS) | ✅ Completa |
+| 3 | Edición de capturas + historial | ✅ Completa |
+| 4 | Contactos rediseñados | ✅ Completa |
+| 5 | Flujo de captura | ✅ Completa |
+| 6 | Limpieza de interfaz | ✅ Completa |
+| 7 | Animaciones MP4 | ✅ Completa (iOS y fondos diferidos a v0.7) |
+| 8 | Visual Duolingo + dark mode | ⏳ Pendiente |
 
 ---
 
